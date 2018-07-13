@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="assets/css/reset.css" type="text/css" />
+    <link rel="stylesheet" href="assets/css/main.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css' />
+    <title>TimeChart Example</title>
+</head>
+
+<body>
+
+    <a href="https://zoomcharts.com/en/"><img src="assets/images/zoomcharts.jpg" width="241" height="55" style="border:0; display:block" alt="ZoomCharts" /></a>
+    <br />
+    <a href="index.html" class="back">Back to overview</a>
+    <h1>TimeChart integration example</h1>
+    To integrate TimeChart into your web application, follow these steps:<br />
+    <ol>
+        <li>Extract the library under your web application root folder (e.g. where your index.html is)</li>
+        <li>Add following code snippet in your html file<pre>&lt;script src="zoomcharts/zoomcharts.js"&gt;&lt;/script&gt;</pre> (where <code>zoomcharts</code> is the name of the folder where you extracted the library)</li>
+        <li>Alternatively you can include the script from the CDN<pre>&lt;script src="//cdn.zoomcharts-cloud.com/1/latest/zoomcharts.js"&gt;&lt;/script&gt;</pre></li>
+        <li>Add container element in which the chart will be added <pre>&lt;div id="chart"&gt;&lt;/div&gt;</pre></li>
+        <li>
+            Initialize chart:
+<pre>
+    &lt;script&gt;
+        var t = new TimeChart({
+            container: document.getElementById("chart"),
+            area: { height: 350 },
+            data: {
+                preloaded: {
+                    values: [
+                        ["2017-01-09 00:00:00", 100],
+                        ["2017-01-20", 200],
+                        [1485907200, 300],
+                        ["2017-02-05 15:20:00", 400],
+                        ["2017-02-15 22:59:59", 500]
+                    ],
+                    dataLimitFrom: "2017-01-09 00:00:00",
+                    dataLimitTo: "2017-02-15 22:59:59",
+                    unit: 's'
+                }
+            }
+        });
+    &lt;/script&gt;
+</pre>
+        </li>
+        <li>Follow the instructions on the ZoomCharts dashboard to include the license key in your application.</li>
+        <li>Congratulations. You have now successfully integrated ZoomCharts into your web application if you can see the same chart as below in the live demo.</li>
+    </ol>
+    <h2>Live Demo</h2>
+    <script src="../zoomcharts.js"></script>
+    <noscript><strong>JavaScript is currently disabled in your browser. Make sure you allowed the scripting after opening this page.</strong></noscript>
+    <div id="demo"></div>
+    <script>
+        var t = new TimeChart({
+            container: document.getElementById("demo"),
+            area: { height: 350 },
+            data: {
+                preloaded: {
+                    values: [
+                        ["2017-01-09 00:00:00", 100],
+                        ["2017-01-20", 200],
+                        [1485907200, 300],
+                        ["2017-02-05 15:20:00", 400],
+                        ["2017-02-15 22:59:59", 500]
+                    ],
+                    dataLimitFrom: "2017-01-09 00:00:00",
+                    dataLimitTo: "2017-02-15 22:59:59",
+                    unit: 's'
+                }
+            }
+        });
+    </script>
+    <a href="http://jsfiddle.net/2rzrqhe5/" target="_blank" class="jsfiddle">Try it on jsFiddle</a>
+    <h2>More Information:</h2>
+    <nav>
+        <a href="https://zoomcharts.com/developers/en/time-chart/api-reference/settings.html">Read full Documentation</a>
+        <a href="https://zoomcharts.com/developers/en/time-chart/examples/data-sources/preloaded.html">Browse more examples</a>
+    </nav>
+</body>
+</html>
+

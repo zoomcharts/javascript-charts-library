@@ -1,0 +1,41 @@
+(c) 2013 - 2018 Data Visualization Software Lab
+ZoomCharts charting library EULA: https://zoomcharts.com/en/legal/
+
+
+3rd party software license acknowledgement:
+  moment.js
+    author : Tim Wood
+    license : MIT
+    github.com/moment/moment/
+
+  Moment TimeZone	
+    author : Tim Wood
+    license : MIT
+    github.com/moment/moment-timezone/
+
+  Leaflet.js
+    author : Vladimir Agafonkin
+    license : BSD
+    github.com/Leaflet/Leaflet/blob/master/LICENSE
+
+  CssColorParser.js
+    author : Dean McNamee, 2012.
+    license : MIT
+    github.com/deanm/css-color-parser-js
+
+  SHA-256 implementation in JavaScript
+    author : Chris Veness 
+    license: MIT
+    github.com/chrisveness/crypto
+
+  jsrsasign (RSA-Sign JavaScript Library)
+    version : 4.7.2
+    author : Kenji Urushima
+    license : MIT
+    kjur.github.io/jsrsasign/
+
+  jsbn (RSA and ECC in JavaScript)
+    version : 1.4
+    author : Tom Wu
+    license : BSD
+    www-cs-students.stanford.edu/~tjw/jsbn/

@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="assets/css/reset.css" type="text/css" />
+    <link rel="stylesheet" href="assets/css/main.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css' />
+    <title>GeoChart Example</title>
+</head>
+
+<body>
+
+    <a href="https://zoomcharts.com/en/"><img src="assets/images/zoomcharts.jpg" width="241" height="55" style="border:0; display:block" alt="ZoomCharts" /></a>
+    <br />
+    <a href="index.html" class="back">Back to overview</a>
+    <h1>GeoChart integration example</h1>
+    To integrate GeoChart into your web application, follow these steps:<br />
+    <ol>
+        <li>Extract the library under your web application root folder (e.g. where your index.html is)</li>
+        <li>Add following code snippet in your html file<pre>&lt;script src="zoomcharts/zoomcharts.js"&gt;&lt;/script&gt;</pre> (where <code>zoomcharts</code> is the name of the folder where you extracted the library)</li>
+        <li>Alternatively you can include the script from the CDN<pre>&lt;script src="//cdn.zoomcharts-cloud.com/1/latest/zoomcharts.js"&gt;&lt;/script&gt;</pre></li>
+        <li>Add container element in which the chart will be added <pre>&lt;div id="chart"&gt;&lt;/div&gt;</pre></li>
+        <li>
+            Initialize chart:
+<pre>
+    &lt;script&gt;
+        var gc = new GeoChart({
+            container: document.getElementById("chart"),
+            area: { height: 500 },
+            data: {
+                preloaded: {
+                    nodes: [
+                        {
+                            id: "Squaw Valley",
+                            coordinates: [-119.181449, 36.707146]
+                        },
+                        {
+                            id: "Atlanta",
+                            coordinates: [-84.388846, 33.752504]
+                        },
+                        {
+                            id: "New York",
+                            coordinates: [-73.996705, 40.74838]
+                        },
+                        {
+                            id: "Lake Placid",
+                            coordinates: [-81.364918, 27.294474]
+                        }
+                    ],
+                    links: [
+                        { from: "New York", to: "Atlanta", drivingTime: "13 hours 3 mins" },
+                        { from: "New York", to: "Squaw Valley", drivingTime: "1 day 18 hours" },
+                        { from: "New York", to: "Lake Placid", drivingTime: "17 hours 33 mins" },
+                        { from: "Lake Placid", to: "Squaw Valley", drivingTime: "1 day 15 hours" },
+                        { from: "Atlanta", to: "Squaw Valley", drivingTime: "1 day 10 hours" }
+                    ]
+                }
+            },
+            navigation: {
+                initialLat: 35.04409,
+                initialLng: -90.246213,
+                initialZoom: 4,
+                minZoom: 4
+            },
+            layers: [
+                {
+                    name: "Points",
+                    type: "items"
+                }
+            ]
+        });
+    &lt;/script&gt;
+</pre>
+        </li>
+        <li>Follow the instructions on the ZoomCharts dashboard to include the license key in your application.</li>
+        <li>Congratulations. You have now successfully integrated ZoomCharts into your web application if you can see the same chart as below in the live demo.</li>
+    </ol>
+    <h2>Live Demo</h2>
+    <script src="../zoomcharts.js"></script>
+    <noscript><strong>JavaScript is currently disabled in your browser. Make sure you allowed the scripting after opening this page.</strong></noscript>
+    <div id="demo"></div>
+    <script>
+        var gc = new GeoChart({
+            container: document.getElementById("demo"),
+            area: { height: 500 },
+            data: {
+                preloaded: {
+                    nodes: [
+                        {
+                            id: "Squaw Valley",
+                            coordinates: [-119.181449, 36.707146]
+                        },
+                        {
+                            id: "Atlanta",
+                            coordinates: [-84.388846, 33.752504]
+                        },
+                        {
+                            id: "New York",
+                            coordinates: [-73.996705, 40.74838]
+                        },
+                        {
+                            id: "Lake Placid",
+                            coordinates: [-81.364918, 27.294474]
+                        }
+                    ],
+                    links: [
+                        { from: "New York", to: "Atlanta", drivingTime: "13 hours 3 mins" },
+                        { from: "New York", to: "Squaw Valley", drivingTime: "1 day 18 hours" },
+                        { from: "New York", to: "Lake Placid", drivingTime: "17 hours 33 mins" },
+                        { from: "Lake Placid", to: "Squaw Valley", drivingTime: "1 day 15 hours" },
+                        { from: "Atlanta", to: "Squaw Valley", drivingTime: "1 day 10 hours" }
+                    ]
+                }
+            },
+            navigation: {
+                initialLat: 35.04409,
+                initialLng: -90.246213,
+                initialZoom: 4,
+                minZoom: 4
+            },
+            layers: [
+                {
+                    name: "Points",
+                    type: "items"
+                }
+            ]
+        });
+    </script>
+    <a href="http://jsfiddle.net/8j961o1y/" target="_blank" class="jsfiddle">Try it on jsFiddle</a>
+    <h2>More Information:</h2>
+    <nav>
+        <a href="https://zoomcharts.com/developers/en/geo-chart/api-reference/settings.html">Read full Documentation</a>
+        <a href="https://zoomcharts.com/developers/en/geo-chart/examples/data-sources/incremental-loading.html">Browse more examples</a>
+    </nav>
+</body>
+</html>

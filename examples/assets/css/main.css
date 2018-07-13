@@ -1,0 +1,161 @@
+﻿@charset "utf-8";
+
+body {
+    font-family: 'Roboto', Arial, Tahoma;
+    color: #333;
+    font-size: 16px;
+    font-weight: 400;
+    background: #fff;
+    line-height: 150%;
+    padding: 24px;
+}
+
+table {
+    border: 0;
+    max-width: 710px;
+    margin: 0;
+    font-size: 100%;
+    line-height: 150%;
+}
+
+div.separator {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 20px;
+}
+
+.iblock, a.tutorial {
+    display: inline-block;
+    width: 120px;
+    margin-right: 20px;
+}
+
+h2 {
+    line-height: 200%;
+    color: #0099cc;
+    font-size: 112%;
+    font-weight: normal;
+}
+
+h3 {
+    font-size: 105%;
+    margin-bottom: 0;
+}
+
+a, a:after {
+    outline: none;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+a {
+    text-decoration: underline;
+    color: #09c;
+}
+
+    a.tutorial {
+        font-size: 15px;
+        padding: 94px 0 0 0;
+        background-position: center top;
+        background-repeat: no-repeat;
+        color: #000;
+        text-align: center;
+    }
+
+    a:hover {
+        color: #000;
+    }
+
+div.split2, div.split3 {
+    display: inline-block;
+    width: 300px;
+    margin: 10px 40px 0 0;
+    vertical-align: top;
+}
+
+div.split2.right, div.split3.right {
+    margin: 10px 0 0 0;
+    width: auto;
+    max-width: 400px;
+}
+
+div.split3 {
+    width: 500px;
+}
+div.split3.right {
+    max-width: 200px;
+}
+
+div.list {
+    font-size:80%;
+    color:#666666;
+}
+
+ol {
+    padding-top: 16px;
+}
+
+    ol li {
+        padding: 10px 24px 10px 10px;
+        list-style: decimal;
+        margin-left: 24px;
+    }
+
+nav {
+    display: block;
+    padding: 7px 0 40px 0;
+}
+
+    nav a {
+        display: block;
+    }
+
+#demo {
+    margin-bottom: 12px;
+}
+
+a.jsfiddle {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+    padding-left: 21px;
+    position: relative;
+}
+
+    a.jsfiddle:after {
+        content: "";
+        position: absolute;
+        top: 5px;
+        left: 0;
+        width: 16px;
+        height: 16px;
+        background: url(../images/jsfiddle.svg) left top no-repeat;
+        background-size: 16px auto;
+        opacity: .4;
+    }
+
+    a.jsfiddle:hover {
+        color: #000;
+    }
+
+        a.jsfiddle:hover:after {
+            opacity: 1;
+        }
+
+pre {
+    padding: 12px;
+    margin: 12px;
+    border: 1px solid #f3f3f3;
+}
+
+    pre:hover {
+        border: 1px solid #fff;
+        -webkit-box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
+        -moz-box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
+        box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
+    }
+

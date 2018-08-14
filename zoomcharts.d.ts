@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.5 */
+/** TypeScript definition file for ZoomCharts 1.18.8 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -2713,6 +2713,8 @@ declare module ZoomCharts.Configuration {
         minHeight?: number;
         /** Padding for column. 0th element - left padding, 1st element - right padding. */
         padding?: [number, number];
+        /** Radius for top-left, top-right, bottom-right, bottom-left corner */
+        radius?: [number, number, number, number];
         /** Shadow blur effect range. */
         shadowBlur?: number;
     }

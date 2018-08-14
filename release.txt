@@ -3,9 +3,38 @@ ZoomCharts javascript library.
 Copyright 2014-2017, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.18.5
+Version 1.18.8
 
 ====== Changelog ===========================
+
+Version 1.18.8 (2018-08-10)
+
+All Charts:
+* Fixed regression of 1.18.6 with "bold" font fix
+
+--------------------------------------------
+Version 1.18.7 (2018-08-03)
+
+All Charts:
+* Temporary solution for a regression from 1.18.6
+
+--------------------------------------------
+
+Version 1.18.6 (2018-08-03)
+
+All Charts:
+* Fixed bug with "bold" font support in Safari
+
+TimeChart, FacetChart:
+* Added border radius for columns.
+
+PieChart:
+* Added radial gradient support for PieChart slices
+
+NetChart:
+* Fixed bug with clickEvent on legend
+
+--------------------------------------------
 
 Version 1.18.5 (2018-07-10)
 

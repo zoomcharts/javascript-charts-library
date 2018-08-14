@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.8 */
+/** TypeScript definition file for ZoomCharts 1.16.5 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -77,10 +77,7 @@ declare module ZoomCharts.Configuration {
                 chartWidth: number;
                 chartHeight: number;
             };
-        /** Gets or sets the fullscreen state of the chart. */
-        public fullscreen(
-            /** specify `true` or `false` to set the state, omit the value to get the current state. */
-            isFullscreen?: boolean): boolean;
+        public fullscreen(isFullscreen: boolean): boolean;
         public home(): boolean;
         /** Removes an event listener that was added by a call to `on` or by specifying it in settings.
         Note that the listener must be the exact same reference, which means that anonymous functions should not be used in call to `on`. */
@@ -105,10 +102,6 @@ declare module ZoomCharts.Configuration {
                 event: BaseMouseEvent, args: BaseChartErrorEventArguments) => void): void;
         /** Adds an event listener for when the currently hovered item has changed. */
         public on(name: "hoverChange", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
-        /** Adds an event listener for pointer down event. */
-        public on(name: "pointerDown", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
-        /** Adds an event listener for pointer down event. */
-        public on(name: "dataUpdated", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
         /** Adds an event listener for when chart placement on screen changes. Note that this is called on every animation frame. */
         public on(name: "positionChange", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
         /** Adds an event listener for the mouse right click (or touch longpress) event. */
@@ -175,11 +168,6 @@ declare module ZoomCharts.Configuration {
     export interface BaseChartEventArguments {
         /** The chart object for which the event has been raised. */
         chart: BaseApi;
-        clickCredits?: boolean;
-        credits?: {
-            url: string;
-            urlTarget: string;
-        };
         origin: string;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
@@ -378,7 +366,7 @@ declare module ZoomCharts.Configuration {
         
         This setting can either be set to `false` to disable the scaling, `true` to render according to the browser DPI setting
         and a number to force a constant scale, ignoring browser DPI settings. */
-        highDPI?: number | boolean;
+        highDPI?: boolean | number;
         /** Whether to store entire label into bitmap. Use it to improve the performance of your application. */
         labelCache?: boolean;
         /** Whether to store labels that are rendered rotated in the cache. */
@@ -553,12 +541,7 @@ declare module ZoomCharts.Configuration {
             }>;
     }
     export interface BaseSettingsEvents<TArguments extends BaseChartEventArguments, TClickArguments extends BaseChartEventArguments> {
-        /** Function called on pointer down. 
-        Function called on pointer up. 
-        Function called when pointer drag has happened. 
-        Function called when mouse pointer is moved. 
-        Function called when data is loaded/added/replaced/removed. 
-        Time to wait after last action before firing onChartUpdate event. */
+        /** Time to wait after last action before firing onChartUpdate event. */
         chartUpdateDelay?: number;
         /** Function called when whenever current view has changed. Usually after panning and navigation. Use to update any linked views.
         Note that this is also fired after chart initialization and API methods. Use args.origin field to determine event's origin. */
@@ -613,7 +596,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface BaseSettingsLabelStyle {
         /** Text alignment. */
-        align?: "center" | "right" | "left";
+        align?: "left" | "right" | "center";
         /** The angle at which the label are rotated */
         angle?: number;
         /** Ratio between label sizes in different dimensions */
@@ -663,10 +646,6 @@ declare module ZoomCharts.Configuration {
         marker?: BaseSettingsLegendMarker;
         /** Max number of symbols used in one line of text that applies to any legend entry. */
         maxLineSymbols?: number;
-        /** Minium height of the legend. */
-        minHeight?: number;
-        /** Minium width of the legend. */
-        minWidth?: number;
         /** Max number of columns. Use in conjunction with side parameter under the legend panel should be right or left in order to arrange entries by columns. */
         numberOfColumns?: number;
         /** Max number of rows. Use in conjunction with side parameter under the legend panel that should be set as bottom or top in order to arrange entries by rows. */
@@ -763,13 +742,6 @@ declare module ZoomCharts.Configuration {
         shadowOffsetY?: number;
     }
     export interface BaseSettingsTitle {
-        /** Advanced settings */
-        advanced?: {
-            /** Determine the position of the title relative to the toolbars
-            false - adds title first, then toolbar
-            true - adds toolbar first, then title. Note, `toolbar.location` should be "outside" for this to have effect */
-            addAfterToolbar?: boolean;
-        };
         /** Alignment of the title text. */
         align?: "center" | "left" | "right";
         /** Show/hide chart title */
@@ -868,7 +840,7 @@ declare module ZoomCharts.Configuration {
         hoverItem: ItemsChartItemsLayerLinkItem | ItemsChartItemsLayerNodeItem;
         hoverLink: ItemsChartLink;
         hoverNode: ItemsChartNode;
-        selection: Array<ItemsChartNode | ItemsChartLink>;
+        selection: Array<ItemsChartLink | ItemsChartNode>;
     }
     export interface ItemsChartDataObjectBase extends BaseDataErrorResponse {
     }
@@ -896,8 +868,6 @@ declare module ZoomCharts.Configuration {
         style?: ItemsChartSettingsNodeStyle;
     }
     export interface ItemsChartLink extends ItemsChartSettingsLinkStyle {
-        /** Specifies if the link was used for radial/hierarchy layout (false) or not (true). This flag is ignored (always false) by static/dynamic layouts. */
-        background: boolean;
         /** Data object that this link represents. */
         data: ItemsChartDataObjectLink;
         /** Node at the start of the link. */
@@ -914,7 +884,7 @@ declare module ZoomCharts.Configuration {
         relevance: number;
         /** If this is `false`, then the node is visible. If it is `true` or a non-zero a number (a "truthy" value), then the removal animation is in progress.
         After the removal animation completes, the node will be hidden. */
-        removed: number | boolean;
+        removed: boolean | number;
         /** Whether or not the link is selected. */
         selected: boolean;
         /** Node at the end of the link. */
@@ -947,7 +917,7 @@ declare module ZoomCharts.Configuration {
         relevance: number;
         /** If this is `false`, then the node is visible. If it is `true` or a non-zero a number (a "truthy" value), then the removal animation is in progress.
         After the removal animation completes, the node will be hidden. */
-        removed: number | boolean;
+        removed: boolean | number;
         /** Whether or not the node is selected. */
         selected: boolean;
         /** If true, the node is fixed in place and does not get affected by layout algorithms. This gets set automatically after the user drags a node in NetChart. */
@@ -1085,7 +1055,7 @@ declare module ZoomCharts.Configuration {
             /** Half of the height of the node */
             hHeight: number, 
             /** Image of the node, if any. */
-            image: HTMLCanvasElement | HTMLImageElement, 
+            image: HTMLImageElement | HTMLCanvasElement, 
             /** Whether or not to paint details (image, label). When the node is zoomed out far enough, the details aren't painted. */
             paintDetails: boolean) => void;
         /** Function to render the selection shape for custom shape in canvas 2d context.
@@ -1330,8 +1300,6 @@ declare module ZoomCharts.Configuration {
         y?: number;
     }
     export interface ItemsChartSettingsLinkMenu extends ItemsChartSettingsMenu {
-        /** Custom buttons for the link menu */
-        buttons?: Array<ItemsChartSettingsMenuButton>;
         /** Prepare html string or DOM element to include in the menu. Called whenever a menu is about to be shown.
         
         If this callback is not defined, the menu will display the label of the element. */
@@ -1351,8 +1319,6 @@ declare module ZoomCharts.Configuration {
         label?: string;
         length?: number;
         lineDash?: Array<number>;
-        lineDashBackgroundFillColor?: string;
-        lineDashShape?: "rectangle" | "triangle" | "hexagon" | "diamond";
         /** Specifies the width of the line rendered for this link. */
         radius?: number;
         shadowBlur?: number;
@@ -1366,6 +1332,10 @@ declare module ZoomCharts.Configuration {
         toPieValue?: number;
     }
     export interface ItemsChartSettingsMenu {
+        /** Buttons to show in node menu. It is possible to add custom buttons or use built-in buttons if
+        that particular menu supports them.
+        
+        Currently only the `nodeMenu` on the NetChart supports any of following built-in buttons: `expand`, `focus`, `lock`, `hide`. */
         buttons?: Array<string | ItemsChartSettingsMenuButton>;
         /** Prepare html string or DOM element to include in the menu. Called whenever a menu is about to be shown.
         
@@ -1409,8 +1379,6 @@ declare module ZoomCharts.Configuration {
             button: HTMLAnchorElement) => void;
         /** The text (HTML is supported) that is displayed within the button. */
         text?: string;
-        /** Tooltip that is displayed while hovering over the button. Leaving `null` uses `text`. */
-        title?: string;
     }
     export interface ItemsChartSettingsNodeAnchorStyle {
         lineColor?: string;
@@ -1441,27 +1409,6 @@ declare module ZoomCharts.Configuration {
         y?: number;
     }
     export interface ItemsChartSettingsNodeMenu extends ItemsChartSettingsMenu {
-        /** Buttons to show in the node menu. It is possible to use both custom buttons and built-in buttons. When built-in buttons
-        are used, they will be shown and hidden as necessary based on the node state. For example, the "unfocus" button will only
-        be available for focused nodes; the "expand" button will only be available if there are hidden neighbor nodes, etc.
-        
-        Currently the following built-in buttons are supported:
-        
-        * `"btn:expand"` - expands the node. All nodes that are linked to this node are shown.
-        * `"btn:collapse"` - collapses the node. In `focusnodes` navigation this hides all linked nodes with a smaller relevance;
-          in other navigation modes this hides this node and all linked nodes.
-        * `"btn:close"` - closes the node. Unavailable for `focusnodes` navigation; in other navigation modes hides all linked nodes
-          that do not have any links to nodes other than this node or nodes directly linked to this node.
-        * `"btn:focus"` - focuses the node. This is most useful for `focusnodes` navigation, but available for all navigation modes.
-        * `"btn:unfocus"` - unfocuses the node. This is most useful for `focusnodes` navigation but available for all navigation modes.
-        * `"btn:lock"` - pins the node in place and prevents the layout algorithm from moving it around.
-        * `"btn:unlock"` - unpins the node and allows the layout algorithm to position the node as necessary.
-        * `"btn:hide"` - Hides this node.
-        * `"expand"` - Composite setting including `"btn:expand"`, `"btn:collapse"` and `"btn:close"`
-        * `"focus"` - Composite setting including `"btn:focus"` and `"btn:unfocus"`
-        * `"lock"` - Composite setting including `"btn:lock"` and `"btn:unlock"`
-        * `"hide"` - Same as `"btn:hide"`, included for backwards compatibility */
-        buttons?: Array<string | ItemsChartSettingsMenuButton>;
         /** Prepare html string or DOM element to include in the menu. Called whenever a menu is about to be shown.
         
         If this callback is not defined, the menu will display the label of the element. */
@@ -1495,12 +1442,10 @@ declare module ZoomCharts.Configuration {
         customShape?: ItemsChartSettingsCustomShape;
         /** Valid values: circle (default), text, roundtext, droplet, rectangle, customShape */
         display?: string;
-        /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
-        draggable?: boolean;
         fillColor?: string;
         image?: string;
         /** Specifies the image cropping method. Valid values are `false` (disable cropping), `true` (default cropping mode), `"crop"`, `"letterbox"` and `"fit"`. */
-        imageCropping?: "fit" | boolean | "crop" | "letterbox";
+        imageCropping?: "crop" | "letterbox" | "fit" | boolean;
         /** Specifies if the node is invisible - thus completely skipping the drawing and hit testing. This can be used, for example, to hide all nodes
         and showing only ones that meet certain criteria using `nodeStyleFunction`. */
         invisible?: boolean;
@@ -1572,27 +1517,10 @@ declare module ZoomCharts.Configuration {
         linkStrengthExtent?: [number, number];
         /** Distance between multiple links between two nodes. */
         multilinkSpacing?: number;
-        /** Controls automatic node scaling. The radii are distributed in the range defined by `nodeRadiusExtent`.
-        
-        Valid values:
-        - null - scaling disabled
-        - linear - distribute node radii linearly
-        - logaritmic - distribute node radii logarithmicaly
-        - square - distribute node radii using square function */
-        nodeAutoScaling?: "linear" | "logarithmic" | "square";
-        /** Min and max value of node radius, before zooming is applied. To use this, specify `nodeAutoScaling`. */
+        /** Controls automatic node scaling. */
+        nodeAutoScaling?: "linear" | "logaritmic";
+        /** Min and max value of node radius, before zooming is applied. */
         nodeRadiusExtent?: [number, number];
-        /** The angle of the self-link in degrees. Limited to 0 < selfLinkAngle <= 90. */
-        selfLinkAngle?: number;
-        /** The "height" of the self links, how far away from the node center it will extend. This is a factor of the node radius.
-        Must be positive. */
-        selfLinkHeightFactor?: number;
-        /** The shape of the  self-link. "Parabolic" makes sure the ends of the link point towards the center, but the self-link
-        looks more "squished". "Quadratic" produces a more natural curve, but the ends of the link will not point at the center. */
-        selfLinkShape?: "quadratic" | "parabolic";
-        /** The "width" of the self links, how wide in parallel to the node it will extend. This is a factor of the default width,
-        as determined by the shape. 1 is the default width. Must be non-negative. */
-        selfLinkWidthFactor?: number;
     }
     export interface NetChartBarSettingsLocalizationToolbar extends BaseSettingsLocalizationToolbar {
         fitButton?: string;
@@ -1606,23 +1534,6 @@ declare module ZoomCharts.Configuration {
     export interface NetChartBarSettingsToolbar extends BaseSettingsToolbar {
         /** Whether to show the zoom slider control. */
         zoomControl?: boolean;
-    }
-    /** Settings for gravity in the dynamic layout */
-    export interface NetChartGravitySettings {
-        /** The object affected by the gravity effect in the dynamic layout. */
-        from?: "node" | "cluster" | "auto";
-        /** How to find the center of the object which is affected by gravity. Only used if `from="cluster"`. Only non-locked nodes will be used to calculate the
-        center. */
-        fromCenter?: "weighted" | "geometric";
-        /** Strength of the gravity effect. This does not have any tangible units but is rather a factor that is used in the calculations. If you
-        want to tweak it, experiment until you find a suitable value. Larger values will mean a stronger gravity, smaller will mean weaker. Negative values are
-        allowed and will reverse the effect, but are unlikely to be useful - unlike "traditional" Newtonian gravity, this one actually gets stronger as the nodes get
-        further away from the center, so the result of a negative value will be uncontrolled, exponential expansion. Setting to 0 disables gravity entirely. */
-        strength?: number;
-        /** The object to which the gravity attracts the affected object. */
-        to?: "cluster" | "nearestLockedNode" | "clusterLockedNodes" | "graph" | "graphLockedNodes";
-        /** How to find the center of the object to which the gravity attacts. Not used if `to="nearestLockedNode"`. */
-        toCenter?: "weighted" | "geometric";
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartClickEventArguments extends NetChartChartEventArguments {
@@ -1642,8 +1553,6 @@ declare module ZoomCharts.Configuration {
     export interface NetChartDataObjectLink extends ItemsChartDataObjectLink {
     }
     export interface NetChartDataObjectNode extends ItemsChartDataObjectNode {
-        /** Whether the node is initially locked in place at the (x;y) coordinates. Used for all except static layouts. */
-        locked?: boolean;
         /** Initial X coordinate, used for static layout. */
         x?: number;
         /** Initial Y coordinate, used for static layout. */
@@ -1658,7 +1567,7 @@ declare module ZoomCharts.Configuration {
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<NetChartSettingsData>;
         /** The events used to handle user interaction with UI elements. */
-        events?: NetChartSettingsEvents;
+        events?: BaseSettingsEvents<NetChartChartEventArguments, NetChartChartClickEventArguments>;
         /** Configurable conditions to filter the raw data values for subset of drawing nodes and links. */
         filters?: {
             /** Determine if link can be displayed. Invoked whenever a link is about to be shown or its data has changed.
@@ -1761,27 +1670,6 @@ declare module ZoomCharts.Configuration {
         `url` or `dataFunction`. */
         preloaded?: NetChartDataObject;
     }
-    export interface NetChartSettingsEvents extends BaseSettingsEvents<NetChartChartEventArguments, NetChartChartClickEventArguments> {
-        /** Function called when data is loaded/added/replaced/removed. */
-        onDataUpdated?: (
-            /** An empty mouse event. */
-            event: MouseEvent, args: NetChartChartEventArguments) => void;
-        onPointerDown?: (
-            /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
-        /** Function called when pointer drag has happened. */
-        onPointerDrag?: (
-            /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
-        /** Function called when mouse pointer is moved. */
-        onPointerMove?: (
-            /** The mouse event. */
-            event: MouseEvent, args: NetChartChartEventArguments) => void;
-        /** Function called on pointer up. */
-        onPointerUp?: (
-            /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
-    }
     export interface NetChartSettingsInteraction extends ItemsChartSettingsInteraction {
         /** The ability to rotate the chart with the pinch gesture, using 2 fingers */
         rotation?: {
@@ -1807,19 +1695,14 @@ declare module ZoomCharts.Configuration {
         /** The acceleration of scene movement, when trying to contain all nodes within the view,
         when autozoom is enabled. Increasing the value decreases latency, and makes the animation
         more responsive. Decreasing the value makes the animation more fluid */
-        autoZoomPositionElasticity?: number;
+        autoZoomPositionEllasticity?: number;
         /** Controls the percentage of how much of the chart width/height the nodes can move around without
         triggering automatic zoom adjustment. A value of 0.9 means that the target is to leave 10% padding
         on all sides of the chart. However once the target  is reached, if the nodes move within these 10%
         on either side, the zoom adjustment is not performed. */
         autoZoomSize?: number;
-        /** Auto zoom mode on chart initialization.
-        
-        Valid values:
-        - `overview` - show whole network
-        - `true` - use basic auto zoom
-        - `false` - no auto zoom. */
-        initialAutoZoom?: "overview" | boolean;
+        /** Auto zoom mode on chart initialization. */
+        initialAutoZoom?: "overview" | "true" | "false";
         /** Zoom value limits while for manual zooming. Contains array of [min, max] values.
         
         Note that if the minimum for `autoZoomExtent` is `null` (the default) then it can override the minimum in this value if the auto zoom level is smaller. */
@@ -1834,8 +1717,6 @@ declare module ZoomCharts.Configuration {
         aspectRatio?: boolean;
         /** Whether to perform global layout on network changes. Use it for better node placement at the cost of chart slowdown on network changes. */
         globalLayoutOnChanges?: boolean;
-        /** For dynamic layout, settings for gravity that pulls all nodes together. */
-        gravity?: NetChartGravitySettings;
         /** Desired horizontal distance between neighboring nodes with different parents in the hierarchy layout. By default `2*nodeSpacing` */
         groupSpacing?: number;
         /** Maximum time to wait for incremental layout to be completed. Note that bigger value will get nicer placement on network updates at the cost of longer delay. */
@@ -1894,11 +1775,8 @@ declare module ZoomCharts.Configuration {
     algorithm for navigation. Other parameters can tweak this algorithm, but not all parameters apply to all algorithms. */
     export interface NetChartSettingsNavigation {
         /** Determines what happens if the user has reached maximum number of focus nodes (`numberOfFocusNodes`) and focuses another node.
-        In focusnode mode, if this setting is `true`, then the least recently focused node will be unfocused; if this setting is `false`, 
-        then the userwill not be able to focus the node. 
-        In manual and showall modes, numberOfFocusNodes is not taken into account. If `true` then by focusing a different node, 
-        the previous becomes unfocused. If 'false' then previous nodes remain focused.
-        _Used by modes: all modes_ */
+        If this setting is `true`, then the least recently focused node will be unfocused. If this setting is `false`, then the user
+        will not be able to focus the node. _Used by modes: all modes_ */
         autoUnfocus?: boolean;
         /** Whether to auto-zoom to a node when it is focused. _Used by modes: all modes_ */
         autoZoomOnFocus?: boolean;
@@ -1933,7 +1811,7 @@ declare module ZoomCharts.Configuration {
         minNumberOfFocusNodes?: number;
         /** Navigation mode - the algorithm that determines the expanding/collapsing logic. */
         mode?: "manual" | "showall" | "focusnodes";
-        /** Maximum number of focused nodes. The `autoUnfocus` setting determines what happens when more nodes are focused.  _Used by modes: focusnodes_ */
+        /** Maximum number of focused nodes. The `autoUnfocus` setting determines what happens when more nodes are focused.  _Used by modes: all modes_ */
         numberOfFocusNodes?: number;
     }
     export interface NetChartSettingsStyle extends ItemsChartSettingsNodesLayerStyle {
@@ -2015,10 +1893,6 @@ declare module ZoomCharts {
                 /** An empty mouse event. */
                 event: Configuration.BaseMouseEvent, args: Configuration.BaseChartErrorEventArguments) => void): void;
         public on(name: "hoverChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
-        /** Adds an event listener for pointer down event. */
-        public on(name: "pointerDown", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
-        /** Adds an event listener for pointer down event. */
-        public on(name: "dataUpdated", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         public on(name: "positionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         public on(name: "rightClick", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartClickEventArguments) => void): void;
         public on(name: "selectionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
@@ -2037,10 +1911,6 @@ declare module ZoomCharts {
         /** Updates the chart settings but instead of merging some settings that are arrays or dictionaries (such as `data`)
         these collections are replaced completely. For example, this allows removal of series or value axis within TimeChart. */
         public replaceSettings(changes: Configuration.NetChartSettings): this;
-        /** Rearranges all nodes to their default locations (note that for dynamic layout these positions are not deterministic)
-        and enables automatic "overview" zoom.
-        
-        Note that these actions are done without animations. */
         public resetLayout(): void;
         /** Animates the viewport to zoom into and contain the nodes specified in the given array */
         public scrollIntoView(
@@ -2086,13 +1956,10 @@ declare module ZoomCharts {
         
         The zoom level is limited by [`interaction.zooming.zoomExtent` setting][zoomextent].
         
-        Passing `auto` will enable the simple auto-zoom mode, passing `overview` will enable the auto-zoom that shows
-        the whole network.
-        
         [zoomextent]: https://zoomcharts.com/developers/en/net-chart/api-reference/settings/interaction/zooming/zoomExtent.html */
         public zoom(
             /** if specified and greater than zero, the zoom level will be updated to this value. */
-            zoomValue?: number | "auto" | "overview" | "in" | "out", 
+            zoomValue?: number, 
             /** specifies if the zoom change should be animated. The default is `true`. */
             animate?: boolean): number;
         /** 
@@ -2115,11 +1982,6 @@ declare module ZoomCharts {
 
     export interface GradientDefinition extends Array<[number, string]> {
     }
-
-    export type GradientMode = null | "vertical" | "horizontal"
-
-    export type GradientType = null | "cylinder"
-
 
     export interface IRectangle {
         x0: number;

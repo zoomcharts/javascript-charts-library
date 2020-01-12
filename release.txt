@@ -1,11 +1,86 @@
 ZoomCharts javascript library.
 
-Copyright 2014-2017, SIA Data Visualization Software Lab. All rights reserved.
+Copyright 2014-2019, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.18.8
+Version 1.18.10 (2019-11-06)
 
-====== Changelog ===========================
+All Charts:
+* Added callbacks for when chart rendering begins or ends
+
+PieChart:
+* Added support for rounded pie chart
+
+TimeChart/FacetChart:
+* Added optional horizontal mode
+* Added API to return data from a hovered column
+* Added setting to allow overlap in value labels
+* Separated showInLegend and showInPopUpInfo settings
+* Fixed value label flickering in very specific cases
+* Fixed hover returns for column renderer
+* Fixed highlight offset
+* Fixed display order of threshold lines compared to value labels
+
+TimeChart:
+* Added option to configure amount of padding for time axis labels
+* Added API to set time range without changing selection
+
+FacetChart:
+* Added option to automatically resize category axis to fit label size
+
+Netchart:
+* Added option to highlight all nodes by legend
+* Fixed onPositionChange event in radial layout
+
+--------------------------------------------
+
+Version 1.18.9 (2019-07-04)
+
+All Charts:
+* Various minor updates
+* Fixed selflink rendering issue at specific case
+* Fixed regression where new dashed line shape killed the decorations
+* Added support for doubleClickZoom feature
+* New version of hiding toolbar items when there is not enough space
+* Fixed legend rendering if item is present
+* Fixed hover event dispatching in facet chart
+* Fixed issue where empty series can cause exception in TC with value labels
+* Improved label hiding algorithm
+* Added support for css transformation detection in chrome
+* Added radial gradient support for circle and rectangle shapes in netchart
+* Added line gradient support for linearcharts
+* Added grid positioning setting to timechart
+* Added label rendering support to thresholds
+* NetChart AutoZoom fix
+* Fixed bar-active color in dark mode
+* Removed error on missing class name
+* Reverted regression in toolbar style
+* Fixed piechart inner gradient issue
+* Fixed PieValues error
+* Fix TimeChart selected period display
+* Added cluster performance test
+* Fixed transparency with overlapping columns
+* Fixed column spacing issue
+* Fixed handling cFillHeight for negative columns
+* Altered overlappingStacks example
+* Fixed timechart log scale updates
+* Only fill stack for based rendering
+* Fix transparency with based columns
+* Fixed TimeSeries data aggregation issue
+* New settings for whisker support
+* Zero value axis alignment
+* ValueAxis improved align zero
+* Fixed min transparency for info popup
+* More precise zero selection in valueaxis alignZero
+* Added dynamic threshold support in FacetChart
+* Added Option to remove zero values from info popup
+* Fixed extreme percentiles in threshold labels
+* Added connector lines for column renderer
+* Added first and last option for Dynamic Thresholds
+* Added cluster padding settings
+* Fixed an issue with incorrect integer rounding used in timechart
+
+--------------------------------------------
 
 Version 1.18.8 (2018-08-10)
 

@@ -3,6 +3,10 @@ ZoomCharts javascript library.
 Copyright 2014-2019, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
+Version 1.18.11-dev
+
+====== Changelog ===========================
+
 Version 1.18.10 (2019-11-06)
 
 All Charts:

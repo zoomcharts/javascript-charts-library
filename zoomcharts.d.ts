@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.10 (2019-11-06) */
+/** TypeScript definition file for ZoomCharts 1.18.11-dev */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -789,6 +789,8 @@ declare module ZoomCharts.Configuration {
         enabled?: boolean;
         /** Whether to display title on the exported image. Note that it does not affect chart. */
         enabledOnExport?: boolean;
+        /** Where the title is located in the chart */
+        location?: "inside" | "outside";
         /** Margin around title text, in px. */
         margin?: number;
         /** Title style */
@@ -825,6 +827,8 @@ declare module ZoomCharts.Configuration {
         extraItems?: Array<string | BaseSettingsToolbarItem>;
         /** Whether to show the fullscreen button on the toolbar. */
         fullscreen?: boolean;
+        /** Whether the toolbar will "stick" at the edge when scrolling */
+        isSticky?: boolean;
         /** A list of toolbar items. If this is specified, it overrides all the default buttons.
         
         Use `extraItems` to specify items that should be displayed in addition to the defaults. */
@@ -2273,6 +2277,8 @@ declare module ZoomCharts.Configuration {
         
         If this callback is not defined, the menu will display the label of the element. */
         contentsFunction?: (data: ItemsChartDataObjectNode, node: ItemsChartNode, callback: (result: string | HTMLElement) => void) => string | HTMLElement;
+        /** Where the menu is positioned relative to the node */
+        position?: "center" | "outside";
     }
     export interface ItemsChartSettingsNodeStyle {
         /** Node anchor mode. */
@@ -2300,7 +2306,7 @@ declare module ZoomCharts.Configuration {
         cursor?: string;
         /** Custom shape settings supplied, if display == "customShape" */
         customShape?: ItemsChartSettingsCustomShape;
-        /** Valid values: circle (default), text, roundtext, droplet, rectangle, customShape */
+        /** Valid values: circle (default), text, roundtext, droplet, rectangle, rhombus, diamond, customShape */
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;
@@ -2554,6 +2560,8 @@ declare module ZoomCharts.Configuration {
         that is specified in the series data configuration.
         Available aggregations: sum (default), count, first, last, min, max, avg, change */
         aggregations?: Array<string>;
+        /** Custom containing div for the info popup */
+        container?: string | HTMLElement;
         /** Show/hide info popup */
         enabled?: boolean;
         /** Specifies the position of the info popup.
@@ -3332,6 +3340,8 @@ declare module ZoomCharts.Configuration {
         rotation?: number;
         /** Desired vertical distance between node rows in the hierarchy layout. */
         rowSpacing?: number;
+        /** For hierarchy layout, whether to sort the nodes during layout */
+        sortNodes?: boolean;
         /** For radial layout, whether to lay out the first level in two rings, if necessary. */
         twoRingRadialLayout?: boolean;
     }

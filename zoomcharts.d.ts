@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.11-dev */
+/** TypeScript definition file for ZoomCharts 1.18.11 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -3407,6 +3407,8 @@ declare module ZoomCharts.Configuration {
         linearly interpolated between `focusNodeExpansionRadius` and `focusNodeTailExpansionRadius`. Also used to calculate
         [node relevance](full-reference/ItemsChartNode.html#doc_relevance). _Used by modes: `focusnodes`_ */
         focusNodeTailExpansionRadius?: number;
+        /** The focus node expansion radius used on chart load and reset. */
+        initialFocusNodeExpansionRadius?: number;
         /** Initially visible/focused nodes. Array of node identifiers. The precise effect depends on the navigation mode.
         * For `manual` this specifies the initially visible nodes and must contain at least 1 node.
         * For `showall` this specifies which nodes to show first, and other nodes are then requested recursively from these until all nodes are visible.
@@ -5160,7 +5162,7 @@ declare module ZoomCharts {
         See [`initialDisplayAnchor` and `initialDisplayPeriod` documentation][doc] for possible period / anchor values. 
         
         [doc]: https://zoomcharts.com/developers/en/time-chart/api-reference/settings.html#doc_navigation.initialDisplayAnchor */
-        public setDisplayPeriod(period: string, anchor: number | "newestData" | "now" | "oldestData", animate?: boolean): void;
+        public setDisplayPeriod(period: string, anchor: number | "newestData" | "now" | "oldestData", animate?: boolean, unit?: string): void;
         /** Displays the info popup for a specified time interval. The interval must be visible on screen.
         
         Note that if [`info.enabled`](time-chart/api-reference/settings/info/enabled.html) is set to `false` this method

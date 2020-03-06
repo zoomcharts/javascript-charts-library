@@ -3,9 +3,55 @@ ZoomCharts javascript library.
 Copyright 2014-2019, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.18.11-dev
+Version 1.18.11
 
 ====== Changelog ===========================
+
+Version 1.18.11 (2019-03-02)
+
+All Charts:
+* Fix menu positioning
+* Fix ellipsis and non-breaking space rendering on non-unicode pages
+* Fix inaccurate font size calculations
+
+TimeChart/FacetChart:
+* Add option for "sticky" toolbar that stays visible when scrolling
+* Allow tooltips in custom HTML containers
+* Allow non-integer data counts
+* Fix legend position in horizontal mode
+* Fix legend interaction in horizontal mode
+* Fix value axis title angle in horizontal mode
+* Fix x axis label offset in horizontal mode
+* Fix value axis floating away on visual resize in horizontal mode
+* Fix render order for columns
+* Fix column label placement with negative values
+* Fix threshold aggregated values with null or undefined data
+* Fix hit test in charts in column mode with exactly 1 column
+* Fix default value axis display units
+* Fix dark mode not applying to highlighted menu items in some cases
+
+FacetChart:
+* Fix hovering on mobile
+
+TimeChart:
+* Add API function to set display unit and display period in a single call
+* Change default display unit for markers at day scale
+* Fix rounding error in display units
+
+NetChart:
+* Add diamond and rhombus shapes
+* Add option to sort nodes in hierarchy layout
+* Add option for tooltip positioning relative to node
+* Add option for initial focus node expansion radius
+* Radial layout sends "onPositionChange" event when nodes are moved
+* Reduce default legend padding when on the left or right
+* Fix link menu updates when link is modified
+* Fix missing corner when outlining square and rhombus shapes
+* Fix layout resetting with a different RNG seed
+* Fix link items being rendered underneath nodes
+* Fix auras with different legend positioning
+
+--------------------------------------------
 
 Version 1.18.10 (2019-11-06)
 

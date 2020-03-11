@@ -3,9 +3,23 @@ ZoomCharts javascript library.
 Copyright 2014-2019, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.18.11
+Version 1.18.12
 
 ====== Changelog ===========================
+
+Version 1.18.12 (2019-03-10)
+
+All Charts:
+* Fix legend wrapping on resize
+* Fix css-transformed elements in non-webkit mobile browsers
+* Fix occasional dark menu elements in light theme
+* Fix Excel export
+
+NetChart:
+* Smooth hierarchy add animation
+* Hierarchy animation focuses on last clicked node
+
+--------------------------------------------
 
 Version 1.18.11 (2019-03-02)
 

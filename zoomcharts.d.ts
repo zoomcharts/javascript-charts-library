@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.11 */
+/** TypeScript definition file for ZoomCharts 1.18.12 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */

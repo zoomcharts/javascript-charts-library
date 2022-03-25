@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.9-dev */
+/** TypeScript definition file for ZoomCharts 1.20.1-dev */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -189,6 +189,11 @@ declare module ZoomCharts.Configuration {
         origin: string;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
+    export interface BaseChartLassoUpdatedEventArguments extends BaseChartEventArguments {
+        points: any;
+        pointsMeta: any;
+    }
+    /** Describes the base properties shared between all events raised by the different charts. */
     export interface BaseChartSettingsChangeEventArguments extends BaseChartEventArguments {
         changes?: BaseSettings;
     }
@@ -304,6 +309,7 @@ declare module ZoomCharts.Configuration {
         Note that the library will try to determine its location automatically by searching the included script tags.
         So this property can be skipped if the assets folder is located next to 'zoomcharts.js' file on the server. */
         assetsUrlBase?: string;
+        callbacks?: BaseSettingsCallbacks;
         /** Element of the page where the chart will be inserted. Any HTML element should work, for example you can use a `<div>`. 
         
         Any contents of the element will be cleared - this behavior can be used to specify a loading message as the initial content,
@@ -376,6 +382,8 @@ declare module ZoomCharts.Configuration {
             data: Array<Array<string | number | Date | boolean>>, 
             /** The callback that has to be called once the data is available. */
             callback: (data: Array<Array<string | number | Date | boolean>>) => void) => void;
+        /** The class to use for making data requests. */
+        dataRequestClass?: string;
         /** The page size in milimeters for the exported PDF documents. For A4 use `[210, 297]` (this is the default),
         for letter size use `[215.9, 279.4]`. The first number is the width, the second is the height. */
         exportPdfSize?: [number, number];
@@ -414,6 +422,14 @@ declare module ZoomCharts.Configuration {
         showTouchTrail?: boolean;
         /** Whether to use debugging option to paint pointer trails on screen. */
         showTouches?: boolean;
+        /** If true, will always escape strings before they are used in
+        innerHTML. For example, this could be useful if user input is used
+        in a contentsFunction to avoid XSS possibilities.
+        
+        Note if true, then HTML cannot be provided as strings in
+        contentsFunction settings. Instead DOM objects must be returned
+        directly. */
+        strictEscaping?: boolean;
         /** Miscellaneous style settings. */
         style?: BaseSettingsAdvancedStyle;
         /** CSS class for current theme. Used to reference chart container in CSS files. */
@@ -502,6 +518,11 @@ declare module ZoomCharts.Configuration {
         shadowOffsetX?: number;
         shadowOffsetY?: number;
     }
+    export interface BaseSettingsCallbacks {
+        renderFailed?: (err: any) => void;
+        renderFinish?: () => void;
+        renderStart?: () => void;
+    }
     export interface BaseSettingsChartPanel {
         /** Panel alignment */
         align?: "left" | "right" | "top" | "bottom" | "center" | "fill";
@@ -588,6 +609,10 @@ declare module ZoomCharts.Configuration {
         /** Function called when object pointer is on changes. */
         onHoverChange?: (
             /** The mouse event. */
+            event: BaseMouseEvent, args: TArguments) => void;
+        /** Function called when lasso is changed */
+        onLassoChange?: (
+            /** The mouse event that caused the event (if any) */
             event: BaseMouseEvent, args: TArguments) => void;
         /** Function called whenever chart placement on screen changes. Note that this is called on every animation frame and is intended
         for painting overlays only. */
@@ -683,6 +708,11 @@ declare module ZoomCharts.Configuration {
         padding?: number;
         /** Legend enclosing panel settings. */
         panel?: BaseSettingsLegendPanel;
+        /** Whether to automatically wrap legend text if any word is too long
+        to fit in the legend entry */
+        shouldForceWrapLongText?: boolean;
+        /** Whether to hide legend text that is too long to fit in an entry */
+        shouldHideLongText?: boolean;
         /** Text settings displaying in legend entries. */
         text?: BaseSettingsTextStyle;
         /** Maximum width of the legend. If null, all available horizontal space of chart will be consumed to set as much entries as possible.
@@ -713,6 +743,7 @@ declare module ZoomCharts.Configuration {
     export interface BaseSettingsLineStyle {
         lineColor?: string;
         lineDash?: Array<number>;
+        lineDashOffset?: number;
         lineWidth?: number;
     }
     export interface BaseSettingsLocalization {
@@ -784,6 +815,8 @@ declare module ZoomCharts.Configuration {
         enabled?: boolean;
         /** Whether to display title on the exported image. Note that it does not affect chart. */
         enabledOnExport?: boolean;
+        /** Where the title is located in the chart */
+        location?: "inside" | "outside";
         /** Margin around title text, in px. */
         margin?: number;
         /** Title style */
@@ -793,6 +826,8 @@ declare module ZoomCharts.Configuration {
         };
         /** Title text. */
         text?: string;
+        /** Vertical alignment of the title text. */
+        verticalAlign?: "top" | "bottom" | "center";
     }
     export interface BaseSettingsToolbar {
         /** Toolbar align. Note that it can be overridden for individual items using item.align. Also Use 'top' or 'bottom'
@@ -818,12 +853,16 @@ declare module ZoomCharts.Configuration {
         extraItems?: Array<string | BaseSettingsToolbarItem>;
         /** Whether to show the fullscreen button on the toolbar. */
         fullscreen?: boolean;
+        /** Whether the toolbar will "stick" at the edge when scrolling */
+        isSticky?: boolean;
         /** A list of toolbar items. If this is specified, it overrides all the default buttons.
         
         Use `extraItems` to specify items that should be displayed in addition to the defaults. */
         items?: Array<string | BaseSettingsToolbarItem>;
+        /** Whether to limit dropdown menu height to the height of the chart */
+        limitDropdownHeight?: boolean;
         /** Toolbar location inside chart. */
-        location?: "inside" | "outside";
+        location?: "auto" | "inside" | "outside";
         /** Whether to show or hide labels next to toolbar items by default. Note that it can be overridden for individual items using item.showLabels. */
         showLabels?: boolean;
         /** Toolbar placement side. Note that it can be overridden for individual items using item.side. */
@@ -862,6 +901,15 @@ declare module ZoomCharts.Configuration {
         onClick?: (event: MouseEvent, chart: BaseApi) => void;
         /** Item title, shown on hover. */
         title?: string;
+    }
+    export enum BaseSettingsValueAxisBaseLineLabelMode {
+        /** The label is drawn always if the line itself is visible. */
+        always = 2,
+        /** Unless the zero line is not visible, the label is drawn always for outside axis. For value axis that are located inside the chart area
+        the label is only drawn if the value axis also shows negative values. */
+        auto = 1,
+        /** The label is never drawn. */
+        never = 0,
     }
     export interface FacetChartFacet {
         activeItemId: string;
@@ -1033,8 +1081,6 @@ declare module ZoomCharts.Configuration {
             /** Initial scroll offset, number of items from start. */
             initialOffset?: number;
         };
-        /** Left, right scroll buttons if additional facets available */
-        scrollButtons?: FacetChartSettingsScrollButtons;
         /** Array of series in the chart. Each of the series can be different type, can use different data source and
         aggregation. Additionally, series can be clustered and stacked. */
         series?: Array<FacetChartSettingsSeries>;
@@ -1110,6 +1156,8 @@ declare module ZoomCharts.Configuration {
         labels?: FacetChartSettingsFacetAxisLabels;
         /** Maximum width of one item. */
         maxUnitWidth?: number;
+        /** Minimum width of one item. */
+        minUnitWidth?: number;
         /** Height of the x axis. */
         size?: number;
         /** Configures the title for the facet axis.
@@ -1175,21 +1223,6 @@ declare module ZoomCharts.Configuration {
         enabled?: boolean;
         /** Distance in pixels to both sides of an item that is still considered as a hover/click on the item. */
         tolerance?: number;
-    }
-    export interface FacetChartSettingsScrollButtons {
-        /** Show/hide left, right scroll buttons if additional facets available. */
-        enabled?: boolean;
-        /** Whether to display title on the exported image. Note that it does not affect chart. */
-        enabledOnExport?: boolean;
-        /** Button height or width. */
-        size?: number;
-        /** Scroll button style */
-        style?: {
-            fillColor?: string;
-            hoverFillColor?: string;
-            hoverLineColor?: string;
-            lineColor?: string;
-        };
     }
     export interface FacetChartSettingsSeries extends LinearChartSettingsSeries {
         /** Data manipulation settings used for default series. */
@@ -1401,6 +1434,12 @@ declare module ZoomCharts.Configuration {
             map: Dictionary<GeoChartAggregationDataObjectNode>, 
             /** An empty array that the delegate is expected to fill with aggregated nodes that have been modified. */
             modifiedNodes: Array<GeoChartAggregationDataObjectNode>) => void;
+        /** If true, aggregated nodes are placed in the center of mass of all the
+        underlying nodes, even if no actual underlying node is at that 
+        location. 
+        Otherwise, aggregated nodes are placed at the location of a single 
+        real "representative" node. */
+        shouldCentralize?: boolean;
         /** Function that returns the value used as weight in the aggregation process for each node. */
         weightFunction?: (node: GeoChartGeoDataObjectNode) => number;
     }
@@ -1567,6 +1606,7 @@ declare module ZoomCharts.Configuration {
         /** Forces style re-evaluation on zoom change. Use to provide zoom dependant style. */
         perZoomStyle?: boolean;
         type?: "shapes" | "items" | "charts" | "aggregateOnShapes";
+        useFindObjectHack?: boolean;
     }
     export interface GeoChartSettingsLayerCharts extends GeoChartSettingsLayerOverlay {
         /** Chart type to use */
@@ -1782,7 +1822,7 @@ declare module ZoomCharts.Configuration {
                 /** link object */
                 link: ItemsChartLink, 
                 /** callback function */
-                asyncCallback: (contents: string) => void) => string;
+                asyncCallback: (contents: string | HTMLElement) => void) => string | HTMLElement;
             /** Returns html string to display in passed nodes info popup. */
             nodeContentsFunction?: (
                 /** node data */
@@ -1790,7 +1830,7 @@ declare module ZoomCharts.Configuration {
                 /** node object */
                 node: ItemsChartNode, 
                 /** callback function */
-                callback: (contents: string) => void) => string;
+                callback: (contents: string | HTMLElement) => void) => string | HTMLElement;
         };
         /** Customise chart resize handles or animation duration settings. */
         interaction?: ItemsChartSettingsInteraction;
@@ -1939,6 +1979,8 @@ declare module ZoomCharts.Configuration {
         doubleClickZoom?: number;
         /** Whether to zoom by two finger pinch. */
         fingers?: boolean;
+        /** Whether a two-finger zoom takes precedence over an existing node drag */
+        fingersOverrideDrag?: boolean;
         /** Sensitivity of wheel zoom. */
         sensitivity?: number;
         /** Whether to zoom by mouse wheel. */
@@ -1966,6 +2008,8 @@ declare module ZoomCharts.Configuration {
         zIndex?: number;
     }
     export interface ItemsChartSettingsItemsLayerLabelStyle extends BaseSettingsLabelStyle {
+        /** How much larger or smaller the item should be drawn */
+        scale?: number;
         /** Whether to apply different scale according to initial size of the link or node. */
         scaleWithSize?: boolean;
         /** Whether to apply the scale if zoom changes. If false, the label size never changes. */
@@ -2113,6 +2157,9 @@ declare module ZoomCharts.Configuration {
         py?: number;
         /** Whether to rotate link labels in the same direction as link */
         rotateWithLink?: boolean;
+        /** How wide should the item be relative to the link length. 1 equals
+        link length, 0 or not given uses default size calculation */
+        width?: number;
         /** X offset from link center in pixels. */
         x?: number;
         /** Y offset from link center in pixels. */
@@ -2127,12 +2174,18 @@ declare module ZoomCharts.Configuration {
         contentsFunction?: (data: ItemsChartDataObjectLink, node: ItemsChartLink, callback: (result: string | HTMLElement) => void) => string | HTMLElement;
     }
     export interface ItemsChartSettingsLinkStyle {
+        /** How high the curve of the link is, if curving is enabled. Can be negative to arc in the other direction. */
+        arcAmount?: number;
+        /** Where the arc of the curve occurs along the link, between -1.0 and 1.0. -1.0 for at the start point, 1.0 for at the end point. */
+        arcOffset?: number;
         cursor?: string;
+        /** Whether this link is considered in calculating a hierarchy layout */
+        definesLayout?: boolean;
         /** null or "U", "D", "L", "R" */
         direction?: string;
         fillColor?: string;
         /** The decoration rendered where the link starts. */
-        fromDecoration?: "circle" | "arrow";
+        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
         /** Specifies if the link is invisible - thus completely skipping the drawing and hit testing. This can be used, for example, to hide all links
         and showing only ones that meet certain criteria using `linkStyleFunction`. */
         invisible?: boolean;
@@ -2142,6 +2195,10 @@ declare module ZoomCharts.Configuration {
         lineDash?: Array<number>;
         lineDashBackgroundFillColor?: string;
         lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
+        /** Where along the link should an orthogonal link split to the other
+        link between 0.0 and 1.0 for the start and end respectively. Note it must not be
+        exactly 0.0 or 1.0. */
+        orthogonalOffset?: number;
         /** Specifies the width of the line rendered for this link. */
         radius?: number;
         shadowBlur?: number;
@@ -2150,7 +2207,7 @@ declare module ZoomCharts.Configuration {
         shadowOffsetY?: number;
         strength?: number;
         /** The decoration rendered where the link ends. */
-        toDecoration?: "circle" | "arrow";
+        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
         toPieColor?: string;
         toPieValue?: number;
     }
@@ -2197,7 +2254,7 @@ declare module ZoomCharts.Configuration {
             /** The HTML element that represents the button. */
             button: HTMLAnchorElement) => void;
         /** The text (HTML is supported) that is displayed within the button. */
-        text?: string;
+        text?: string | string | HTMLElement;
         /** Tooltip that is displayed while hovering over the button. Leaving `null` uses `text`. */
         title?: string;
     }
@@ -2255,6 +2312,8 @@ declare module ZoomCharts.Configuration {
         
         If this callback is not defined, the menu will display the label of the element. */
         contentsFunction?: (data: ItemsChartDataObjectNode, node: ItemsChartNode, callback: (result: string | HTMLElement) => void) => string | HTMLElement;
+        /** Where the menu is positioned relative to the node */
+        position?: "pointer" | "center" | "outside";
     }
     export interface ItemsChartSettingsNodeStyle {
         /** Node anchor mode. */
@@ -2282,11 +2341,19 @@ declare module ZoomCharts.Configuration {
         cursor?: string;
         /** Custom shape settings supplied, if display == "customShape" */
         customShape?: ItemsChartSettingsCustomShape;
-        /** Valid values: circle (default), text, roundtext, droplet, rectangle, customShape */
+        /** Valid values: circle (default), text, roundtext, droplet, rectangle, rhombus, diamond, customShape */
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;
-        fillColor?: string;
+        fillColor?: string | CanvasGradient;
+        /** Fill gradient.
+        For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
+        fillGradient?: GradientDefinition;
+        /** Forces hierarchy layout to place the node at a specific level */
+        hierarchyLevel?: number;
+        /** Forces hierarchy layout to place the node a certain number of
+        levels above or below it's expected location */
+        hierarchyOffset?: number;
         image?: string;
         /** Specifies the image cropping method. Valid values are `false` (disable cropping), `true` (default cropping mode), `"crop"`, `"letterbox"` and `"fit"`. */
         imageCropping?: "fit" | boolean | "crop" | "letterbox";
@@ -2301,6 +2368,7 @@ declare module ZoomCharts.Configuration {
         lineColor?: string;
         lineDash?: Array<number>;
         lineWidth?: number;
+        onImageLoadError?: (node: any) => void;
         /** Node opacity. */
         opacity?: number;
         radius?: number;
@@ -2359,6 +2427,9 @@ declare module ZoomCharts.Configuration {
         linkStrengthAutoScaling?: "linear" | "logaritmic";
         /** Min and max value for link strength. */
         linkStrengthExtent?: [number, number];
+        /** If the multilinks are curved, how much should they automatically curve away from each other.
+        0 for no curvature change, 1 for balanced curving away. More extreme or in between values can also be used. */
+        multilinkAutoCurve?: number;
         /** Distance between multiple links between two nodes. */
         multilinkSpacing?: number;
         /** Controls automatic node scaling. The radii are distributed in the range defined by `nodeRadiusExtent`.
@@ -2419,6 +2490,7 @@ declare module ZoomCharts.Configuration {
         };
         /** The events used to handle user interaction with UI elements. */
         events?: LinearChartSettingsEvents<BaseChartEventArguments, BaseChartEventArguments>;
+        horizontal?: boolean;
         /** Info popup when hovering over columns or lines. Content returned in a form of html and is relevant to context of series hovered. */
         info?: LinearChartSettingsInfoPopup;
         /** A variety of interaction options that includes scrolling, zooming and swipe. */
@@ -2427,6 +2499,7 @@ declare module ZoomCharts.Configuration {
         /** Localizeable strings including export type options and useful default buttons used for chart interaction.
         Buttons like to navigate back, set the chart on full screen and others. */
         localization?: LinearChartSettingsLocalization;
+        scrollButtons?: LinearChartSettingsScrollButtons;
         /** Array of series in the chart. Each of the series can be different type, can use different data source and
         aggregation. Additionally, series can be clustered and stacked. */
         series?: Array<LinearChartSettingsSeries>;
@@ -2514,7 +2587,7 @@ declare module ZoomCharts.Configuration {
                 /** The configuration of the series object currently under the cursor */
                 series: LinearChartSettingsSeries, 
                 /** The range for which the info popup is being built. */
-                range: [number, number]) => string;
+                range: [number, number]) => string | HTMLElement;
             /** Controls how the selection for the info popup is created and what data is displayed. */
             scope?: "stack" | "value" | "auto";
             /** Specifies if the default header should be included. If set to `false`, the `contentsFunction` should be used to return the header as well. */
@@ -2527,6 +2600,8 @@ declare module ZoomCharts.Configuration {
         that is specified in the series data configuration.
         Available aggregations: sum (default), count, first, last, min, max, avg, change */
         aggregations?: Array<string>;
+        /** Custom containing div for the info popup */
+        container?: string | HTMLElement;
         /** Show/hide info popup */
         enabled?: boolean;
         /** Specifies the position of the info popup.
@@ -2534,14 +2609,27 @@ declare module ZoomCharts.Configuration {
         Values:
         - `inside` - Displays the info popup inside the chart area right below the toolbars. This is the default behavior which is well suited for larger charts.
         - `outside` - Displays the info popup above the chart area. This mode is intended for very small charts where the info popup would overlap the whole chart. */
-        position?: "inside" | "outside";
+        position?: "outside" | "inside";
+        /** Whether to show the info popup at the data point itself */
+        showAtDataPoint?: boolean;
         /** Whether to show series with no data in hovered time period. */
         showNoData?: boolean;
+        /** Whether to show series with null data in the hovered time period. */
+        showNullData?: boolean;
+        /** Whether to show series with data equal to zero in hovered time period. */
+        showZeroData?: boolean;
         /** Info popup style. */
         style?: {
             /** Style used to highlight the values that are shown in the info popup. */
             highlight?: LinearChartSettingsHighlightStyle;
         };
+        /** Specifies if the value label render the stacked value (the sum of
+        all values below it) or just the individual value of the particular
+        series.
+        
+        Default value `null` means that the stacked value is used unless the
+        stack type is set to `based`. */
+        useStackedValue?: boolean;
         /** Prepare custom format values to display in info popup. */
         valueFormatterFunction?: (
             /** object containing {sum, min, max, first, last, count, avg, change} */
@@ -2610,6 +2698,7 @@ declare module ZoomCharts.Configuration {
             lineColor?: string;
             textColor?: string;
         };
+        legendSortFunction?: (a: LinearChartSettingsSeries, b: LinearChartSettingsSeries) => number;
     }
     export interface LinearChartSettingsLegendMarker extends BaseSettingsLegendMarker {
         /** Specifies the shape for markers in the legend. If the value is `null` then the small icon representing the series is drawn. */
@@ -2633,28 +2722,65 @@ declare module ZoomCharts.Configuration {
         /** Logarithmic mode button text. */
         logButton?: string;
     }
+    export interface LinearChartSettingsScrollButtons {
+        /** Show/hide left, right scroll buttons if additional facets available. */
+        enabled?: boolean;
+        /** Whether to display title on the exported image. Note that it does not affect chart. */
+        enabledOnExport?: boolean;
+        /** How large the button should be on hover */
+        hoverSize?: number;
+        /** How long (in seconds) it should take for a hovered button to change
+        from initial size to full size */
+        hoverSizeActiveAnimationTime?: number;
+        /** How long (in seconds) it should take for a hovered button to change
+        from full size back to initial size */
+        hoverSizeInactiveAnimationTime?: number;
+        /** Button height or width. */
+        size?: number;
+        /** Scroll button style */
+        style?: {
+            fillColor?: string;
+            hoverFillColor?: string;
+            hoverLineColor?: string;
+            lineColor?: string;
+        };
+    }
     export interface LinearChartSettingsSeries {
+        /** Name to show in the info popup when some aggregation has occurred. */
+        aggregatedName?: string;
         /** Cluster identifier. Columns with the same cluster id will be placed in same cluster. */
         cluster?: string;
         /** Data manipulation settings used for default series. */
         data?: LinearChartSettingsSeriesData;
         /** Enable/disable series. */
         enabled?: boolean;
+        /** Whether series remains enabled in aggregated views */
+        enabledWhenAggregated?: boolean;
+        /** Whether series remains enabled in non-aggregated views */
+        enabledWhenNotAggregated?: boolean;
         /** A field that can be used to store any additional data with the series object. This can be useful in situations when the
         data is required in event handlers, such as `onClick` when the event arguments contain the configuration of the series that
         was hovered or clicked. This value is copied by reference. */
         extra?: any;
         id?: string;
+        /** Disables series rendering, but otherwise process it as normal.
+        Useful if the series still needs to influence e.g. the value axis
+        size, or be present in the legend or tooltip. */
+        invisible?: boolean;
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
         (no group) or the group contains only one item. Then the item is toggled on/off individually. */
         legendGroupId?: string;
+        /** How enabling/disabling grouped legend items should behave */
+        legendGroupMode?: "toggle";
         /** Name to show in the info popup. The same value is also used in the legend unless `nameLegend` is also set. */
         name?: string;
         /** Name to show in the legend. If not specified, value from the `name` property is shown. */
         nameLegend?: string;
-        /** Whether to show the series name in legend and info popup. */
+        /** Whether to show the series name  info popup. */
+        showInInfoPopup?: boolean;
+        /** Whether to show the series name in legend. */
         showInLegend?: boolean;
         /** Stack identifier. Series with same stack ID are placed in the same stack. Define a stack with the same identifier to tune the stack. */
         stack?: string;
@@ -2662,6 +2788,8 @@ declare module ZoomCharts.Configuration {
         style?: LinearChartSettingsSeriesStyle;
         /** Series type. */
         type?: "candlestick" | "columns" | "line";
+        /** Name of the unit of data for the series in the info tooltip. */
+        unitName?: string;
         /** ID of value axis that this series will use.
         Maps to a configuration specified in [valueAxis](full-reference/LinearChartSettings.html#doc_valueAxis) property. */
         valueAxis?: string;
@@ -2694,10 +2822,18 @@ declare module ZoomCharts.Configuration {
         valueLabels?: LinearChartSettingsValueLabels;
     }
     export interface LinearChartSettingsSeriesColumnsStyle extends LinearChartSettingsSeriesStyle {
+        /** Padding for cluster. 0th element - left padding, 1st element - right padding. */
+        clusterPadding?: [number, number];
+        /** Which logical grouping to use for drawing connector lines */
+        connectorLineID?: string;
+        /** Where to start drawing the connecting line */
+        connectorLinePositionX?: "edge" | "center" | "full";
         /** Depth for column. Use it to achieve 3D effect. */
         depth?: number;
         /** Brightness applied to depth components. */
         depthBrightness?: number;
+        /** Whether to draw an outline around the columns */
+        enableOutlineLines?: boolean;
         /** Fill gradient orientation for manual fill gradient mode. In use with fillGradient property.
         "null" for default fillGradient mode, "vertical" for vertical gradient, "horizontal" for horizonal rendering" */
         fillGradientMode?: "vertical" | "horizontal";
@@ -2717,6 +2853,10 @@ declare module ZoomCharts.Configuration {
         radius?: [number, number, number, number];
         /** Shadow blur effect range. */
         shadowBlur?: number;
+        /** What factor to scale the column widths by, between 0.0 and 1.0.
+        
+        If set to 0, the columns will be drawn as lines instead of columns. */
+        widthScale?: number;
     }
     export interface LinearChartSettingsSeriesData {
         /** Prepare displaying value after data aggregation. */
@@ -2728,10 +2868,34 @@ declare module ZoomCharts.Configuration {
             /** display unit */
             units: string) => number;
         /** Aggregation function to use. Used when data source does not provide data in needed display unit.
-        Note that when `avg` is used, you should provide `countIndex` so that the calculation is correct even across multiple units. */
-        aggregation?: "sum" | "min" | "max" | "first" | "last" | "avg" | "count";
+        Note that when `avg` is used, you should provide `countIndex` so that
+        the calculation is correct even across multiple units.
+        - "max-threshold" modes finds the largest value that is at least X% of
+        the data range; otherwise finds the minimum. X% is set with the
+        'percentile' setting. */
+        aggregation?: "sum" | "min" | "max" | "first" | "last" | "avg" | "percentile" | "count";
+        /** When given, then "aggregationFunction" is
+        called to generate the value of each displayed data point instead of
+        the fixed function specified by "aggregation". */
+        aggregationFunction?: (
+            /** Unit to aggregate to */
+            displayUnit: string, 
+            /** Initial time for current data item */
+            fromTime: number, 
+            /** Final time for current data item */
+            toTime: number, 
+            /** All data values in the time range */
+            intervalValues: Array<number>, 
+            /** All data counts in the time range */
+            intervalCounts: Array<number>) => [number, number];
+        /** If true, zero mode sets every null to zero regardless of data range.
+        If false, zero mode only sets nulls within the data range to zero */
+        alwaysZeroMode?: boolean;
         /** Method used to fill in time intervals that have no data. Used only for line series. */
         noDataPolicy?: "join" | "skip" | "zero";
+        /** Controls the percentile level for percentile and threshold
+        aggregation modes. */
+        percentile?: number;
         /** Data source to use if multiple data sources are available. */
         source?: string;
         /** Retrieves the individual value used for calculations from the data array. This is an alternative for specifying `index`. */
@@ -2746,6 +2910,10 @@ declare module ZoomCharts.Configuration {
         valueLabels?: LinearChartSettingsValueLabels;
     }
     export interface LinearChartSettingsSeriesLinesStyle extends LinearChartSettingsSeriesStyle {
+        /** How much to scale the width of a column generated by the "column" degenerateLinePolicy */
+        degenerateLineColumnWidthScale?: number;
+        /** What to do if a line only has a single point. */
+        degenerateLinePolicy?: "point" | "zero" | "column";
         /** Marker highlight data points on line. They can be in different sizes, shapes and colors. */
         marker?: LinearChartSettingsSeriesStyleMarker;
         /** Enables customizing the marker for each particular data point. The function receives an array of all horizontal indices that are being painted and
@@ -2774,6 +2942,9 @@ declare module ZoomCharts.Configuration {
         If specified fillGradientMode: "horizontal" or "vertical", then value denotes fraction of the column width and must be in interval from 0 to 1 - this feature is available for columns only
         For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
         fillGradient?: GradientDefinition;
+        /** Fill gradient orientation for manual fill gradient mode. In use with fillGradient property.
+        "null" for default fillGradient mode, "vertical" for vertical gradient, "horizontal" for horizonal rendering" */
+        fillGradientMode?: "vertical" | "horizontal";
         /** Specifies the URL to the image that will be used as the repeated fill pattern for the series.
         
         When `fillPattern` is specified, `fillGradient` is ignored. If `fillColor` is specified together with `fillPattern`, it will be
@@ -2793,6 +2964,8 @@ declare module ZoomCharts.Configuration {
         /** Array of line dash pattern to have a dashed line. The array contains length of dash followed by length of space in pixels.
         A sequence of multiple dash-space values is supported. In case you want to set a solid line, pass empty array: [] */
         lineDash?: Array<number>;
+        /** Start offset of line dash, in pixels */
+        lineDashOffset?: number;
         /** Width of the line. */
         lineWidth?: number;
         /** Shadow color of column. If undefined, no shadow will be applied. Leave empty to use default shadow or set your own shadow color. */
@@ -2815,6 +2988,12 @@ declare module ZoomCharts.Configuration {
         width?: number;
     }
     export interface LinearChartSettingsStack {
+        /** Whether to fill the entire area under each series or only the
+        difference between it and the series below.
+        
+        The default is `true` for based stacks and `false` for everything
+        else. */
+        drawFullArea?: boolean;
         /** The display name in info popup. */
         name?: string;
         /** Whether to separate negative values.
@@ -2825,15 +3004,25 @@ declare module ZoomCharts.Configuration {
         type?: "normal" | "proportional" | "based";
     }
     export interface LinearChartSettingsValueAxis {
+        /** Whether to align the zero value with other axes */
+        alignZero?: boolean;
         /** Always animate value axis */
         animate?: "auto" | "always";
         /** Whether to show vertical line along value axis */
         axisLine?: boolean;
         /** Show/hide value axis. */
         enabled?: boolean;
+        /** Whether to force top and bottom values in the hgrid. */
+        forceTopAndBottomValues?: boolean;
+        /** Amount to inset the forced min/max values */
+        forcedMinMaxInset?: number;
+        /** Placement of grid lines in relation to series data. */
+        gridPosition?: "above" | "under";
         /** Whether to show horizontal grid lines. Specifying `null` means that only the first value axis will show the horizontal lines,
         all other axis will not. */
         hgrid?: boolean;
+        /** Whether to hide the valid axis when it is not valid */
+        hideInvalidAxis?: boolean;
         /** This parameter works together with `animate` when it's set to "always" as here you can define fixed initial value that should be used for animation beginning.
         If set to 0, then animation would be with "dropping" effect. If set to larger value than your maximum series value, then effect would be "growing".
         If you want animation value to be calculated automatically depending on your data, keep default value and adjust `initialAnimationValueMultiplier`. */
@@ -2849,6 +3038,10 @@ declare module ZoomCharts.Configuration {
         maxValue?: number;
         /** Fixed minimum value for value axis. If not set it will be computed automatically from visible data and zeroLine settings. */
         minValue?: number;
+        /** Only draw the top and bottom labels */
+        onlyPaintMinMax?: boolean;
+        /** Only draw non-redundant labels */
+        onlyPaintUniqueLabels?: boolean;
         /** Location of the value axis. */
         position?: "inside" | "outside";
         /** The animation easing function. */
@@ -2869,6 +3062,8 @@ declare module ZoomCharts.Configuration {
         size?: number;
         /** Style for parts of value axis. */
         style?: {
+            /** Whether label spacing should automatically scale with font size */
+            autoScaleLabelSpacing?: boolean;
             /** Rendering style for the vertical line along value axis. */
             axisLine?: BaseSettingsLineStyle;
             /** Base line settings. It is the horizontal line showing zero value. */
@@ -2889,6 +3084,10 @@ declare module ZoomCharts.Configuration {
         thresholds?: Array<LinearChartSettingsValueAxisThreshold>;
         /** Title text for the value axis. */
         title?: string;
+        /** Following formats are supported:
+        
+        ^0([.,]0+)?( ?%)                  - percentage
+        ^([^0-9]+)?0?([.,]0+)?([^0-9]+)?  - currency */
         valueFormat?: string;
         /** Prepare custom format values to display in value axis. If using this, consider also setting the `size` parameter to
         accommodate your label size. */
@@ -2900,30 +3099,43 @@ declare module ZoomCharts.Configuration {
             /** multiplier value - 1000 for thousands, 1 000 000 for millions */
             unitValue: number, 
             /** value string that is displayed by default */
-            name: string) => string;
+            name: string, 
+            /** additional metadata for advanced use cases */
+            extra?: any) => string;
         /** Zero line. */
         zeroLine?: "visible" | "center" | "floating";
-    }
-    export enum LinearChartSettingsValueAxisBaseLineLabelMode {
-        /** The label is drawn always if the line itself is visible. */
-        always = 2,
-        /** Unless the zero line is not visible, the label is drawn always for outside axis. For value axis that are located inside the chart area
-        the label is only drawn if the value axis also shows negative values. */
-        auto = 1,
-        /** The label is never drawn. */
-        never = 0,
     }
     export interface LinearChartSettingsValueAxisBaseLineStyle extends BaseSettingsLineStyle {
         depthColor?: string;
         lineDepth?: number;
         /** Specifies when the label for the zero line is rendered. */
-        showLabel?: LinearChartSettingsValueAxisBaseLineLabelMode;
+        showLabel?: BaseSettingsValueAxisBaseLineLabelMode;
     }
     export interface LinearChartSettingsValueAxisThreshold {
         /** Specifies the bottom bound of the threshold area. */
         from?: number;
+        /** How the from value should be determined */
+        fromType?: "constant" | "first" | "last" | "minimum" | "maximum" | "median" | "average" | "percentile";
+        label?: string;
+        labelDecimals?: number;
+        labelDisplayUnits?: string;
+        labelHorizontalPadding?: number;
+        labelHorizontalPosition?: "center" | "right" | "left";
+        labelStyle?: BaseSettingsLabelStyle;
+        /** Whether to use the line value as the label text */
+        labelType?: "text" | "fromValue" | "toValue" | "textFromValue" | "textToValue";
+        labelVerticalPadding?: number;
+        labelVerticalPosition?: "center" | "above" | "under";
+        /** Specifies a percentile to use when percentile is selected. Range 0
+        to 100, must be integer. */
+        percentileFrom?: number;
+        /** Specifies a percentile to use when percentile is selected. Range 0
+        to 100, must be integer. */
+        percentileTo?: number;
         /** Threshold placement in relation to series data. */
         position?: "above" | "under";
+        /** Which series to use for non-constant values */
+        seriesID?: string;
         /** Describes the visual style for the threshold guidelines and area. */
         style?: {
             /** Specifies the fill color for the threshold area. If multiple areas overlap, this should specify an `rgba()` color with transparency.
@@ -2939,11 +3151,19 @@ declare module ZoomCharts.Configuration {
         };
         /** Specifies the upper bound of the threshold area. */
         to?: number;
+        /** How the from value should be determined */
+        toType?: "constant" | "first" | "last" | "minimum" | "maximum" | "median" | "average" | "percentile";
+        valueFunction?: (from: number, to: number, settings: LinearChartSettingsValueAxisThreshold) => {
+                fromLabel: string;
+                toLabel: string;
+            };
     }
     export interface LinearChartSettingsValueAxisTitleStyle extends BaseSettingsLabelStyle {
         reverseDirection?: boolean;
     }
     export interface LinearChartSettingsValueLabels {
+        /** Whether to draw overlapping value labels or not */
+        allowOverlap?: boolean;
         /** Prepare custom content to display in value label along with numeric value.
         If this callback is not defined, then floating value is formatted with two digits after the decimal point and integer values are formatted without decimal digits.
         If this callback returns `null` or `undefined` for the given value, it won't be created. Note that `null` values are never passed to the callback. Usage example:
@@ -2970,7 +3190,11 @@ declare module ZoomCharts.Configuration {
         column or line area does not provide enough room for full-size labels.
         
         ![Value label possible positions](images/valueLabelPosition.png) */
-        position?: "outside" | "aboveValue" | "value" | "belowValue" | "insideTopAuto" | "insideTop" | "insideCenter" | "insideBase";
+        position?: "outside" | "outsideTop" | "outsideBottom" | "aboveValue" | "value" | "belowValue" | "insideTopAuto" | "insideTop" | "insideCenter" | "insideBase";
+        /** Whether to skip drawing labels for null values */
+        showNullData?: boolean;
+        /** Whether to skip drawing labels for zero values */
+        showZeroData?: boolean;
         /** Data label text style. */
         style?: BaseSettingsLabelStyle;
         /** Specifies if the value label render the stacked value (the sum of all values below it) or just the individual value
@@ -2978,24 +3202,34 @@ declare module ZoomCharts.Configuration {
         
         Default value `null` means that the stacked value is used unless the stack type is set to `based`. */
         useStackedValue?: boolean;
+        /** Value label horizontal position in perspective to the series data point. */
+        xPosition?: "center" | "insideRight" | "right" | "centerRight" | "outsideRight" | "insideLeft" | "left" | "centerLeft" | "outsideLeft";
     }
     export interface NetChartBarSettingsLocalizationToolbar extends BaseSettingsLocalizationToolbar {
         fitButton?: string;
         fitTitle?: string;
         freezeButton?: string;
         freezeTitle?: string;
+        lassoButton?: string;
+        lassoTitle?: string;
         rearrangeButton?: string;
         rearrangeTitle?: string;
         unfreezeTitle?: string;
     }
     export interface NetChartBarSettingsToolbar extends BaseSettingsToolbar {
+        /** Whether to show the fit button on the toolbar. */
+        fit?: boolean;
+        /** Whether to show the freeze button on the toolbar. */
+        freeze?: boolean;
+        /** Whether to show the rearrange button on the toolbar. */
+        rearrange?: boolean;
         /** Whether to show the zoom slider control. */
         zoomControl?: boolean;
     }
     /** Settings for gravity in the dynamic layout */
     export interface NetChartGravitySettings {
         /** The object affected by the gravity effect in the dynamic layout. */
-        from?: "node" | "cluster" | "auto";
+        from?: "auto" | "node" | "cluster";
         /** How to find the center of the object which is affected by gravity. Only used if `from="cluster"`. Only non-locked nodes will be used to calculate the
         center. */
         fromCenter?: "weighted" | "geometric";
@@ -3232,20 +3466,27 @@ declare module ZoomCharts.Configuration {
         /** Dynamic layout is stopped after user is inactive for this time. */
         layoutFreezeTimeout?: number;
         /** Layout mode. */
-        mode?: "dynamic" | "radial" | "hierarchy" | "static";
+        mode?: "dynamic" | "radial" | "hierarchy" | "static" | "swimlane";
         /** Desired distance between nodes. */
         nodeSpacing?: number;
-        /** For hierarhy layout, clockwise rotation of the tree(s), measured in degrees.
+        /** For hierarchy layout, clockwise rotation of the tree(s), measured in degrees.
         0 = top-down tree; 90 = right-left tree; 180 = bottom-up tree, etc. Also affects placement of multiple trees the same way. */
         rotation?: number;
         /** Desired vertical distance between node rows in the hierarchy layout. */
         rowSpacing?: number;
+        /** For hierarchy layout, whether to sort trees during layout */
+        sortForestBySize?: boolean;
+        /** For hierarchy layout, whether to sort the nodes during layout */
+        sortNodes?: boolean;
+        /** Settings for swimlane layout */
+        swimlane?: NetChartSettingsSwimlaneLayout;
         /** For radial layout, whether to lay out the first level in two rings, if necessary. */
         twoRingRadialLayout?: boolean;
     }
     export interface NetChartSettingsLegend extends BaseSettingsLegend {
         /** Advanced settings which may change in the future. */
         advanced?: NetChartSettingsLegendAdvanced;
+        mode?: "hide" | "highlight";
         /** Legend enclosing panel settings. */
         panel?: BaseSettingsLegendPanel;
     }
@@ -3287,6 +3528,11 @@ declare module ZoomCharts.Configuration {
         autoUnfocus?: boolean;
         /** Whether to auto-zoom to a node when it is focused. _Used by modes: all modes_ */
         autoZoomOnFocus?: boolean;
+        /** How many levels deep a node expand has if not specified. Only
+        applies in focus node navigation mode. */
+        defaultExpandDepth?: number;
+        /** Which nodes to expand. Only applies in focus node navigation mode. */
+        defaultExpandMode?: "both" | "from" | "to";
         /** If focusing a node would display several levels of nodes (due to `focusNodeExpansionRadius` or `focusNodeTailExpansionRadius`), each level is shown after
         the specified delay (milliseconds). Set to 0 to disable. _Used by modes: `focusnodes`_ */
         expandDelay?: number;
@@ -3304,6 +3550,8 @@ declare module ZoomCharts.Configuration {
         linearly interpolated between `focusNodeExpansionRadius` and `focusNodeTailExpansionRadius`. Also used to calculate
         [node relevance](full-reference/ItemsChartNode.html#doc_relevance). _Used by modes: `focusnodes`_ */
         focusNodeTailExpansionRadius?: number;
+        /** The focus node expansion radius used on chart load and reset. */
+        initialFocusNodeExpansionRadius?: number;
         /** Initially visible/focused nodes. Array of node identifiers. The precise effect depends on the navigation mode.
         * For `manual` this specifies the initially visible nodes and must contain at least 1 node.
         * For `showall` this specifies which nodes to show first, and other nodes are then requested recursively from these until all nodes are visible.
@@ -3324,6 +3572,38 @@ declare module ZoomCharts.Configuration {
     export interface NetChartSettingsStyle extends ItemsChartSettingsNodesLayerStyle {
         /** The style for the resizable selection box. */
         dragSelection?: BaseSettingsBackgroundStyle;
+    }
+    export interface NetChartSettingsSwimlaneLayout extends NetChartSettingsSwimlaneLayoutStyle {
+        /** What color the label box should be filled with */
+        boxFillColor?: string;
+        /** Whether to draw horizontal or vertical lanes first. Can be important
+        for lane colors showing up correctly */
+        drawVerticalFirst?: boolean;
+        labelAlign?: "center" | "right" | "left";
+        laneSpreadX?: number;
+        laneSpreadY?: number;
+        lanesHorizontal?: Array<NetChartSettingsSwimlaneLayoutLane>;
+        lanesVertical?: Array<NetChartSettingsSwimlaneLayoutLane>;
+        /** What color the swimlane lines are */
+        lineColor?: string;
+        /** How wide the swimlane lines are */
+        lineWidth?: number;
+    }
+    export interface NetChartSettingsSwimlaneLayoutLane extends NetChartSettingsSwimlaneLayoutStyle {
+        /** The text displayed at the top of the lane */
+        label?: string;
+    }
+    export interface NetChartSettingsSwimlaneLayoutStyle {
+        /** What color the label box should be filled with */
+        boxFillColor?: string;
+        /** How tall the label box should be */
+        boxHeight?: number;
+        labelAlign?: "center" | "right" | "left";
+        labelStyle?: ItemsChartSettingsItemsLayerLabelStyle;
+        laneFillColor?: string;
+        laneWidth?: number;
+        lineColor?: string;
+        shouldZoomBox?: boolean;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface PieChartChartClickEventArguments extends PieChartChartEventArguments {
@@ -3522,7 +3802,7 @@ declare module ZoomCharts.Configuration {
                 /** slice object to apply predefined content */
                 slice: PieChartSlice, 
                 /** function called to return predefined content */
-                callback: (result: string) => void) => string;
+                callback: (result: string | HTMLElement) => void) => string | HTMLElement;
             /** Show/hide info popup. */
             enabled?: boolean;
         };
@@ -3586,7 +3866,7 @@ declare module ZoomCharts.Configuration {
                 /** pie to apply predefined style */
                 pie: PieChartPie) => void;
             /** Default pie rendering theme. */
-            theme?: "flat" | "bevel" | "can" | "smoothy";
+            theme?: "flat" | "bevel" | "can" | "rounded" | "smoothy";
             /** Center X coordinate of the pie chart.
             If the value is 'null' - coordinate is calculated automatically.
             If the value is >1 - it specifies the exact x value in pixels.
@@ -3609,6 +3889,7 @@ declare module ZoomCharts.Configuration {
                 fillColor?: string;
                 /** Extra property to alternate fill colors on backgrond slices. */
                 fillColor2?: string;
+                fillGradient?: GradientDefinition;
             };
             /** Label connector line style. */
             connectorStyle?: BaseSettingsLineStyle;
@@ -3808,6 +4089,7 @@ declare module ZoomCharts.Configuration {
         insideLabelVisibilityFraction?: number;
         /** Min distance between labels, as a fraction of line height. */
         interLabelSpacing?: number;
+        labelAppendFunction?: (outerText: string, innerText: string, isRightSide: boolean) => string;
         /** Outside labels placement method. */
         placement?: "aligned" | "wrap";
     }
@@ -3849,6 +4131,8 @@ declare module ZoomCharts.Configuration {
         expandable?: boolean;
         /** Slice fill color. */
         fillColor?: string;
+        /** Gradient definition for the pie slice */
+        fillGradient?: GradientDefinition;
         /** Icon to display on slice. */
         icon?: string;
         /** Gets or sets the style of the label shown inside the slice. Use `insideLabel.text` to specify the text that will be displayed. */
@@ -3876,9 +4160,11 @@ declare module ZoomCharts.Configuration {
         expandable: boolean;
         fillColor: string;
         fillColor2: string;
+        fillGradient: GradientDefinition;
         /** The fraction of the pie the slice covers. Note that this is represents the visual size,
         not the value - for that you need to use `percent` field. */
         fraction: number;
+        hovered: boolean;
         icon: string;
         iconOffset: [number, number, number, number];
         id: string;
@@ -3923,6 +4209,11 @@ declare module ZoomCharts.Configuration {
         x: number;
         y: number;
     }
+    export interface TimeChartHeaderItem {
+        date: string;
+        unitCount: number;
+        unitName: string;
+    }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface TimeChartChartEventArguments extends BaseChartEventArguments {
         /** 
@@ -3941,6 +4232,7 @@ declare module ZoomCharts.Configuration {
         displayUnit: string;
         /** The UTC timestamp of the end of the hovered time period. `null` if the cursor is not hovering over data. */
         hoverEnd: number;
+        hoverItem: TimeChartItem;
         /** `True` if the cursor is directly hovering a marker on a line series. `False` otherwise. Note that this currently does not work with 
         the markers that are configured using `markerStyleFunction` delegate. */
         hoverMarker: boolean;
@@ -3992,6 +4284,10 @@ declare module ZoomCharts.Configuration {
         contain the timestamp value, the rest are values for individual series.
         For example: [[time1, series1_Val1, series2_Val1], [time2, series1_Val2, series2_Val2]] */
         values: Array<Array<string | number> | Float64Array | Float32Array | Int32Array | Uint32Array>;
+    }
+    export interface TimeChartItem {
+        header: TimeChartHeaderItem;
+        values: Array<LinearChartSeriesStackDataItem>;
     }
     export interface TimeChartSettings extends LinearChartSettings {
         advanced?: TimeChartSettingsAdvanced;
@@ -4138,6 +4434,9 @@ declare module ZoomCharts.Configuration {
         fillColor?: string;
         lineColor?: string;
         lineWidth?: number;
+        /** If enabled, the displayed times will be rounded to the nearest unit
+        instead of containing the nearest unit. */
+        roundToNearestTime?: boolean;
     }
     export interface TimeChartSettingsCurrentTime extends TimeChartSettingsMarker {
         /** Align label relative to the line */
@@ -4270,6 +4569,10 @@ declare module ZoomCharts.Configuration {
         overscrollProportion?: number;
     }
     export interface TimeChartSettingsInteractionSelection {
+        /** Specifies if the selection area should be cleared/removed when
+        display unit dropdown menu is changed to a unit where the selection
+        will no longer start and end on a whole unit */
+        clearOnDropdownUnitMismatch?: boolean;
         /** Specifies if the selection area should be cleared/removed on right click. By default right click will clear selection. */
         clearOnRightClick?: boolean;
         /** Enable/disable selection */
@@ -4284,8 +4587,13 @@ declare module ZoomCharts.Configuration {
         resizeTolerance?: number;
         /** Distance in pixels to both sides of the selection left/right edges that can be used to drag the selection area to expand/collapse it. */
         tolerance?: number;
+        /** Specifies what should happen to the selection when zoom out is used */
+        zoomOutSelectionMode?: "clear" | "mismatch" | "keep";
     }
     export interface TimeChartSettingsInteractionZooming extends LinearChartSettingsInteractionZooming {
+        /** If true, clicking to zoom will always pick the next smallest display
+        unit */
+        alwaysNextUnit?: boolean;
         /** Whether to zoom-in when the chart area is clicked/tapped.
         
         Note that to maintain backwards compatibility, if the zooming is completely disabled by setting `enabled: false`,
@@ -4295,6 +4603,12 @@ declare module ZoomCharts.Configuration {
         Note that the user will still be able to zoom by drill-down (clicking on values; to disable that, specify `click: false`)
         and by using toolbar. */
         enabled?: boolean;
+        /** If true, zooming out will try to align with the next larger display
+        unit. */
+        matchDisplayUnit?: boolean;
+        /** If set to `false`, no zooming will occur on interaction if the chart
+        is already at the minimum unit */
+        zoomOnMinUnit?: boolean;
     }
     export interface TimeChartSettingsLocalization extends LinearChartSettingsLocalization {
         /** Calendar specific localization settings. This section is used to initialize moment.js locale.
@@ -4302,6 +4616,10 @@ declare module ZoomCharts.Configuration {
         calendar?: TimeChartSettingsLocalizationCalendar;
         /** Message being displayed while loading initial data. */
         determiningDataBounds?: string;
+        /** Which day of the week is considered the start of the week for
+        display purposes. 'null' uses locale default, 0 uses Sunday, 1 uses
+        Monday */
+        firstDayOfWeek?: number;
         /** Weekdays that are considered holidays. Uses ISO numbering, with 1 being Monday and 7 being Sunday. */
         holidayWeekdays?: Array<number>;
         /** Date and time formats used to display the selected time range in the header of the info popup. */
@@ -4484,6 +4802,12 @@ declare module ZoomCharts.Configuration {
     export interface TimeChartSettingsTimeAxis {
         /** Shows/hides time axis. */
         enabled?: boolean;
+        /** Whether to change display units while animating */
+        keepUnitWhileAnimating?: boolean;
+        /** Maximum width of a single time axis display unit relative to the
+        screen width. If maxUnitWidth is larger than this factor would allow,
+        then this takes precedence. */
+        maxRelativeUnitWidth?: number;
         /** Maximum width of a single time axis display unit, in px. If the width is bigger than this, the chart will use a smaller time unit
         (e.g. switch from minutes to seconds).
         
@@ -4498,6 +4822,11 @@ declare module ZoomCharts.Configuration {
         minUnitWidth?: number;
         /** Whether to show smallest bars on time axis. It matches with display unit dropdown entry used in time chart toolbar. */
         miniTimeRuler?: boolean;
+        /** Relative amount of padding to add around the text. Remains
+        proportional to text size. 0 results in no padding.
+        
+        Default results in 44px total padding with text defaults */
+        padding?: number;
         /** Whether to highlight weekends in day view. The highlight only appears if the display unit is hours, days or weeks. */
         showHolidays?: boolean;
         /** Time axis style */
@@ -4545,6 +4874,9 @@ declare module ZoomCharts.Configuration {
         displayUnit?: boolean;
         /** Show/hide toolbar. */
         enabled?: boolean;
+        /** Whether the 'All Data' display period should be selected as long as
+        *at least* all data is shown */
+        flexibleAllData?: boolean;
         /** A list of toolbar items. If this is specified, it overrides all the default buttons.
         
         Use `extraItems` to specify items that should be displayed in addition to the defaults. */
@@ -4640,6 +4972,7 @@ declare module ZoomCharts {
         ``` */
         public static themes: {
             dark?: Configuration.FacetChartSettings;
+            horizontal?: Configuration.FacetChartSettings;
         };
         public updateFilter(): this;
         /** Updates the chart settings. Only the settings that have to be changed should be passed. Note that some arrays
@@ -4685,6 +5018,7 @@ declare module ZoomCharts {
                 /** An empty mouse event. */
                 event: Configuration.BaseMouseEvent, args: Configuration.BaseChartErrorEventArguments) => void): void;
         public on(name: "hoverChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.ItemsChartChartEventArguments) => void): void;
+        public on(name: "lassoChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.BaseChartLassoUpdatedEventArguments) => void): void;
         public on(name: "positionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.ItemsChartChartEventArguments) => void): void;
         public on(name: "rightClick", listener: (event: Configuration.BaseMouseEvent, args: Configuration.ItemsChartChartClickEventArguments) => void): void;
         public on(name: "selectionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.ItemsChartChartEventArguments) => void): void;
@@ -4734,7 +5068,7 @@ declare module ZoomCharts {
             id: string | Configuration.ItemsChartNode, 
             /** Explicitly assigned relevance (used only by Focusnodes navigation mode).
             For more information, see the [Focusnodes algorithm](net-chart/advanced-topics/focusnodes-algorithm-details.html) */
-            relevance?: number): void;
+            relevance?: number): boolean;
         /** Removes focus from all nodes. The exact effect depends on the navigation mode. */
         public clearFocus(): void;
         /** Closes a node. The exact effect depends on the navigation mode. */
@@ -4744,12 +5078,14 @@ declare module ZoomCharts {
         /** Collapses a node. The exact effect depends on the navigation mode. */
         public collapseNode(
             /** Node ID or object */
-            id: string | Configuration.ItemsChartNode): void;
+            id: string | Configuration.ItemsChartNode, expandMode?: string): void;
         /** Expands a visible node. */
         public expandNode(
             /** Node ID or object */
-            id: string | Configuration.ItemsChartNode): void;
+            id: string | Configuration.ItemsChartNode, depth?: number, expandMode?: string): void;
         public exportData(visibleOnly?: boolean, exportCoordinates?: boolean): Configuration.NetChartDataObject;
+        public freezeLayout(): void;
+        public getHiddenNodes(): Array<string>;
         /** Gets a visible link by its ID */
         public getLink(
             /** Link ID */
@@ -4832,6 +5168,8 @@ declare module ZoomCharts {
         public showNode(
             /** Node ID */
             id: string): void;
+        /** Shows context menu, when either node id or INode interface object is passed as a parameter. */
+        public showNodeMenu(node: string | Configuration.ItemsChartNode): void;
         /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
         
         ```javascript 
@@ -4843,6 +5181,7 @@ declare module ZoomCharts {
             dark?: Configuration.NetChartSettings;
             flat?: Configuration.NetChartSettings;
         };
+        public unfreezeLayout(): void;
         /** Unfixates a node and allows it to be repositioned by the layout algorithms. */
         public unlockNode(
             /** Node ID or object */
@@ -4926,6 +5265,7 @@ declare module ZoomCharts {
             selected?: Array<string | Configuration.PieChartSlice>): Array<Configuration.PieChartSlice>;
         public setPie(pieId: Array<string>, offset?: number): this;
         public setPieOffset(offset: number): this;
+        public showInfoPopup(x: number, y: number, slice: Configuration.PieChartSlice): void;
         /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
         
         ```javascript 
@@ -4939,6 +5279,7 @@ declare module ZoomCharts {
             flat?: Configuration.PieChartSettings;
             gradient?: Configuration.PieChartSettings;
             raised?: Configuration.PieChartSettings;
+            rounded?: Configuration.PieChartSettings;
         };
         public updateFilter(): PieChart;
         /** Updates the chart settings. Only the settings that have to be changed should be passed. Note that some arrays
@@ -4974,6 +5315,8 @@ declare module ZoomCharts {
         public getEnabledSeries(): Array<Configuration.TimeChartSettingsSeries>;
         /** Gets all series even those that are not enabled */
         public getSeries(): Array<Configuration.TimeChartSettingsSeries>;
+        /** Returns the display period currently selected by the display toolbar */
+        public getToolbarDisplayPeriod(): string;
         /** Adds event listener. */
         public on(
             /** The type of the event for which the listener will be added. See method overloads for valid values. */
@@ -5034,7 +5377,7 @@ declare module ZoomCharts {
         See [`initialDisplayAnchor` and `initialDisplayPeriod` documentation][doc] for possible period / anchor values. 
         
         [doc]: https://zoomcharts.com/developers/en/time-chart/api-reference/settings.html#doc_navigation.initialDisplayAnchor */
-        public setDisplayPeriod(period: string, anchor: number | "newestData" | "now" | "oldestData", animate?: boolean): void;
+        public setDisplayPeriod(period: string, anchor: number | "newestData" | "now" | "oldestData", animate?: boolean, unit?: string): void;
         /** Displays the info popup for a specified time interval. The interval must be visible on screen.
         
         Note that if [`info.enabled`](time-chart/api-reference/settings/info/enabled.html) is set to `false` this method
@@ -5048,7 +5391,7 @@ declare module ZoomCharts {
             If not specified, selects a single unit starting with the `from` timestamp. */
             to?: number | Date | moment.Moment, 
             /** Optional HTML code that will be used as the contents of the info popup. If this is not specified, the default contents will be generated. */
-            contents?: string): void;
+            contents?: string | HTMLElement): void;
         /** When the chart is animating, gets the target display unit (otherwise returns the current display unit). */
         public targetDisplayUnit(): string;
         /** When the chart is animating, gets the target time range (otherwise returns the current time range).

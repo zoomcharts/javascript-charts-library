@@ -1,11 +1,279 @@
 ZoomCharts javascript library.
 
-Copyright 2014-2017, SIA Data Visualization Software Lab. All rights reserved.
+Copyright 2014-2021, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.18.9-dev
+Version 1.20.1-dev
 
 ====== Changelog ===========================
+
+Version 1.20.0 (2021-08-13)
+
+All Charts:
+* Add render fail event
+* Add strictEscaping setting
+* Fix chart growing infinitely if assigned a non-empty container element
+* Fix label resize performance
+
+TimeChart/FacetChart:
+* Add Legend Grouping
+* Add option to hide value axis when no data is present
+* Add scrollbar for dropdown menu when "limitDropdownHeight" setting is enabled
+* Add alwaysZero no data mode
+* Fix forced top/bottom values with no axis data
+* Fix zero line center when all values are zero
+* Fix default Y-axis maximum for percentage values
+* Fix forced min/max values overlapping the zero line
+* Fix zero line potentially drawing in chart margins
+* Fix tooltip not matching selection on mobile
+* Fix degenerate lines appearing in stepped line mode
+* Fix missing value label
+
+FacetChart:
+* Fix horizontal charts disappearing on zoom out
+* Fix horizontal toolbar sizing with certain chart sizes
+* Fix horizontal toolbar menu being off screen with certain chart types
+* Fix horizontal chart border
+
+TimeChart:
+* Add Flexible All Data setting
+* Add settings for click to zoom
+* Add semiauto display unit setting
+* Add zoom out selection settings
+* Add setting to show info popup at data point
+* Change default time rounding to nearest time
+* Prevent setting invalid display period/unit combo
+* Fix edge case where negative series appeared on positive axis
+* Fix display unit dropdown showing "All Data" incorrectly in some cases
+* Fix getting 'stuck' on small display units in some cases
+* Fix time range rounding in different time zones
+* Fix dropdown sync with equal display units
+* Fix zoom in on click when column takes entire canvas width
+* Fix current time marker vanishing on refresh
+* Fix display unit console error when chart is hidden
+* Fix secondary Y axis sometimes breaking the x axis
+* Fix unit changing on right click when column takes entire canvas width
+* Fix no unit found error when scene is zero width
+
+NetChart:
+* Add setting for handling image load errors
+
+GeoChart:
+* Add Lasso Tool
+* Add option to centralize aggregated nodes
+* Fix node order changing on hover
+* Fix selected shapes hiding behind non-selected shapes
+
+PieChart:
+* Add PieChart popup API
+
+--------------------------------------------
+
+Version 1.18.13 (2020-10-14)
+
+All Charts:
+* Add support for double click on iOS
+* Fix double click with double click timeout set to null
+* Fix location of unlicensed logo.
+* Fix font cropping with certain label size and font size combinations
+
+TimeChart/FacetChart:
+* Add options for how to render single point "degenerate" lines
+* Add option for a unit name in the info popup
+* Add 'invisible' option for invisible series
+* Add option to auto-scale label spacing with font size
+* Add setting to only show min/max of value axis
+* More consistent stacking behavior with null data
+* Skip redundant value axis labels
+* Fix hit test in case of equal items
+* Fix series ordering in toolbar and legend
+* Fixed text alignment in the toolbar
+* Fix legend area on mobile devices
+* Fix vanishing value axis label
+* Fix value axis range when all data is equal
+* Fix edge case with line area stacking
+* Fix zero line position with extreme display units
+* Fix value axis labels being left aligned instead of right aligned
+* Fix crash with specific choice of font and font size
+
+FacetChart:
+* Add min unit width setting for facet axis
+* Smarter label hiding in FacetAxis
+* Fix facet axis label height in CSS scaled reports
+* Fix unit height settings in horizontal mode
+* Fix axis width settings in horizontal mode
+* Fix edge case crash on refresh
+* Fix tooltip hiding when panning
+
+TimeChart:
+* Add API function to get user selected display period selected from toolbar
+* Add threshold data aggregation mode
+* Add percentile data aggregation mode
+* Add median data aggregation mode
+* Add option to clear selection on display unit change
+* Add setting for max unit width for time axis
+* Add warning if no display units are available
+* Fix toolbar flickering on some recalculations
+
+NetChart:
+* Add "hollow arrow" line decoration
+* Add "open arrow" line decoration
+* Add directional expansion in focus node mode
+* Add options to control sorting on expand in hierarchy layout with focus node navigation mode
+* Add API to freeze the layout
+* Hierarchy mode takes into account user-moved nodes
+* Performance improvement to expanding nodes in focus node mode
+* Fix zoom control position when legend is enabled
+* Fix control positions in CSS scaled viewports
+* Fix node switching in radial layout
+
+GeoChart:
+* Fix mouse offset when used in a container scaled by CSS.
+* Fix error about unimplemented toolbar
+
+PieChart:
+* Add custom label append function
+
+--------------------------------------------
+
+Version 1.18.12 (2020-03-10)
+
+All Charts:
+* Fix legend wrapping on resize
+* Fix css-transformed elements in non-webkit mobile browsers
+* Fix occasional dark menu elements in light theme
+* Fix Excel export
+
+NetChart:
+* Smooth hierarchy add animation
+* Hierarchy animation focuses on last clicked node
+
+--------------------------------------------
+
+Version 1.18.11 (2020-03-02)
+
+All Charts:
+* Fix menu positioning
+* Fix ellipsis and non-breaking space rendering on non-unicode pages
+* Fix inaccurate font size calculations
+
+TimeChart/FacetChart:
+* Add option for "sticky" toolbar that stays visible when scrolling
+* Allow tooltips in custom HTML containers
+* Allow non-integer data counts
+* Fix legend position in horizontal mode
+* Fix legend interaction in horizontal mode
+* Fix value axis title angle in horizontal mode
+* Fix x axis label offset in horizontal mode
+* Fix value axis floating away on visual resize in horizontal mode
+* Fix render order for columns
+* Fix column label placement with negative values
+* Fix threshold aggregated values with null or undefined data
+* Fix hit test in charts in column mode with exactly 1 column
+* Fix default value axis display units
+* Fix dark mode not applying to highlighted menu items in some cases
+
+FacetChart:
+* Fix hovering on mobile
+
+TimeChart:
+* Add API function to set display unit and display period in a single call
+* Change default display unit for markers at day scale
+* Fix rounding error in display units
+
+NetChart:
+* Add diamond and rhombus shapes
+* Add option to sort nodes in hierarchy layout
+* Add option for tooltip positioning relative to node
+* Add option for initial focus node expansion radius
+* Radial layout sends "onPositionChange" event when nodes are moved
+* Reduce default legend padding when on the left or right
+* Fix link menu updates when link is modified
+* Fix missing corner when outlining square and rhombus shapes
+* Fix layout resetting with a different RNG seed
+* Fix link items being rendered underneath nodes
+* Fix auras with different legend positioning
+
+--------------------------------------------
+
+Version 1.18.10 (2019-11-06)
+
+All Charts:
+* Added callbacks for when chart rendering begins or ends
+
+PieChart:
+* Added support for rounded pie chart
+
+TimeChart/FacetChart:
+* Added optional horizontal mode
+* Added API to return data from a hovered column
+* Added setting to allow overlap in value labels
+* Separated showInLegend and showInPopUpInfo settings
+* Fixed value label flickering in very specific cases
+* Fixed hover returns for column renderer
+* Fixed highlight offset
+* Fixed display order of threshold lines compared to value labels
+
+TimeChart:
+* Added option to configure amount of padding for time axis labels
+* Added API to set time range without changing selection
+
+FacetChart:
+* Added option to automatically resize category axis to fit label size
+
+Netchart:
+* Added option to highlight all nodes by legend
+* Fixed onPositionChange event in radial layout
+
+--------------------------------------------
+
+Version 1.18.9 (2019-07-04)
+
+All Charts:
+* Various minor updates
+* Fixed selflink rendering issue at specific case
+* Fixed regression where new dashed line shape killed the decorations
+* Added support for doubleClickZoom feature
+* New version of hiding toolbar items when there is not enough space
+* Fixed legend rendering if item is present
+* Fixed hover event dispatching in facet chart
+* Fixed issue where empty series can cause exception in TC with value labels
+* Improved label hiding algorithm
+* Added support for css transformation detection in chrome
+* Added radial gradient support for circle and rectangle shapes in netchart
+* Added line gradient support for linearcharts
+* Added grid positioning setting to timechart
+* Added label rendering support to thresholds
+* NetChart AutoZoom fix
+* Fixed bar-active color in dark mode
+* Removed error on missing class name
+* Reverted regression in toolbar style
+* Fixed piechart inner gradient issue
+* Fixed PieValues error
+* Fix TimeChart selected period display
+* Added cluster performance test
+* Fixed transparency with overlapping columns
+* Fixed column spacing issue
+* Fixed handling cFillHeight for negative columns
+* Altered overlappingStacks example
+* Fixed timechart log scale updates
+* Only fill stack for based rendering
+* Fix transparency with based columns
+* Fixed TimeSeries data aggregation issue
+* New settings for whisker support
+* Zero value axis alignment
+* ValueAxis improved align zero
+* Fixed min transparency for info popup
+* More precise zero selection in valueaxis alignZero
+* Added dynamic threshold support in FacetChart
+* Added Option to remove zero values from info popup
+* Fixed extreme percentiles in threshold labels
+* Added connector lines for column renderer
+* Added first and last option for Dynamic Thresholds
+* Added cluster padding settings
+* Fixed an issue with incorrect integer rounding used in timechart
+
+--------------------------------------------
 
 Version 1.18.8 (2018-08-10)
 

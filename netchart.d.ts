@@ -382,6 +382,9 @@ declare module ZoomCharts.Configuration {
         This setting can either be set to `false` to disable the scaling, `true` to render according to the browser DPI setting
         and a number to force a constant scale, ignoring browser DPI settings. */
         highDPI?: number | boolean;
+        /** Specifies a delegate to perform additional rendering during image
+        export operations. */
+        imageExportRenderingFunction?: (context: CanvasRenderingContext2D, width: number, height: number) => void;
         /** Whether to store entire label into bitmap. Use it to improve the performance of your application. */
         labelCache?: boolean;
         /** Whether to store labels that are rendered rotated in the cache. */

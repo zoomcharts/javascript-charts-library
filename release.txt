@@ -1,11 +1,170 @@
 ZoomCharts javascript library.
 
-Copyright 2014-2022, SIA Data Visualization Software Lab. All rights reserved.
+Copyright 2014-2024, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.20.1-dev
+Version 1.20.3
 
 ====== Changelog ===========================
+
+Version 1.20.3 (2024-01-31)
+
+All Charts:
+* Add new "inline" legend mode
+* Add "shouldFill" legend panel option for using space beyond the chart
+* Add legend pages in "inline" legend mode
+* Add onLongPress event
+* Change all icons to use SVG images instead of PNG
+* CSS styling added to toolbar items is preserved when settings are updated
+* Fix tooltip positioning when tooltip is scaled
+
+TimeChart/FacetChart:
+* Add valueLabel.allowLabelSkip setting to allow skipping labels when space is limited
+* Add snapScale and snapOffset settings for value axis to control where values snap to
+* Add offset setting for forced top and bottom values
+* Fix rare performance issue with value axis labels
+* Fix legend vanishing bug in odd cases with multiple value axes and thresholds enabled
+* Fix potential performance spike when invalid data counts are provided.
+* Fix value labels not drawing if a series is empty
+* Fix skip noDataPolicy not stacking correctly in some cases
+* Fix zero noDataPolicy not stacking correctly in some cases
+* Fix legend alignment settings behavior in horizontal mode
+
+TimeChart:
+* Add option to combine same selection labels
+* Update moment.js to 2.29.4
+* Fix chart update origin when using scroll buttons
+* Fix clicking on time axis sending extraneous onSelectionChange event
+* Fix clicking on value axis not deselecting if a selection is off screen
+* Fix targetTime in onSelectionChange events
+* Fix console error upon clicking on empty period
+* Fix drilldown from months to weeks having the wrong time range
+* Fix data chart update sometime having api origin in rare cases
+
+FacetChart:
+* Add 'maxSize' config option for facetAxis
+* Add 'forceNoWrap' config option for facetAxis labels
+* Add label wrapping for rotated facetAxis labels
+* Fix facetAxis sizing on load
+* Fix first back button state
+
+NetChart:
+* Add option to customize node/link class list delimiter
+* Add categoryHierarchy layout mode for creating hierarchies while grouping certain nodes together
+* Add centerNodes option for hierarchy mode
+* Add shouldKeepGraphOnScreen option to allow zooming on areas outside the chart
+* Fix default font color for node tooltip in dark mode
+* Fix lasso area highlighting on touch devices
+* Fix node class handling when nodes and their class are removed. 
+
+PieChart:
+* Add Pie Markers
+* Add setting to disable either name or percentage in pie label
+* Pie fits canvas area when only a partial circle is drawn
+
+--------------------------------------------
+
+Version 1.20.2 (2023-01-02)
+
+All Charts:
+* Add setting for custom file names on chart export
+* Add API parameter for specifying file name for chart export
+
+TimeChart/FacetChart:
+* Add auto label spacing mode
+* Fix toolbar compacting when toolbar is recreated
+* Fix navigation arrow placement
+* Fix navigation arrow flicker
+* Fix tooltip colors not matching series colors
+* Fix legend disappearing
+* Fix tooltip console errors
+* Fix tooltip hover selection in based stacks
+
+TimeChart:
+* Add label alignment setting
+* Fix TimeChart minWidth calculation
+* Fix Timechart crashes on interaction with the legend
+
+FacetChart:
+* Fix FacetChart selection removal on chart update
+* Fix horizontal legend height wrapping
+* Fix inconsistent view when setPie API is used without a specified count
+* Add shift+click selection
+* Add API option for specifying origin of zoomOut and expandSlice calls
+
+NetChart:
+* Update hierarchy layout on style change
+* Start curved links at the edge of nodes
+
+PieChart:
+* Fix pie chart legend click on touch device
+* Add shift+click selection
+
+--------------------------------------------
+
+Version 1.20.1 (2022-07-19)
+
+All Charts:
+* Add setting for custom additional rendering on chart export
+* Change long press triggering right click to only work on mobile
+* Update to newer SheetJS
+* Fix case where toolbar could select non-existent elements after export
+
+TimeChart/FacetChart:
+* Add threshold value function
+* Add settings for how long legend text should be displayed
+* Add scroll button size animation on hover
+* Add line gradient support
+* Add tooltip item color settings
+* Add gradients & styleFunctions for non-column modes
+* Add gradient styling for markers
+* Add conditional tooltip name shadow
+* Fix cases of legend flickering
+* Fix cases of legend orientation being detected incorrectly
+* Fix cases of legend size being incorrect on chart load
+* Fix cases of bad value label placement
+* Fix scroll button arrow highlighting
+* Fix cases of line markers not showing
+* Fix column size accounting for off screen data
+
+FacetChart:
+* Add 'getItemAt' API
+* Change cursor to only become a pointer if the hovered item can be expanded
+* Fix logo hitbox in horizontal mode
+
+TimeChart:
+* Add custom data aggregation function support
+* Add matchDisplayUnit mode which tries to keep display units aligned on zoom out
+* Add scroll buttons
+* Add option to configure which day of the week is considered the start of the week
+* Add items styleFunction
+* Add setting for allowing unit multiples when useSmallerUnitCache is false
+* Update to newer moment.js 
+* Fix animated zoom out using the current display unit instead of the unit the animation started with
+* Fix display unit handling when view contains a single column
+* Fix display unit calculation ignoring unit rounding
+
+NetChart:
+* Add curved link support
+* Add orthogonal link support
+* Add link item alignment settings
+* Add link item width settings
+* Add item scale settings
+* Add swimlane layout
+* Add setting to control whether a two-finger zoom takes precedence over an existing node drag
+* Change default for alwaysZeroMode setting to false
+* Fix zoom slider jerking on visual resize
+
+GeoChart:
+* Change map server from CartoDB to OpenStreetMap
+* Fix leaflet interactions in Chrome
+* Fix out of bounds nodes sometimes being detected as hovered
+
+PieChart:
+* Add hover effect on slices with gradients
+* Fix back button color in dark mode
+
+--------------------------------------------
 
 Version 1.20.0 (2021-08-13)
 

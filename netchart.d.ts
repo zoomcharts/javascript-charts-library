@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.20.1-dev */
+/** TypeScript definition file for ZoomCharts 1.20.3 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -31,7 +31,9 @@ declare module ZoomCharts.Configuration {
             /** Specifies if the resulting image should have transparent background. This setting is only valid for `png` image format. Default is `false`.
             
             Note that if `area.style.fillColor` is set, this will have no effect. */
-            transparent?: boolean): void;
+            transparent?: boolean, 
+            /** Specifies the fileName to be used, excluding fileExtension */
+            fileName?: string): void;
         /** Saves the current chart state as a data-URI. 
         
         If image type is specified, the URI can be used as the image source in `<img src="">`. 
@@ -259,6 +261,7 @@ declare module ZoomCharts.Configuration {
             dist: number, 
             /** Time, in milliseconds. If specified, also verifies that the original event did not occur too long ago. */
             maxAge?: number): boolean;
+        metaKey: boolean;
         pageX: number;
         pageY: number;
         pressed: boolean;
@@ -371,6 +374,7 @@ declare module ZoomCharts.Configuration {
             callback: (data: Array<Array<string | number | Date | boolean>>) => void) => void;
         /** The class to use for making data requests. */
         dataRequestClass?: string;
+        defaultExportFileName?: string;
         /** The page size in milimeters for the exported PDF documents. For A4 use `[210, 297]` (this is the default),
         for letter size use `[215.9, 279.4]`. The first number is the width, the second is the height. */
         exportPdfSize?: [number, number];
@@ -515,7 +519,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface BaseSettingsChartPanel {
         /** Panel alignment */
-        align?: "left" | "right" | "top" | "bottom" | "center" | "fill";
+        align?: "left" | "right" | "top" | "bottom" | "center" | "middle" | "fill";
         /** Whether allow packing over other panels */
         floating?: boolean;
         /** The location of the panel */
@@ -604,6 +608,10 @@ declare module ZoomCharts.Configuration {
         onLassoChange?: (
             /** The mouse event that caused the event (if any) */
             event: BaseMouseEvent, args: TArguments) => void;
+        /** Function called when user long presses on chart. */
+        onLongPress?: (
+            /** The mouse event. */
+            event: BaseMouseEvent, args: TClickArguments) => void;
         /** Function called whenever chart placement on screen changes. Note that this is called on every animation frame and is intended
         for painting overlays only. */
         onPositionChange?: (
@@ -647,6 +655,7 @@ declare module ZoomCharts.Configuration {
         borderRadius?: number;
         /** Extra data associated with the label */
         extra?: any;
+        forceNoWrap?: boolean;
         /** Label image. */
         image?: string;
         /** Slicing to use tiled images. Array of 4 values: [left, top, width, height] */
@@ -667,6 +676,15 @@ declare module ZoomCharts.Configuration {
     export interface BaseSettingsLegend {
         /** Advanced settings which may change in the future. */
         advanced?: BaseSettingsLegendAdvanced;
+        /** How legend items are arranged.
+        
+        In grid mode, all entries have a fixed width and height and displayed
+        based on how much of the entry grid is possible
+        
+        In inline mode, entry width and height is based on item width and
+        height and items are displayed one after the other until all
+        available legend space is filled */
+        displayMode?: string;
         /** Show/hide chart legend. */
         enabled?: boolean;
         /** Whether to order entries to get possibly equal number of items into columns or rows. If false, once the row or column is full of entries,
@@ -696,8 +714,12 @@ declare module ZoomCharts.Configuration {
         numberOfRows?: number;
         /** Padding around each entry text and marker. */
         padding?: number;
+        /** How long (in seconds) it should take for a legend page to scroll to
+        the next location */
+        pageScrollAnimationTime?: number;
         /** Legend enclosing panel settings. */
         panel?: BaseSettingsLegendPanel;
+        scrollButtons?: BaseSettingsScrollButtons;
         /** Whether to automatically wrap legend text if any word is too long
         to fit in the legend entry */
         shouldForceWrapLongText?: boolean;
@@ -729,6 +751,8 @@ declare module ZoomCharts.Configuration {
     }
     export interface BaseSettingsLegendPanel extends BaseSettingsChartPanel {
         padding?: number;
+        /** Whether to use space beyond chart boundaries */
+        shouldFill?: boolean;
     }
     export interface BaseSettingsLineStyle {
         lineColor?: string;
@@ -773,6 +797,29 @@ declare module ZoomCharts.Configuration {
         grabDistance?: number;
         /** Max pointer distance from chart edge when resize handle appears. */
         visibilityDistance?: number;
+    }
+    export interface BaseSettingsScrollButtons {
+        /** Show/hide left, right scroll buttons if additional facets available. */
+        enabled?: boolean;
+        /** Whether to display title on the exported image. Note that it does not affect chart. */
+        enabledOnExport?: boolean;
+        /** How large the button should be on hover */
+        hoverSize?: number;
+        /** How long (in seconds) it should take for a hovered button to change
+        from initial size to full size */
+        hoverSizeActiveAnimationTime?: number;
+        /** How long (in seconds) it should take for a hovered button to change
+        from full size back to initial size */
+        hoverSizeInactiveAnimationTime?: number;
+        /** Button height or width. */
+        size?: number;
+        /** Scroll button style */
+        style?: {
+            fillColor?: string;
+            hoverFillColor?: string;
+            hoverLineColor?: string;
+            lineColor?: string;
+        };
     }
     export interface BaseSettingsTextStyle {
         fillColor?: string;
@@ -1052,6 +1099,18 @@ declare module ZoomCharts.Configuration {
     export interface ItemsChartSettingsAdvanced extends BaseSettingsAdvanced {
         /** Whether to display a loading indicator on every node, otherwise only a global loading indicator. */
         perNodeLoadingIndicator?: boolean;
+        /** For very rare use cases where interaction must come from the correct
+        part of the page to behave as expected.
+        
+        If doing significant configuration on the chart DOM elements, then:
+        
+        Try setting to 'true' if interactions seem to come from the wrong
+        location e.g. interactions are offset by several pixels. This is the
+        correct value for most use cases.
+        
+        Try setting to 'false' if the scroll wheel is not being detected in
+        Google Chrome. */
+        useLeafletInteractionContainer?: boolean;
     }
     export interface ItemsChartSettingsAuraStyle extends BaseSettingsBackgroundStyle {
         /** Whether the aura is enabled and visible */
@@ -1209,6 +1268,11 @@ declare module ZoomCharts.Configuration {
         /** Whether or not to show in legend. */
         showInLegend?: boolean;
     }
+    export interface ItemsChartSettingsItemsLayerCategoryLabelStyle extends ItemsChartSettingsItemsLayerLabelStyle {
+        positionX?: "right" | "left" | "start";
+        positionY?: "top" | "start" | "bottom";
+        side?: "center" | "right" | "left";
+    }
     export interface ItemsChartSettingsItemsLayerItemStyle extends ItemsChartSettingsItemsLayerLabelStyle {
         /** Whether to enlarge the item when its parent is being hovered. */
         hoverEffect?: boolean;
@@ -1237,6 +1301,9 @@ declare module ZoomCharts.Configuration {
                 modifiedNodes: Array<ItemsChartNode>;
                 modifiedLinks: Array<ItemsChartLink>;
             };
+        /** Which character is used to delimit multiple node or link classes in
+        the class string for node and link data */
+        classSplitChar?: string;
         /** Items are small UI elements that provide extra information. Items are attached to nodes or links and can display a label, image or both. */
         item?: ItemsChartSettingsItemsLayerItemStyle;
         /** Default link style. */
@@ -1557,6 +1624,9 @@ declare module ZoomCharts.Configuration {
         /** Fill gradient.
         For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
         fillGradient?: GradientDefinition;
+        /** Forces hierarchy layout to consider this node in a specific category
+        for layout purposes */
+        hierarchyCategory?: string;
         /** Forces hierarchy layout to place the node at a specific level */
         hierarchyLevel?: number;
         /** Forces hierarchy layout to place the node a certain number of
@@ -1841,22 +1911,22 @@ declare module ZoomCharts.Configuration {
         /** Function called when data is loaded/added/replaced/removed. */
         onDataUpdated?: (
             /** An empty mouse event. */
-            event: MouseEvent, args: NetChartChartEventArguments) => void;
+            event: BaseMouseEvent, args: NetChartChartEventArguments) => void;
         onPointerDown?: (
             /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
         /** Function called when pointer drag has happened. */
         onPointerDrag?: (
             /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
         /** Function called when mouse pointer is moved. */
         onPointerMove?: (
             /** The mouse event. */
-            event: MouseEvent, args: NetChartChartEventArguments) => void;
+            event: BaseMouseEvent, args: NetChartChartEventArguments) => void;
         /** Function called on pointer up. */
         onPointerUp?: (
             /** The mouse event. */
-            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
     }
     export interface NetChartSettingsInteraction extends ItemsChartSettingsInteraction {
         /** The ability to rotate the chart with the pinch gesture, using 2 fingers */
@@ -1896,6 +1966,7 @@ declare module ZoomCharts.Configuration {
         - `true` - use basic auto zoom
         - `false` - no auto zoom. */
         initialAutoZoom?: "overview" | boolean;
+        shouldKeepGraphOnScreen?: boolean;
         /** Zoom value limits while for manual zooming. Contains array of [min, max] values.
         
         Note that if the minimum for `autoZoomExtent` is `null` (the default) then it can override the minimum in this value if the auto zoom level is smaller. */
@@ -1908,6 +1979,11 @@ declare module ZoomCharts.Configuration {
         };
         /** Whether to fit network in aspect ratio of chart viewport. Useful for small networks that always fit in chart and are not intended to be zoomed in / out. */
         aspectRatio?: boolean;
+        /** The style for the labels in category hierarchy */
+        categoryLabelStyle?: ItemsChartSettingsItemsLayerCategoryLabelStyle;
+        /** For hierarchy layout, whether to attempt to center nodes under their
+        parent */
+        centerNodes?: boolean;
         /** Whether to perform global layout on network changes. Use it for better node placement at the cost of chart slowdown on network changes. */
         globalLayoutOnChanges?: boolean;
         /** For dynamic layout, settings for gravity that pulls all nodes together. */
@@ -1923,14 +1999,23 @@ declare module ZoomCharts.Configuration {
         /** Dynamic layout is stopped after user is inactive for this time. */
         layoutFreezeTimeout?: number;
         /** Layout mode. */
-        mode?: "dynamic" | "radial" | "hierarchy" | "static" | "swimlane";
+        mode?: "dynamic" | "radial" | "hierarchy" | "static" | "swimlane" | "categoryHierarchy";
         /** Desired distance between nodes. */
         nodeSpacing?: number;
+        /** Function executed by category hierarchy layout when it detects a
+        link that creates a cycle in the graph */
+        onCycleDetect?: (backLink: ItemsChartLink, cycle: Array<ItemsChartLink>) => void;
         /** For hierarchy layout, clockwise rotation of the tree(s), measured in degrees.
         0 = top-down tree; 90 = right-left tree; 180 = bottom-up tree, etc. Also affects placement of multiple trees the same way. */
         rotation?: number;
         /** Desired vertical distance between node rows in the hierarchy layout. */
         rowSpacing?: number;
+        /** For hierarchy layout, scale the hierarchy on X, mainly used for
+        mirroring and flipping */
+        scaleX?: number;
+        /** For hierarchy layout, scale the hierarchy on Y, mainly used for
+        mirroring and flipping */
+        scaleY?: number;
         /** For hierarchy layout, whether to sort trees during layout */
         sortForestBySize?: boolean;
         /** For hierarchy layout, whether to sort the nodes during layout */
@@ -2033,10 +2118,13 @@ declare module ZoomCharts.Configuration {
     export interface NetChartSettingsSwimlaneLayout extends NetChartSettingsSwimlaneLayoutStyle {
         /** What color the label box should be filled with */
         boxFillColor?: string;
+        cellSettings?: Array<Array<NetChartSettingsSwimlaneLayoutCell>>;
         /** Whether to draw horizontal or vertical lanes first. Can be important
         for lane colors showing up correctly */
         drawVerticalFirst?: boolean;
         labelAlign?: "center" | "right" | "left";
+        labelSideHorizontal?: "right" | "left";
+        labelSideVertical?: "top" | "bottom";
         laneSpreadX?: number;
         laneSpreadY?: number;
         lanesHorizontal?: Array<NetChartSettingsSwimlaneLayoutLane>;
@@ -2045,6 +2133,9 @@ declare module ZoomCharts.Configuration {
         lineColor?: string;
         /** How wide the swimlane lines are */
         lineWidth?: number;
+    }
+    export interface NetChartSettingsSwimlaneLayoutCell {
+        fillColor?: string;
     }
     export interface NetChartSettingsSwimlaneLayoutLane extends NetChartSettingsSwimlaneLayoutStyle {
         /** The text displayed at the top of the lane */

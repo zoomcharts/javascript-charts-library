@@ -3,9 +3,48 @@ ZoomCharts javascript library.
 Copyright 2014-2024, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.20.3
+Version 1.20.4
 
 ====== Changelog ===========================
+
+Version 1.20.4 (2024-09-28)
+
+All Charts:
+* Add "I" license mode
+* Fix entity decode in strict mode giving warnings with unescaped ampersands
+* Fix right click in Safari 17+
+* Fix CSV export with multiple escaped quotes
+* Fix reset button icon alignment
+* Update SheetJS
+
+PieChart:
+* Fix chart size when startAngle or endAngle are reduced via a settings update
+
+GeoChart:
+* Update leaflet.js
+* Add pointer events
+
+NetChart:
+* Label scaling by font size
+* Allow chart panning while using lasso tool
+* Add option to keep existing selection when drag selection is used
+* Add option to have a delay before showing the info popup
+* Fix auto zoom not applying on startup in certain cases
+* Fix zoom control movements not accounting for CSS transform on the toolbar
+
+TimeChart/FacetChart:
+* Add series parameter to value label contentsFunction
+* Add useApproximateFontReduction setting for better performance with expensive value label contentsFunctions
+* Add allowOverlappingLabelStacking setting
+* Add alignToChartWhenHorizontal toolbar setting
+* Hovering the value label now counts as hovering the corresponding series
+* Fix drawing of rounded columns with negative height
+* Fix value label overlap being erroneously allowed in some cases
+
+TimeChart:
+* Add flexibleAllDataUnit toolbar setting
+
+--------------------------------------------
 
 Version 1.20.3 (2024-01-31)
 

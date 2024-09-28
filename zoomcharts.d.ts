@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.20.3 */
+/** TypeScript definition file for ZoomCharts 1.20.4 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -883,6 +883,8 @@ declare module ZoomCharts.Configuration {
         /** Toolbar align. Note that it can be overridden for individual items using item.align. Also Use 'top' or 'bottom'
         sides in conjunction with 'left', 'right' align or use 'left', 'right' sides with 'top', 'bottom'. */
         align?: "left" | "right" | "top" | "bottom";
+        /** Whether to align the toolbar to the chart area in horizontal mode */
+        alignToChartWhenHorizontal?: boolean;
         /** Whether to show back button in toolbar. */
         back?: boolean;
         /** CSS class name for the toolbar HTML panel. */
@@ -1450,6 +1452,8 @@ declare module ZoomCharts.Configuration {
         /** Settings used to load data into chart. Customise preferred data source feeding methods.
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<GeoChartSettingsData>;
+        /** The events used to handle user interaction with UI elements. */
+        events?: GeoChartSettingsEvents;
         filters?: {
             nodeFilter?: (node: GeoChartGeoDataObjectNode) => boolean;
         };
@@ -1670,6 +1674,23 @@ declare module ZoomCharts.Configuration {
         @deprecated use the automatic proximity based aggregation instead */
         useGridBasedAggregation?: boolean;
         wrapLng?: boolean;
+    }
+    export interface GeoChartSettingsEvents extends BaseSettingsEvents<NetChartChartEventArguments, NetChartChartClickEventArguments> {
+        onPointerDown?: (
+            /** The mouse event. */
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
+        /** Function called when pointer drag has happened. */
+        onPointerDrag?: (
+            /** The mouse event. */
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
+        /** Function called when mouse pointer is moved. */
+        onPointerMove?: (
+            /** The mouse event. */
+            event: BaseMouseEvent, args: NetChartChartEventArguments) => void;
+        /** Function called on pointer up. */
+        onPointerUp?: (
+            /** The mouse event. */
+            event: BaseMouseEvent, args: NetChartChartClickEventArguments) => void;
     }
     export interface GeoChartSettingsInteraction extends ItemsChartSettingsInteraction {
         mode?: "drilldown" | "select" | "toggle";
@@ -1935,6 +1956,8 @@ declare module ZoomCharts.Configuration {
                 node: ItemsChartNode, 
                 /** callback function */
                 callback: (contents: string | HTMLElement) => void) => string | HTMLElement;
+            /** Delay before showing the popup */
+            showDelay?: number;
         };
         /** Customise chart resize handles or animation duration settings. */
         interaction?: ItemsChartSettingsInteraction;
@@ -2129,8 +2152,16 @@ declare module ZoomCharts.Configuration {
         zIndex?: number;
     }
     export interface ItemsChartSettingsItemsLayerLabelStyle extends BaseSettingsLabelStyle {
+        /** If scaling by font size, how to round the scaled font. Mainly useful
+        for optimizing font cache usage. */
+        fontSizeScaleRoundingFunction?: (fontSize: number) => number;
         /** How much larger or smaller the item should be drawn */
         scale?: number;
+        /** Whether to apply scaling by changing the font size. Only necessary
+        when using subpixel font sizes with large scaling factors, as
+        otherwise the browser would have skipped calculating the font because
+        it was too small to be seen. */
+        scaleByFontSize?: boolean;
         /** Whether to apply different scale according to initial size of the link or node. */
         scaleWithSize?: boolean;
         /** Whether to apply the scale if zoom changes. If false, the label size never changes. */
@@ -3300,6 +3331,9 @@ declare module ZoomCharts.Configuration {
         allowLabelSkip?: boolean;
         /** Whether to draw overlapping value labels or not */
         allowOverlap?: boolean;
+        /** Whether overlapping labels can be drawn in a stack instead if
+        overlap is disallowed */
+        allowOverlappingLabelStacking?: boolean;
         /** Prepare custom content to display in value label along with numeric value.
         If this callback is not defined, then floating value is formatted with two digits after the decimal point and integer values are formatted without decimal digits.
         If this callback returns `null` or `undefined` for the given value, it won't be created. Note that `null` values are never passed to the callback. Usage example:
@@ -3310,7 +3344,7 @@ declare module ZoomCharts.Configuration {
             /** The value which has to be formatted. */
             value: number, 
             /** The horizontal position (timestamp for TimeChart and item index for FacetChart) where the label is located. */
-            position: number) => string;
+            position: number, series: LinearChartSettingsSeriesColumns | LinearChartSettingsSeriesLines) => string;
         /** Whether to show series data labels. */
         enabled?: boolean;
         /** The font size will be used as defined in `series.valueLabel.style`.
@@ -3333,6 +3367,10 @@ declare module ZoomCharts.Configuration {
         showZeroData?: boolean;
         /** Data label text style. */
         style?: BaseSettingsLabelStyle;
+        /** Advanced: Skip the contents function when calculating font width
+        reduction. Less accurate, but can improve performance is using an
+        expensive contentsFunction. */
+        useApproximateFontReduction?: boolean;
         /** Specifies if the value label render the stacked value (the sum of all values below it) or just the individual value
         of the particular series.
         
@@ -3551,6 +3589,8 @@ declare module ZoomCharts.Configuration {
     export interface NetChartSettingsInteractionSelection extends ItemsChartSettingsInteractionSelection {
         /** Enable/disable rectangular dragging selection. This has no effect if `enabled=false`. */
         dragSelect?: boolean;
+        /** Whether drag select clears existing selection first */
+        dragSelectClearsSelection?: boolean;
     }
     export interface NetChartSettingsInteractionZooming extends ItemsChartSettingsInteractionZooming {
         /** Zoom value limits for automatic zooming (for example, "Fit to screen"). Contains array of [min, max] values.
@@ -3580,6 +3620,9 @@ declare module ZoomCharts.Configuration {
         
         Note that if the minimum for `autoZoomExtent` is `null` (the default) then it can override the minimum in this value if the auto zoom level is smaller. */
         zoomExtent?: [number, number];
+        /** Whether to update the zoom level immediately upon clicking the
+        slider, or to only zoom when the slider is dragged. */
+        zoomOnSliderClick?: boolean;
     }
     export interface NetChartSettingsLayout {
         /** Advanced chart settings. Be advised that they are subject to change, backwards compatibility is not guaranteed. */
@@ -5092,6 +5135,9 @@ declare module ZoomCharts.Configuration {
         /** Whether the 'All Data' display period should be selected as long as
         *at least* all data is shown */
         flexibleAllData?: boolean;
+        /** Whether the 'All Data' display period should avoid changing the
+        current display unit */
+        flexibleAllDataUnit?: boolean;
         /** A list of toolbar items. If this is specified, it overrides all the default buttons.
         
         Use `extraItems` to specify items that should be displayed in addition to the defaults. */

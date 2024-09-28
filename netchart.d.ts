@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.20.3 */
+/** TypeScript definition file for ZoomCharts 1.20.4 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -870,6 +870,8 @@ declare module ZoomCharts.Configuration {
         /** Toolbar align. Note that it can be overridden for individual items using item.align. Also Use 'top' or 'bottom'
         sides in conjunction with 'left', 'right' align or use 'left', 'right' sides with 'top', 'bottom'. */
         align?: "left" | "right" | "top" | "bottom";
+        /** Whether to align the toolbar to the chart area in horizontal mode */
+        alignToChartWhenHorizontal?: boolean;
         /** Whether to show back button in toolbar. */
         back?: boolean;
         /** CSS class name for the toolbar HTML panel. */
@@ -1086,6 +1088,8 @@ declare module ZoomCharts.Configuration {
                 node: ItemsChartNode, 
                 /** callback function */
                 callback: (contents: string | HTMLElement) => void) => string | HTMLElement;
+            /** Delay before showing the popup */
+            showDelay?: number;
         };
         /** Customise chart resize handles or animation duration settings. */
         interaction?: ItemsChartSettingsInteraction;
@@ -1280,8 +1284,16 @@ declare module ZoomCharts.Configuration {
         zIndex?: number;
     }
     export interface ItemsChartSettingsItemsLayerLabelStyle extends BaseSettingsLabelStyle {
+        /** If scaling by font size, how to round the scaled font. Mainly useful
+        for optimizing font cache usage. */
+        fontSizeScaleRoundingFunction?: (fontSize: number) => number;
         /** How much larger or smaller the item should be drawn */
         scale?: number;
+        /** Whether to apply scaling by changing the font size. Only necessary
+        when using subpixel font sizes with large scaling factors, as
+        otherwise the browser would have skipped calculating the font because
+        it was too small to be seen. */
+        scaleByFontSize?: boolean;
         /** Whether to apply different scale according to initial size of the link or node. */
         scaleWithSize?: boolean;
         /** Whether to apply the scale if zoom changes. If false, the label size never changes. */
@@ -1942,6 +1954,8 @@ declare module ZoomCharts.Configuration {
     export interface NetChartSettingsInteractionSelection extends ItemsChartSettingsInteractionSelection {
         /** Enable/disable rectangular dragging selection. This has no effect if `enabled=false`. */
         dragSelect?: boolean;
+        /** Whether drag select clears existing selection first */
+        dragSelectClearsSelection?: boolean;
     }
     export interface NetChartSettingsInteractionZooming extends ItemsChartSettingsInteractionZooming {
         /** Zoom value limits for automatic zooming (for example, "Fit to screen"). Contains array of [min, max] values.
@@ -1971,6 +1985,9 @@ declare module ZoomCharts.Configuration {
         
         Note that if the minimum for `autoZoomExtent` is `null` (the default) then it can override the minimum in this value if the auto zoom level is smaller. */
         zoomExtent?: [number, number];
+        /** Whether to update the zoom level immediately upon clicking the
+        slider, or to only zoom when the slider is dragged. */
+        zoomOnSliderClick?: boolean;
     }
     export interface NetChartSettingsLayout {
         /** Advanced chart settings. Be advised that they are subject to change, backwards compatibility is not guaranteed. */

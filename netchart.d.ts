@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.20.4 */
+/** TypeScript definition file for ZoomCharts 1.21.0 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1090,6 +1090,9 @@ declare module ZoomCharts.Configuration {
                 callback: (contents: string | HTMLElement) => void) => string | HTMLElement;
             /** Delay before showing the popup */
             showDelay?: number;
+            /** Whether to show a label if no contents function has been
+            provided */
+            showLabelByDefault?: boolean;
         };
         /** Customise chart resize handles or animation duration settings. */
         interaction?: ItemsChartSettingsInteraction;

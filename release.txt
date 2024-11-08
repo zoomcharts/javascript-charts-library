@@ -3,9 +3,29 @@ ZoomCharts javascript library.
 Copyright 2014-2024, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.20.4
+Version 1.21.0
 
 ====== Changelog ===========================
+
+Version 1.21.0 (2024-11-08)
+
+All Charts:
+* Fix click event failing to fire on touch devices after rapidly clicking multiple different things
+* Fix the position of scaled tooltips when overlapping the screen edge
+
+NetChart:
+* Change legend to use unzoomed node size.
+
+TimeChart/FacetChart:
+* Add index parameter to value label contentsFunction
+* Allow subpixel precision for zero line rendering
+* Fix title rendering in horizontal mode
+* Fix vavlue label rendering with based stacks at exactly the same value
+* Fix value axis zero line disappearing in horizontal mode
+* Fix incorrect click and drag behavior before first interaction
+* Fix legend marker colors when gradient is used
+
+--------------------------------------------
 
 Version 1.20.4 (2024-09-30)
 

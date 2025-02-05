@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.0 */
+/** TypeScript definition file for ZoomCharts 1.21.1 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -518,7 +518,9 @@ declare module ZoomCharts.Configuration {
         /** The foreground fill color of the chart area. `rgba()` with alpha transparency should be used */
         overlayColor?: string;
     }
-    export interface BaseSettingsBackgroundStyle extends BaseSettingsLineStyle {
+    export interface BaseSettingsBackgroundStyle extends BaseSettingsLineStyle, BaseSettingsBackgroundStyleBase {
+    }
+    export interface BaseSettingsBackgroundStyleBase {
         fillColor?: string | CanvasGradient;
         shadowBlur?: number;
         shadowColor?: string;
@@ -679,6 +681,9 @@ declare module ZoomCharts.Configuration {
         margin?: number;
         /** Maximum width of the label. */
         maxWidth?: number;
+        /** The minimum space, in pixels, that a label must display before
+        shortening the label with ellipsis is considered. */
+        minNonEllipsisWidth?: number;
         /** Padding between item content and item border. */
         padding?: number;
         /** Label text. */
@@ -767,8 +772,11 @@ declare module ZoomCharts.Configuration {
         /** Whether to use space beyond chart boundaries */
         shouldFill?: boolean;
     }
-    export interface BaseSettingsLineStyle {
+    export interface BaseSettingsLineStyle extends BaseSettingsLineStyleBase {
         lineColor?: string;
+    }
+    export interface BaseSettingsLineStyleBase {
+        lineColor?: string | CanvasGradient;
         lineDash?: Array<number>;
         lineDashOffset?: number;
         lineWidth?: number;
@@ -850,6 +858,18 @@ declare module ZoomCharts.Configuration {
         shadowColor?: string;
         shadowOffsetX?: number;
         shadowOffsetY?: number;
+    }
+    export interface BaseSettingsThresholdStyle {
+        /** Specifies the fill color for the threshold area. If multiple areas overlap, this should specify an `rgba()` color with transparency.
+            If 'null' fill color will not be applied. */
+        fillColor?: string;
+        /** Specifies the line color for the upper and lower bounds. If `null`, the lines will not be drawn. */
+        lineColor?: string;
+        /** Array of line dash pattern to have a dashed line. The array contains length of dash followed by length of space in pixels.
+        A sequence of multiple dash-space values is supported. In case you want to set a solid line, pass empty array: [] */
+        lineDash?: Array<number>;
+        /** Specifies the width of the boundary lines. */
+        lineWidth?: number;
     }
     export interface BaseSettingsTitle {
         /** Advanced settings */
@@ -964,6 +984,12 @@ declare module ZoomCharts.Configuration {
         never = 0,
     }
     export interface BaseSettingsValueAxisThreshold {
+        /** How far the arrow is drawn from the edge of the screen */
+        arrowOffset?: number;
+        arrowPosition?: "right" | "left";
+        arrowSize?: number;
+        /** Style used for the arrow */
+        arrowStyle?: BaseSettingsThresholdStyle;
         /** Specifies the bottom bound of the threshold area. */
         from?: number;
         /** How the from value should be determined */
@@ -989,20 +1015,14 @@ declare module ZoomCharts.Configuration {
         /** Which series to use for non-constant values */
         seriesID?: string;
         /** Describes the visual style for the threshold guidelines and area. */
-        style?: {
-            /** Specifies the fill color for the threshold area. If multiple areas overlap, this should specify an `rgba()` color with transparency.
-            If 'null' fill color will not be applied. */
-            fillColor?: string;
-            /** Specifies the line color for the upper and lower bounds. If `null`, the lines will not be drawn. */
-            lineColor?: string;
-            /** Array of line dash pattern to have a dashed line. The array contains length of dash followed by length of space in pixels.
-            A sequence of multiple dash-space values is supported. In case you want to set a solid line, pass empty array: [] */
-            lineDash?: Array<number>;
-            /** Specifies the width of the boundary lines. */
-            lineWidth?: number;
-        };
+        style?: BaseSettingsThresholdStyle;
         /** Specifies the upper bound of the threshold area. */
         to?: number;
+        /** Which series to use for the "to" threshold's non-constant values. If
+        null, uses seriesID. */
+        toSeriesID?: string;
+        /** Style to be used for the to line */
+        toStyle?: BaseSettingsThresholdStyle;
         /** How the from value should be determined */
         toType?: "constant" | "first" | "last" | "minimum" | "maximum" | "median" | "average" | "percentile";
         valueFunction?: (from: number, to: number, settings: BaseSettingsValueAxisThreshold) => {
@@ -1103,6 +1123,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface FacetChartItem {
         active: boolean;
+        comment: FacetChartSettingsFacetComment;
         currentLabel: BaseLabel;
         data: FacetChartDataObject;
         expandable: boolean;
@@ -1140,6 +1161,7 @@ declare module ZoomCharts.Configuration {
             /** Series type to connect value points by lines. */
             line?: FacetChartSettingsSeriesLines;
         };
+        comments?: FacetChartSettingsFacetComments;
         /** Settings used to load data into chart. Customise preferred data source feeding methods.
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<FacetChartSettingsData>;
@@ -1298,7 +1320,25 @@ declare module ZoomCharts.Configuration {
         /** Determines if the `name` property from the data overrides the `text` value in these settings. */
         useFacetName?: boolean;
     }
+    export interface FacetChartSettingsFacetComment {
+        iconMarkerAlign?: "center" | "right" | "left";
+        iconMarkerPosition?: "default" | "top" | "bottom";
+        iconStyle?: BaseSettingsLabelStyle;
+        iconText?: string;
+        labelStyle?: BaseSettingsLabelStyle;
+        text?: string;
+    }
+    export interface FacetChartSettingsFacetComments {
+        enabled?: boolean;
+        height?: number;
+        iconMarkerPosition?: "default" | "top" | "bottom";
+        panel?: BaseSettingsChartPanel;
+        scrollAnimationDuration?: number;
+        scrollButtons?: BaseSettingsScrollButtons;
+        width?: number;
+    }
     export interface FacetChartSettingsFacetStyle extends FacetChartSettingsSeriesColumnsStyle {
+        comment?: FacetChartSettingsFacetComment;
         /** Specifies if the item can be expanded. */
         expandable?: boolean;
     }
@@ -2785,6 +2825,10 @@ declare module ZoomCharts.Configuration {
             /** Whether to show only the series under cursor in info popup. If `scope` is set to `value` then the info popup will be empty unless the pointer
             hovers over the value bar/line. */
             showOnlyHoveredSeries?: boolean;
+            /** Function to determine what order the series are displayed in.
+            indexA and indexB give the order the series were originally
+            specified in. */
+            sortFunction?: (a: LinearChartSettingsSeries, b: LinearChartSettingsSeries, indexA: number, indexB: number) => number;
         };
         /** List of aggregations that will be shown in the info popup for each series. If none are specified, info popup displays the aggregation
         that is specified in the series data configuration.
@@ -3187,6 +3231,9 @@ declare module ZoomCharts.Configuration {
         fillGradientClampMode?: string;
         /** The line color for the marker shape. */
         lineColor?: string;
+        /** Marker line gradient. If this is not set, then the lineColor will be
+        used instead. */
+        lineGradient?: GradientDefinition;
         /** The width of the outline for the marker shape. */
         lineWidth?: number;
         /** Specify the shape of markers on the line. */
@@ -3611,6 +3658,15 @@ declare module ZoomCharts.Configuration {
         on all sides of the chart. However once the target  is reached, if the nodes move within these 10%
         on either side, the zoom adjustment is not performed. */
         autoZoomSize?: number;
+        /** If the target zoom level differs from the current zoom level by
+        more than autoZoomThreshold percent, then an actual zoom is
+        performed. Otherwise the current zoom level is considered good
+        enough.
+        Useful to increase if many small zoom changes are causing
+        small, unwanted shifts or vibrations in the zoom level.
+        Useful to decrease if the zoom doesn't seem to be updating on changes
+        that should change the zoom level. */
+        autoZoomThreshold?: number;
         /** Auto zoom mode on chart initialization.
         
         Valid values:
@@ -5232,7 +5288,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -5314,7 +5370,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -5449,7 +5505,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -5545,7 +5601,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -5682,7 +5738,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {

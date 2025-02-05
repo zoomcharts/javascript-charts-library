@@ -1,11 +1,44 @@
 ZoomCharts javascript library.
 
-Copyright 2014-2024, SIA Data Visualization Software Lab. All rights reserved.
+Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.0
+Version 1.21.1
 
 ====== Changelog ===========================
+
+Version 1.21.1 (2025-02-05)
+
+All Charts:
+* Add minNonEllipsisWidth setting for labels
+* Fix tooltip positioning when centered near the left in tiny windows
+
+TimeChart/FacetChart:
+* Add sort function for info popup
+* Add line gradients for markers
+* Add option for arrow line between threshold from and to
+* Better marker styling if using gradients with identical value
+* Fix series marker width overriding legend marker width for line series.
+* Fix approximate font reduction mode when no reduction is performed
+* Fix value label sizes when contentsFunction significantly shortens the text
+
+FacetChart:
+* Add data-driven comments panel
+* Add icons on chart where comments are present
+* Fix export dimensions with horizontal chart
+* Fix facetAxis auto-sizing when labels are small
+
+TimeChart:
+* Fix selection label positioning when larger fonts are used
+
+NetChart:
+* Add shape layer selector in lasso menu
+* Add setting to configure the autoZoomThreshold: the minimum zoom change to cause an auto zoom
+* Fix chart autozoom with extremely small nodes with labels
+* Fix hit detection finding the hovered node when it isn't hovered.
+* Fix console error when round text shape has no background style
+
+--------------------------------------------
 
 Version 1.21.0 (2024-11-08)
 
@@ -20,7 +53,7 @@ TimeChart/FacetChart:
 * Add index parameter to value label contentsFunction
 * Allow subpixel precision for zero line rendering
 * Fix title rendering in horizontal mode
-* Fix vavlue label rendering with based stacks at exactly the same value
+* Fix value label rendering with based stacks at exactly the same value
 * Fix value axis zero line disappearing in horizontal mode
 * Fix incorrect click and drag behavior before first interaction
 * Fix legend marker colors when gradient is used

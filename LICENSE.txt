@@ -1,4 +1,4 @@
-(c) 2013 - 2024 Data Visualization Software Lab
+(c) 2013 - 2025 Data Visualization Software Lab
 ZoomCharts charting library EULA: https://zoomcharts.com/en/legal/
 United States Patent No. 11,645,343; 11,921,804
 

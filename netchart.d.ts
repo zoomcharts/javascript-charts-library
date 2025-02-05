@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.0 */
+/** TypeScript definition file for ZoomCharts 1.21.1 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -505,7 +505,9 @@ declare module ZoomCharts.Configuration {
         /** The foreground fill color of the chart area. `rgba()` with alpha transparency should be used */
         overlayColor?: string;
     }
-    export interface BaseSettingsBackgroundStyle extends BaseSettingsLineStyle {
+    export interface BaseSettingsBackgroundStyle extends BaseSettingsLineStyle, BaseSettingsBackgroundStyleBase {
+    }
+    export interface BaseSettingsBackgroundStyleBase {
         fillColor?: string | CanvasGradient;
         shadowBlur?: number;
         shadowColor?: string;
@@ -666,6 +668,9 @@ declare module ZoomCharts.Configuration {
         margin?: number;
         /** Maximum width of the label. */
         maxWidth?: number;
+        /** The minimum space, in pixels, that a label must display before
+        shortening the label with ellipsis is considered. */
+        minNonEllipsisWidth?: number;
         /** Padding between item content and item border. */
         padding?: number;
         /** Label text. */
@@ -754,8 +759,11 @@ declare module ZoomCharts.Configuration {
         /** Whether to use space beyond chart boundaries */
         shouldFill?: boolean;
     }
-    export interface BaseSettingsLineStyle {
+    export interface BaseSettingsLineStyle extends BaseSettingsLineStyleBase {
         lineColor?: string;
+    }
+    export interface BaseSettingsLineStyleBase {
+        lineColor?: string | CanvasGradient;
         lineDash?: Array<number>;
         lineDashOffset?: number;
         lineWidth?: number;
@@ -1976,6 +1984,15 @@ declare module ZoomCharts.Configuration {
         on all sides of the chart. However once the target  is reached, if the nodes move within these 10%
         on either side, the zoom adjustment is not performed. */
         autoZoomSize?: number;
+        /** If the target zoom level differs from the current zoom level by
+        more than autoZoomThreshold percent, then an actual zoom is
+        performed. Otherwise the current zoom level is considered good
+        enough.
+        Useful to increase if many small zoom changes are causing
+        small, unwanted shifts or vibrations in the zoom level.
+        Useful to decrease if the zoom doesn't seem to be updating on changes
+        that should change the zoom level. */
+        autoZoomThreshold?: number;
         /** Auto zoom mode on chart initialization.
         
         Valid values:
@@ -2298,7 +2315,7 @@ declare module ZoomCharts {
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
-        chart.updateSettings({ theme: ZoomChart.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
         chart.customize("dark");
         ``` */
         public static themes: {

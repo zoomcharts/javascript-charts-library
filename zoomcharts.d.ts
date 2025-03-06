@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.1 */
+/** TypeScript definition file for ZoomCharts 1.21.2 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -4696,6 +4696,7 @@ declare module ZoomCharts.Configuration {
         use [`toolbar.periods`](time-chart/api-reference/settings/toolbar/periods.html) setting. */
         displayPeriods?: Array<{
                 unit?: string;
+                isMinorOnly?: boolean;
             }>;
         /** List of time units to use for data aggregation on the time axis.
         
@@ -5116,6 +5117,10 @@ declare module ZoomCharts.Configuration {
             timestamps: Array<number>, verticalPositions: Array<number>) => Array<LinearChartSettingsSeriesStyleMarker>;
     }
     export interface TimeChartSettingsTimeAxis {
+        /** Whether to allow minor units that are the same size as major units.
+        Can be used to effectively disallow some major unit groupings, such
+        as major labels for decade or century groups. */
+        allowEqualMinorUnits?: boolean;
         /** Shows/hides time axis. */
         enabled?: boolean;
         /** Whether to change display units while animating */

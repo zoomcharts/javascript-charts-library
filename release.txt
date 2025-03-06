@@ -3,9 +3,28 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.1
+Version 1.21.2
 
 ====== Changelog ===========================
+
+Version 1.21.2 (2025-03-06)
+
+All Charts:
+* Fix hexadecimal HTML entities not being decoded.
+* Disable label cache by default.
+
+TimeChart:
+* Add option to allow minor time axis units to take precedence when the minor unit would be the same as the major unit.
+* Add ability to specify periods that can only be used as a minor unit in area.displayPeriod.
+* Add ability to disable time axis grouping by decade and century by not including those as items in area.displayPeriod.
+* Fix week number not rounding down in selection label.
+
+NetChart:
+* Fix occassional freeze in hierarchy layout with centerNodes enabled.
+* Fix legend item interaction if the legend item's name is the empty string.
+* Fix legend text offset for legend panels on the left or right when the first legend item's name is the empty string.
+
+--------------------------------------------
 
 Version 1.21.1 (2025-02-05)
 

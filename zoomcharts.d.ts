@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.2 */
+/** TypeScript definition file for ZoomCharts 1.21.3 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -449,7 +449,16 @@ declare module ZoomCharts.Configuration {
         clickSensitivity?: number;
         /** Pixels pointer can move around and still be registered as double click. */
         doubleClickSensitivity?: number;
-        /** Maximum time in ms between clicks to register a double click. */
+        /** Maximum time in ms between clicks to register a double click.
+        Also controls the maximum amount of time that can pass between a
+        mouse down and mouse up and still qualify as a click.
+        
+        Special values:
+        null - Entirely disables double and triple click; all clicks
+        count as single.
+        undefined - Same as null.
+        0 - Entirely disables clicking in general; all mouse down and up
+        events are registered as just mouse down and mouse up. */
         doubleClickTimeout?: number;
         /** The distance in pixels the pointer is allowed to be moved before the long-press event is cancelled. */
         longPressSensitivity?: number;
@@ -468,6 +477,11 @@ declare module ZoomCharts.Configuration {
         scrollIntoView?: boolean;
         /** Time window to use for pointer speed estimation. */
         speedAveragingPeriod?: number;
+        /** Maximum time in ms between double click and triple click to register a triple click.
+        Special values:
+        null -- Use the same length as doubleClickTimeout
+        undefined -- Same as null. */
+        tripleClickTimeout?: number;
     }
     export interface BaseSettingsAdvancedStyle {
         /** Loading arc animation style */
@@ -2471,6 +2485,10 @@ declare module ZoomCharts.Configuration {
     }
     /** Node item. */
     export interface ItemsChartSettingsNodeItem extends ItemsChartSettingsItemsLayerItemStyle {
+        /** X offset from node center in units of item half width. */
+        ix?: number;
+        /** Y offset from node center in units of item half height. */
+        iy?: number;
         /** X offset from node center. A fraction of node width.
         Value of -1 places the item at the left edge of the node.
         Value of 1 places the item at the right edge of the node. */
@@ -3029,6 +3047,9 @@ declare module ZoomCharts.Configuration {
     export interface LinearChartSettingsSeriesColumns extends LinearChartSettingsSeries {
         /** Default column style. */
         style?: LinearChartSettingsSeriesColumnsStyle;
+        /** Controls if and how the value label for the total of the series is
+        displayed on the chart */
+        totalValueLabel?: LinearChartSettingsTotalValueLabel;
         /** Controls if and how the value labels for each column is displayed on the chart. */
         valueLabels?: LinearChartSettingsValueLabels;
     }
@@ -3117,6 +3138,9 @@ declare module ZoomCharts.Configuration {
     export interface LinearChartSettingsSeriesLines extends LinearChartSettingsSeries {
         /** Default style for line type series. */
         style?: LinearChartSettingsSeriesLinesStyle;
+        /** Controls if and how the value label for the total of the series is
+        displayed on the chart */
+        totalValueLabel?: LinearChartSettingsTotalValueLabel;
         /** Controls if and how the value labels for each line is displayed on the chart. */
         valueLabels?: LinearChartSettingsValueLabels;
     }
@@ -3257,6 +3281,51 @@ declare module ZoomCharts.Configuration {
         /** Different representation of stacked series values. */
         type?: "normal" | "proportional" | "based";
     }
+    export interface LinearChartSettingsTotalValueLabel {
+        /** Whether to allow skipping  some labels if there isn't enough space
+        to draw any labels at all */
+        allowLabelSkip?: boolean;
+        /** Prepare custom content to display in value label along with numeric value.
+        If this callback is not defined, then floating value is formatted with two digits after the decimal point and integer values are formatted without decimal digits.
+        If this callback returns `null` or `undefined` for the given value, it won't be created. Note that `null` values are never passed to the callback. Usage example:
+        ```javascript
+        contentsFunction: function(value) { return value.toFixed(2) + "$"; }
+        ``` */
+        contentsFunction?: (
+            /** The value which has to be formatted. */
+            value: number, 
+            /** The horizontal position (timestamp for TimeChart and item index for FacetChart) where the label is located. */
+            position: number, series: LinearChartSettingsSeriesColumns | LinearChartSettingsSeriesLines, index?: number) => string;
+        /** Whether to show series data labels. */
+        enabled?: boolean;
+        /** The font size will be used as defined in `series.valueLabel.style`.
+        However, if the available space is too narrow, font size will be gradually reduced to the minimum font size.
+        If the minimum font size still does not fit, the values won't be displayed.
+        
+        Note that this value must match the units that is being used in the `style.textStyle.font` setting. For example,
+        if the font is specified as `2em Arial` then this should be adjusted to, for example, 0.5, since the default value
+        is tailored for font sizes in pixels. */
+        minFontSize?: number;
+        /** Value label position in perspective to the series data point. Note that in all of the inside options 
+        automatically reduce the font size (based on `minFontSize` setting) in situations when the height of the 
+        column or line area does not provide enough room for full-size labels.
+        
+        ![Value label possible positions](images/valueLabelPosition.png) */
+        position?: "outside" | "outsideTop" | "outsideBottom" | "aboveValue" | "value" | "belowValue" | "insideTopAuto" | "insideTop" | "insideCenter" | "insideBase";
+        /** Whether to skip drawing labels for null values */
+        showNullData?: boolean;
+        /** Whether to skip drawing labels for zero values */
+        showZeroData?: boolean;
+        /** Data label text style. */
+        style?: BaseSettingsLabelStyle;
+        /** Specifies if the value label render the stacked value (the sum of all values below it) or just the individual value
+        of the particular series.
+        
+        Default value `null` means that the stacked value is used unless the stack type is set to `based`. */
+        useStackedValue?: boolean;
+        /** Value label horizontal position in perspective to the series data point. */
+        xPosition?: "center" | "insideRight" | "right" | "centerRight" | "outsideRight" | "insideLeft" | "left" | "centerLeft" | "outsideLeft";
+    }
     export interface LinearChartSettingsValueAxis {
         /** Whether to align the zero value with other axes */
         alignZero?: boolean;
@@ -3375,59 +3444,12 @@ declare module ZoomCharts.Configuration {
         /** Specifies when the label for the zero line is rendered. */
         showLabel?: BaseSettingsValueAxisBaseLineLabelMode;
     }
-    export interface LinearChartSettingsValueLabels {
-        /** Whether to allow skipping  some labels if there isn't enough space
-        to draw any labels at all */
-        allowLabelSkip?: boolean;
+    export interface LinearChartSettingsValueLabels extends LinearChartSettingsTotalValueLabel {
         /** Whether to draw overlapping value labels or not */
         allowOverlap?: boolean;
         /** Whether overlapping labels can be drawn in a stack instead if
         overlap is disallowed */
         allowOverlappingLabelStacking?: boolean;
-        /** Prepare custom content to display in value label along with numeric value.
-        If this callback is not defined, then floating value is formatted with two digits after the decimal point and integer values are formatted without decimal digits.
-        If this callback returns `null` or `undefined` for the given value, it won't be created. Note that `null` values are never passed to the callback. Usage example:
-        ```javascript
-        contentsFunction: function(value) { return value.toFixed(2) + "$"; }
-        ``` */
-        contentsFunction?: (
-            /** The value which has to be formatted. */
-            value: number, 
-            /** The horizontal position (timestamp for TimeChart and item index for FacetChart) where the label is located. */
-            position: number, series: LinearChartSettingsSeriesColumns | LinearChartSettingsSeriesLines, index?: number) => string;
-        /** Whether to show series data labels. */
-        enabled?: boolean;
-        /** The font size will be used as defined in `series.valueLabel.style`.
-        However, if the available space is too narrow, font size will be gradually reduced to the minimum font size.
-        If the minimum font size still does not fit, the values won't be displayed.
-        
-        Note that this value must match the units that is being used in the `style.textStyle.font` setting. For example,
-        if the font is specified as `2em Arial` then this should be adjusted to, for example, 0.5, since the default value
-        is tailored for font sizes in pixels. */
-        minFontSize?: number;
-        /** Value label position in perspective to the series data point. Note that in all of the inside options 
-        automatically reduce the font size (based on `minFontSize` setting) in situations when the height of the 
-        column or line area does not provide enough room for full-size labels.
-        
-        ![Value label possible positions](images/valueLabelPosition.png) */
-        position?: "outside" | "outsideTop" | "outsideBottom" | "aboveValue" | "value" | "belowValue" | "insideTopAuto" | "insideTop" | "insideCenter" | "insideBase";
-        /** Whether to skip drawing labels for null values */
-        showNullData?: boolean;
-        /** Whether to skip drawing labels for zero values */
-        showZeroData?: boolean;
-        /** Data label text style. */
-        style?: BaseSettingsLabelStyle;
-        /** Advanced: Skip the contents function when calculating font width
-        reduction. Less accurate, but can improve performance is using an
-        expensive contentsFunction. */
-        useApproximateFontReduction?: boolean;
-        /** Specifies if the value label render the stacked value (the sum of all values below it) or just the individual value
-        of the particular series.
-        
-        Default value `null` means that the stacked value is used unless the stack type is set to `based`. */
-        useStackedValue?: boolean;
-        /** Value label horizontal position in perspective to the series data point. */
-        xPosition?: "center" | "insideRight" | "right" | "centerRight" | "outsideRight" | "insideLeft" | "left" | "centerLeft" | "outsideLeft";
     }
     export interface NetChartBarSettingsLocalizationToolbar extends BaseSettingsLocalizationToolbar {
         fitButton?: string;
@@ -5164,7 +5186,15 @@ declare module ZoomCharts.Configuration {
             majorTimeBalloonStyle?: BaseSettingsBackgroundStyle;
             /** Style for major time labels. */
             majorTimeLabel?: BaseSettingsTextStyle;
+            /** How to align the minor unit */
             minorAlign?: "center" | "right" | "left";
+            /** What the minor unit is aligned with respect to. For example,
+            suppose the time ruler has 1 tick for every month, but the minor
+            unit only has a label for every 3 months. In "tick" mode, the
+            alignment will be based on the 1 month space of a single tick,
+            whereas in "nextLabel" mode the alignment will be based on the
+            full 3 month space between labeled minor units. */
+            minorAlignMode?: "tick" | "nextLabel";
             /** Style for minor time labels balloons. */
             minorTimeBalloonStyle?: BaseSettingsBackgroundStyle;
             /** Style for minor time labels. */

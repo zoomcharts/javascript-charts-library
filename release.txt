@@ -3,9 +3,35 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.2
+Version 1.21.3
 
 ====== Changelog ===========================
+
+Version 1.21.3 (2025-04-04)
+
+All Charts:
+* Tooltip will now stay within the boundaries of the main chart area.
+* Add setting to control the timeout for triple click separately from double click.
+* Fix click not firing if a second click is done where the mouse down is before the maximum time for a double click but the mouse up is after.
+
+TimeChart/FacetChart:
+* Tooltip will no longer overlap the scroll buttons.
+* Add ability to have a totalValueLabel for the stack independent of the other value labels.
+* Improve value label font calculation performance.
+* Remove useApproximateFontReduction setting; the performance improvements that setting allowed are now always present but without needing to be approximate.
+* Fix the range of valid tooltip y positions being offset if the tooltip is scaled.
+
+TimeChart:
+* Change minor unit alignment to be based on the individual elements rather than the full area described by the minor unit label.
+* Fix left navigation arrow not allowing to scroll to times before 1970.
+* Fix navigation arrows scrolling past the end of the data range
+
+NetChart:
+* Add ix/iy options for node/link items, allowing positioning in terms of item width and height.
+* Add onTripleClick event
+* Fix auto zoom level not being calculated correctly when scaleByFontSize labels are used.
+
+--------------------------------------------
 
 Version 1.21.2 (2025-03-06)
 
@@ -18,6 +44,9 @@ TimeChart:
 * Add ability to specify periods that can only be used as a minor unit in area.displayPeriod.
 * Add ability to disable time axis grouping by decade and century by not including those as items in area.displayPeriod.
 * Fix week number not rounding down in selection label.
+
+NetChart/GeoChart:
+* Fix lasso tool having incorrect background color when active in dark mode.
 
 NetChart:
 * Fix occassional freeze in hierarchy layout with centerNodes enabled.

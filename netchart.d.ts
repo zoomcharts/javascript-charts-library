@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.2 */
+/** TypeScript definition file for ZoomCharts 1.21.3 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -436,7 +436,16 @@ declare module ZoomCharts.Configuration {
         clickSensitivity?: number;
         /** Pixels pointer can move around and still be registered as double click. */
         doubleClickSensitivity?: number;
-        /** Maximum time in ms between clicks to register a double click. */
+        /** Maximum time in ms between clicks to register a double click.
+        Also controls the maximum amount of time that can pass between a
+        mouse down and mouse up and still qualify as a click.
+        
+        Special values:
+        null - Entirely disables double and triple click; all clicks
+        count as single.
+        undefined - Same as null.
+        0 - Entirely disables clicking in general; all mouse down and up
+        events are registered as just mouse down and mouse up. */
         doubleClickTimeout?: number;
         /** The distance in pixels the pointer is allowed to be moved before the long-press event is cancelled. */
         longPressSensitivity?: number;
@@ -455,6 +464,11 @@ declare module ZoomCharts.Configuration {
         scrollIntoView?: boolean;
         /** Time window to use for pointer speed estimation. */
         speedAveragingPeriod?: number;
+        /** Maximum time in ms between double click and triple click to register a triple click.
+        Special values:
+        null -- Use the same length as doubleClickTimeout
+        undefined -- Same as null. */
+        tripleClickTimeout?: number;
     }
     export interface BaseSettingsAdvancedStyle {
         /** Loading arc animation style */
@@ -1571,6 +1585,10 @@ declare module ZoomCharts.Configuration {
     }
     /** Node item. */
     export interface ItemsChartSettingsNodeItem extends ItemsChartSettingsItemsLayerItemStyle {
+        /** X offset from node center in units of item half width. */
+        ix?: number;
+        /** Y offset from node center in units of item half height. */
+        iy?: number;
         /** X offset from node center. A fraction of node width.
         Value of -1 places the item at the left edge of the node.
         Value of 1 places the item at the right edge of the node. */

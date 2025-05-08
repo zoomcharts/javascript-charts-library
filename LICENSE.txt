@@ -39,3 +39,22 @@ United States Patent No. 11,645,343; 11,921,804
     author : Tom Wu
     license : BSD
     www-cs-students.stanford.edu/~tjw/jsbn/
+
+  jsPDF 0.9.0rc2 ( ${buildDate} ${commitID} )
+    author: James Hall, james@snapshotmedia.co.uk, Copyright (c) 2012 Willow Systems Corporation, willow-systems.com
+    license: MIT
+    github.com/MrRio/jsPDF
+
+  xlsx.js (C) 2013-2025 SheetJS 
+    license: Apache 2.0 License
+    sheetjs.com
+
+  Chipmunk.js
+    author: Scott Lembcke, Joseph Gentle
+    license: MIT
+    github.com/josephg/Chipmunk-js/
+
+  tsm
+    author: Matthias Ferch
+    license: BSD
+    github.com/matthiasferch/tsm

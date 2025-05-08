@@ -3,9 +3,20 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.3
+Version 1.21.4
 
 ====== Changelog ===========================
+
+Version 1.21.4 (2025-05-08)
+
+All Charts:
+* Update old documentation
+* Fix typos in documentation
+
+TimeChart/FacetChart:
+* Fix value axis label omission behaving strangely in certain cases
+
+--------------------------------------------
 
 Version 1.21.3 (2025-04-04)
 

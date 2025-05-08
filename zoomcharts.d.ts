@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.3 */
+/** TypeScript definition file for ZoomCharts 1.21.4 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -2635,15 +2635,15 @@ declare module ZoomCharts.Configuration {
             size?: number;
         };
         /** Link radius auto distribution method. */
-        linkAutoScaling?: "linear" | "logaritmic";
+        linkAutoScaling?: "linear" | "logarithmic";
         /** Link length auto distribution method. */
-        linkLengthAutoScaling?: "linear" | "logaritmic";
+        linkLengthAutoScaling?: "linear" | "logarithmic";
         /** Min and max value of link length before zooming is applied. */
         linkLengthExtent?: [number, number];
         /** Min and max value of link half-width before zooming is applied. */
         linkRadiusExtent?: [number, number];
         /** Link strength auto distribution method. */
-        linkStrengthAutoScaling?: "linear" | "logaritmic";
+        linkStrengthAutoScaling?: "linear" | "logarithmic";
         /** Min and max value for link strength. */
         linkStrengthExtent?: [number, number];
         /** If the multilinks are curved, how much should they automatically curve away from each other.
@@ -2656,7 +2656,7 @@ declare module ZoomCharts.Configuration {
         Valid values:
         - null - scaling disabled
         - linear - distribute node radii linearly
-        - logaritmic - distribute node radii logarithmicaly
+        - logarithmic - distribute node radii logarithmicaly
         - square - distribute node radii using square function */
         nodeAutoScaling?: "linear" | "logarithmic" | "square";
         /** Min and max value of node radius, before zooming is applied. To use this, specify `nodeAutoScaling`. */

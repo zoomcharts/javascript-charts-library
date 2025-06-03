@@ -3,9 +3,21 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.4
+Version 1.21.5
 
 ====== Changelog ===========================
+
+Version 1.21.5 (2025-06-03)
+
+TimeChart:
+* Add exportAggregatedVisibleData API call
+* Add vgridMode setting for TimeAxis
+
+NetChart:
+* Fix vanishing nodes in centered hierarchy layout
+* Fix dashed node outlines doubling up on one side for rectangle, diamond, and rhombus shapes.
+
+--------------------------------------------
 
 Version 1.21.4 (2025-05-08)
 

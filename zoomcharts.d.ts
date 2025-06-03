@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.4 */
+/** TypeScript definition file for ZoomCharts 1.21.5 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -5218,6 +5218,8 @@ declare module ZoomCharts.Configuration {
         unitSizePolicy?: "auto" | "min" | "max";
         /** Whether to show vertical grid. */
         vgrid?: boolean;
+        /** Which unit determins the vertical grid placement */
+        vgridMode?: "both" | "major" | "minor";
     }
     export interface TimeChartSettingsToolbar extends BaseSettingsToolbar {
         /** Whether to show display period dropdown. */
@@ -5676,6 +5678,7 @@ declare module ZoomCharts {
             animate?: boolean, 
             /** Deprecated as of 1.14.0. */
             rescale?: boolean): string;
+        public exportAggregatedVisibleData(): Array<Array<string | number>>;
         public exportVisibleData(): Array<Array<string | number>>;
         /** Gets the currently enabled series */
         public getEnabledSeries(): Array<Configuration.TimeChartSettingsSeries>;

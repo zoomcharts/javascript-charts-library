@@ -3,9 +3,25 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.5
+Version 1.21.6
 
 ====== Changelog ===========================
+
+Version 1.21.6 (2025-07-08)
+
+NetChart:
+* Allow case insensitive shape names in the node display setting
+* Fix autoZoomSize when set to exactly 0
+* Fix auto zoom not occurring if nodes get much closer together but stay near a chart edge.
+* Update documentation for autoZoomSize behavior
+
+TimeChart/FacetChart:
+* Fix gradient alignment in small legend items
+
+TimeChart:
+* Add API to get number of visible columns
+
+--------------------------------------------
 
 Version 1.21.5 (2025-06-03)
 

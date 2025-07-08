@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.5 */
+/** TypeScript definition file for ZoomCharts 1.21.6 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1997,10 +1997,20 @@ declare module ZoomCharts.Configuration {
         when autozoom is enabled. Increasing the value decreases latency, and makes the animation
         more responsive. Decreasing the value makes the animation more fluid */
         autoZoomPositionElasticity?: number;
-        /** Controls the percentage of how much of the chart width/height the nodes can move around without
-        triggering automatic zoom adjustment. A value of 0.9 means that the target is to leave 10% padding
-        on all sides of the chart. However once the target  is reached, if the nodes move within these 10%
-        on either side, the zoom adjustment is not performed. */
+        /** Controls the percentage of how much of the chart width/height the
+        nodes can move around without triggering automatic zoom adjustment. A
+        value of 0.9 means that the target is to leave 10% padding on all sides
+        of the chart. However once the target  is reached, if the nodes move
+        within these 10% on either side, the zoom adjustment is not performed.
+        
+        Note that this is a percent of the *data size*, not the *screen size*.
+        For example, if the value is 0.2, then by the logic above this means the
+        target is to leave 80% padding on all sides. This does *not* mean that
+        80% of the chart will be white space and all of the data will be stuffed
+        in the middle 20%. Rather, it means that the screen will be fit as if
+        the data was 80% wider and taller than it really is. For instance, if
+        the data would normally fit in a 1000x1000 box, then the screen would
+        fit to a 1700x1700 box with the data in the middle 1000x1000. */
         autoZoomSize?: number;
         /** If the target zoom level differs from the current zoom level by
         more than autoZoomThreshold percent, then an actual zoom is

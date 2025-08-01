@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.6 */
+/** TypeScript definition file for ZoomCharts 1.21.7 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1987,6 +1987,29 @@ declare module ZoomCharts.Configuration {
         dragSelectClearsSelection?: boolean;
     }
     export interface NetChartSettingsInteractionZooming extends ItemsChartSettingsInteractionZooming {
+        /** Determines how much the center of the nodes can move before auto
+        zoom updates.
+        
+        The default value is 1.0, meaning it must move by an amount equal to
+        the padding before the auto zoom updates. Lower values, down to 0
+        will update with smaller moves, while larger values will require more
+        significant movement before auto zoom updates. */
+        autoZoomCenterOffsetTolerance?: number;
+        /** Determines how far nodes are allowed to move inwards, creating more * than the optimal amount of padding, before auto zoom updates.
+        
+        If auto zoom always updates when there is more than the optimal amount
+        of padding, then this can create an undesirable "trembling" as auto
+        zoom might constantly update if e.g. a boundary node is moving
+        inwards.
+        
+        The default value is 1.0, meaning it must move inwards by an amount
+        equal to the padding before the auto zoom updates. Lower values, down
+        to 0 will update with smaller moves inwards, while larger values will
+        require more significant inward movement before auto zoom updates.
+        
+        The threshold is calculated as:
+        `1.0 + (autoZoomExcessivePaddingTolerance * padding)` */
+        autoZoomExcessivePaddingTolerance?: number;
         /** Zoom value limits for automatic zooming (for example, "Fit to screen"). Contains array of [min, max] values.
         
         If the minimum (the first value) is specified as `null`, the chart will not enforce it, instead it will be adjusted as needed

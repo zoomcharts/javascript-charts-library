@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.6 */
+/** TypeScript definition file for ZoomCharts 1.21.7 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -3665,6 +3665,29 @@ declare module ZoomCharts.Configuration {
         dragSelectClearsSelection?: boolean;
     }
     export interface NetChartSettingsInteractionZooming extends ItemsChartSettingsInteractionZooming {
+        /** Determines how much the center of the nodes can move before auto
+        zoom updates.
+        
+        The default value is 1.0, meaning it must move by an amount equal to
+        the padding before the auto zoom updates. Lower values, down to 0
+        will update with smaller moves, while larger values will require more
+        significant movement before auto zoom updates. */
+        autoZoomCenterOffsetTolerance?: number;
+        /** Determines how far nodes are allowed to move inwards, creating more * than the optimal amount of padding, before auto zoom updates.
+        
+        If auto zoom always updates when there is more than the optimal amount
+        of padding, then this can create an undesirable "trembling" as auto
+        zoom might constantly update if e.g. a boundary node is moving
+        inwards.
+        
+        The default value is 1.0, meaning it must move inwards by an amount
+        equal to the padding before the auto zoom updates. Lower values, down
+        to 0 will update with smaller moves inwards, while larger values will
+        require more significant inward movement before auto zoom updates.
+        
+        The threshold is calculated as:
+        `1.0 + (autoZoomExcessivePaddingTolerance * padding)` */
+        autoZoomExcessivePaddingTolerance?: number;
         /** Zoom value limits for automatic zooming (for example, "Fit to screen"). Contains array of [min, max] values.
         
         If the minimum (the first value) is specified as `null`, the chart will not enforce it, instead it will be adjusted as needed
@@ -4374,6 +4397,8 @@ declare module ZoomCharts.Configuration {
         angle?: number;
         /** Minimal connector length from slice to label. */
         connectorLength?: number;
+        /** Connector line type. */
+        connectorType?: "curved" | "straight" | "angled";
         /** Whether to show connector lines for labels. */
         connectors?: boolean;
         /** Show/hide labels. */
@@ -5056,6 +5081,8 @@ declare module ZoomCharts.Configuration {
         m?: string;
         /** Milliseconds */
         ms?: string;
+        /** Quarters */
+        q?: string;
         s?: string;
         w?: string;
         y?: string;
@@ -5184,6 +5211,12 @@ declare module ZoomCharts.Configuration {
         showHolidays?: boolean;
         /** Time axis style */
         style?: {
+            /** If true, will attempt to wrap minor labels in if they don't fit
+            before omitting them outright. Note that minor labels will still
+            not be drawn if they overlap after wrapping, even if the overlap
+            is with the major label. This mostly applies to in case of
+            ranged minor time units. */
+            allowMinorLabelWrapping?: boolean;
             /** Style used to highlight weekends.
             
             Note that this is drawn on top of the series so semi-transparent fill styles should be used. */
@@ -5211,6 +5244,11 @@ declare module ZoomCharts.Configuration {
             minorTimeLabel?: BaseSettingsTextStyle;
             /** Minor time ruler style. */
             minorTimeRuler?: BaseSettingsLineStyle;
+            /** Which time units will display in a range on the minor axis. For
+            example, if "3 M" is in the array, then it will cause any
+            instance of 3 months to display as a range like "Jan-Mar" on the
+            minor time axis. */
+            rangedMinorTimeUnits?: Array<string>;
             /** Whether to show balloons around major time labels. */
             showMajorTimeBalloons?: boolean;
             /** Whether to display minor time labels as balloons instead of ruler style. */

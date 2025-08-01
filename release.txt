@@ -3,9 +3,32 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.6
+Version 1.21.7
 
 ====== Changelog ===========================
+
+Version 1.21.7 (2025-08-01)
+
+NetChart:
+* Add autoZoomExcessivePaddingTolerance setting to control zoom behavior. This new parameter allows for finer control over how much nodes can move inwards before triggering an auto zoom update.
+* Add autoZoomCenterOffsetTolerance setting to control node movement before auto zoom updates
+* Fix node item labels not being correctly accounted for in auto zoom.
+
+PieChart:
+* Add new connector system with multiple connector types (curved, straight, angled)
+* Add connectorType setting to control connector line style
+* Refactor connector rendering for better maintainability and extensibility
+
+TimeChart:
+* Add getNumAggregatedVisibleColumns() API method to get the number of visible
+columns
+* Add ranged minor units on time axis
+* Add ability to wrap minor units on time axis to avoid overlap
+* Add quarter unit formatting
+* Improve performance of visible column calculation with caching
+* Fix display period dropdown height limit when chart is scaled and limitDropdownHeight is enabled.
+
+--------------------------------------------
 
 Version 1.21.6 (2025-07-08)
 

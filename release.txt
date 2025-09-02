@@ -3,9 +3,24 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.7
+Version 1.21.8
 
 ====== Changelog ===========================
+
+Version 1.21.8 (2025-09-02)
+
+PieChart:
+* Add support for multiple simultaneous label styles with the useMultiLabelStyles setting
+* Change angled connector mode to move more simply and directly
+* Rename old angled connector type to "constrained"
+* Add setting to increase the x offset of labels from the pie.
+* Add center circle feature
+* Fix labels swapping order when resizing
+
+FacetChart/TimeChart:
+* Fix subpixel gaps between stacked columns
+
+--------------------------------------------
 
 Version 1.21.7 (2025-08-01)
 

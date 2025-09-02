@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.7 */
+/** TypeScript definition file for ZoomCharts 1.21.8 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -172,6 +172,23 @@ declare module ZoomCharts.Configuration {
         /** Re-evaluate style for all objects on next paint. */
         public updateStyle(): void;
     }
+    export interface BaseBarnesHutElement {
+        defaultMass: number;
+        mass: number;
+        x: number;
+        y: number;
+    }
+    export interface BaseIAABB {
+        getBHTreeMass?: () => number;
+        hHeight: number;
+        hWidth: number;
+        maxX: number;
+        maxY: number;
+        minX: number;
+        minY: number;
+        x: number;
+        y: number;
+    }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface BaseChartErrorEventArguments extends BaseChartEventArguments {
         /** Any additional arguments that were passed to the error handler. */
@@ -235,16 +252,86 @@ declare module ZoomCharts.Configuration {
         aligned in the top-left corner. */
         width?: number;
     }
+    export interface BaseLabelFitInRectResult {
+        prop: number;
+        singleLineHHeight: number;
+    }
+    export interface BaseLabelLine {
+        font: string;
+        row: number;
+        text: string;
+        width: number;
+    }
+    export interface BaseLabelLocationDelegate {
+    }
+    export interface BaseLabelLocationDelegate2 {
+    }
+    export interface BaseLabelTagParserResult {
+        breaks: Array<number>;
+        maxLines: number;
+        sourceFont: string;
+        sourceText: string;
+        words: Array<BaseLabelWord>;
+    }
+    export interface BaseLabelWord {
+        font: string;
+        spaceWidth: number;
+        width: number;
+        word: string;
+    }
     export interface BaseSettingsClassMap {
     }
     export interface BaseLabel {
+        fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         hheight: number;
         hwidth: number;
+        isMultiline(): boolean;
+        paint(labelRenderer: BaseLabelRenderer, g: CanvasRenderingContext2D, x: number, y: number, scale: number): void;
+        setAlign(align: "center" | "right" | "left"): void;
         /** The style settings used to render this label. */
         style: BaseSettingsLabelStyle;
         /** The text the label renders. This property overrides the text specified in the style settings. */
         text: string;
         visible: boolean;
+    }
+    export interface BaseLabelLayoutBase {
+        /** Add rows, recalculate offsets, add ellipsis if necessary */
+        addLine(g: CanvasRenderingContext2D, label: BaseLabel, line: string, row: number, addEllipsis: boolean): void;
+        /** places label */
+        fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
+        /** places label
+        locationFromHeight(halfHeight) -> [centerX, centerY, directionX, directionY, width] */
+        fitLabelInRect(g: CanvasRenderingContext2D, label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
+        fitLabelInRectWithDetails(g: CanvasRenderingContext2D, label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean, forceAlign?: "center" | "right" | "left", preserveLeadingWhitespace?: boolean): BaseLabelFitInRectResult;
+        getAvailableWidth(label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate): number;
+        /** Format full or partial multi line label text based on available space. It will add
+        elipsis to any row if it does not fit in available space. */
+        getFormatedText(g: CanvasRenderingContext2D, label: BaseLabel, availableWidth: number, availableHeight: number, locationFromHeight: BaseLabelLocationDelegate2, defaultLabelText: string): void;
+        /** Binary split words and measure whether it exceeds available width. */
+        getIncludingPart(g: CanvasRenderingContext2D, textStyle: BaseSettingsTextStyle, t: string, subText: string, availableWidth: number, subWidth: number): string;
+        splitWordsToLines(words: Array<BaseLabelWord>, breaks: Array<number>, lineCount: number, availableWidthFunc: (lineNo: number) => number): {
+                prop: number;
+                actualWidthForLines: Array<number>;
+                positions: Array<number>;
+            };
+        stringsByFont(words: Array<BaseLabelWord>, bestLineBreaks: Array<number>): {
+                subLines: Array<BaseLabelLine>;
+                rowWidths: Array<number>;
+            };
+        styleTagParser(g: CanvasRenderingContext2D, label: BaseLabel, preserveLeadingWhitespace?: boolean): BaseLabelTagParserResult;
+        styleTagParser2(g: CanvasRenderingContext2D, text: string, textStyle: BaseSettingsTextStyle, preserveLeadingWhitespace?: boolean): BaseLabelTagParserResult;
+        /** Calculates the total padding of the given label that includes the border width. */
+        totalPadding(style: BaseSettingsLabelStyle): number;
+    }
+    export interface BaseLabelRenderer {
+        /** If set to `false`, label cache will not be used even if it is enabled in the settings. */
+        allowCache: boolean;
+        calcLabelBounds(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel): void;
+        finishFrame(): void;
+        measure(g: CanvasRenderingContext2D, item: BaseLabel): void;
+        paint(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel): void;
+        paintIfNonOverlapping(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel, labelQuadTree: BaseQuadTree): boolean;
+        startFrame(width: number, height: number, scaleX: number, scaleY: number): void;
     }
     /** Represents a single pointer. On multitouch, separate event for each pointer will be fired. */
     export interface BaseMouseEvent {
@@ -302,6 +389,31 @@ declare module ZoomCharts.Configuration {
     export interface BaseProfiler {
         hasPendingRequests(): boolean;
         measureFps(measureFpsIters: number, measureFpsCallback: (fps: number, iterations: number, time: number) => void): boolean;
+    }
+    export interface BaseQuadTree {
+        add(obj: BaseIAABB): void;
+        addValidAABB(obj: BaseIAABB): void;
+        barnesHutVisit(fn: (data: BaseBarnesHutElement, x: number, y: number, mass: number) => void, data: BaseBarnesHutElement, thetaSq: number): void;
+        canMove(obj: BaseIAABB, xDiff: number, yDiff: number): boolean;
+        centerPos(): BaseQuadTreeCenterPos;
+        clear(): void;
+        getMinimumBoundingAABB(filterFunc?: (x: BaseIAABB) => boolean): BaseIAABB;
+        isDirty: boolean;
+        isSoftDirty: boolean;
+        queryApproximateRange(result: Array<Array<BaseIAABB>>, range: BaseIAABB): number;
+        queryRange(result: Array<BaseIAABB>, range: BaseIAABB, minObjectArea: number, minObjectDiagonalSq: number): Array<BaseIAABB>;
+        remove(obj: BaseIAABB): boolean;
+        resetCachedTotalMass(): void;
+        resetDirtyFlag(): void;
+        resetSoftDirtyFlag(): void;
+        setDirtyFlag(): void;
+    }
+    export interface BaseQuadTreeCenterPos {
+        rawX: number;
+        rawY: number;
+        weight: number;
+        x: number;
+        y: number;
     }
     export interface BaseSettings {
         advanced?: BaseSettingsAdvanced;
@@ -3085,6 +3197,8 @@ declare module ZoomCharts.Configuration {
         radius?: [number, number, number, number];
         /** Shadow blur effect range. */
         shadowBlur?: number;
+        /** Advanced setting: How much extra height to add to the column to ensure it is drawn at the correct subpixel boundary. */
+        subpixelHeightOffset?: number;
         /** What factor to scale the column widths by, between 0.0 and 1.0.
         
         If set to 0, the columns will be drawn as lines instead of columns. */
@@ -4149,6 +4263,7 @@ declare module ZoomCharts.Configuration {
             backgroundHoveredStyle?: PieChartSettingsPieStyle;
             /** Pie background style. */
             backgroundStyle?: PieChartSettingsPieStyle;
+            centerCircle?: PieChartSettingsPieCenterCircle;
             /** Pie center margin. */
             centerMargin?: number;
             /** Pie depth - used for raised theme. */
@@ -4398,7 +4513,7 @@ declare module ZoomCharts.Configuration {
         /** Minimal connector length from slice to label. */
         connectorLength?: number;
         /** Connector line type. */
-        connectorType?: "curved" | "straight" | "angled";
+        connectorType?: "curved" | "straight" | "angled" | "constrained";
         /** Whether to show connector lines for labels. */
         connectors?: boolean;
         /** Show/hide labels. */
@@ -4416,6 +4531,10 @@ declare module ZoomCharts.Configuration {
         labelAppendFunction?: (outerText: string, innerText: string, isRightSide: boolean) => string;
         /** Outside labels placement method. */
         placement?: "aligned" | "wrap";
+        /** Whether to use multiple label styles for the same slice. */
+        useMultiLabelStyles?: boolean;
+        /** Additional x offset from desired label position */
+        xOffset?: number;
     }
     export interface PieChartSettingsLegend extends BaseSettingsLegend {
         /** Visual element of legend entry with appropriate style to a slice color it corresponds. 
@@ -4431,6 +4550,12 @@ declare module ZoomCharts.Configuration {
     export interface PieChartSettingsLocalization extends BaseSettingsLocalization {
         othersLabel?: string;
         previousLabel?: string;
+    }
+    export interface PieChartSettingsPieCenterCircle {
+        align?: "center" | "top" | "bottom";
+        fillColor?: string;
+        labels?: Array<BaseSettingsLabelStyle>;
+        padding?: number;
     }
     export interface PieChartSettingsPieMarker extends BaseSettingsBackgroundStyle {
         arrowSize?: number;
@@ -4463,6 +4588,8 @@ declare module ZoomCharts.Configuration {
         brightness?: number;
         /** Distance how far the slice is moved away from pie. */
         cutoutDistance?: number;
+        /** Gets or sets the style of the label shown for the name from the data when labels.useMultiLabelStyles is true. Use `dataNameLabel.text` to specify the text that will be displayed. */
+        dataNameLabel?: BaseSettingsLabelStyle;
         /** Specifies if the slice is expandable. */
         expandable?: boolean;
         /** Slice fill color. */
@@ -4484,6 +4611,8 @@ declare module ZoomCharts.Configuration {
         lineDash?: Array<number>;
         /** Width of the slice outline. */
         lineWidth?: number;
+        /** Gets or sets the style of the label shown for the percent from the data when labels.useMultiLabelStyles is true. Use `percentLabel.text` to specify the text that will be displayed. */
+        percentLabel?: BaseSettingsLabelStyle;
         /** Specifies markers positioned relative to the pie */
         pieMarkers?: Array<PieChartSettingsPieMarker>;
         /** Specifies markers positioned relative to the slice */
@@ -4496,6 +4625,7 @@ declare module ZoomCharts.Configuration {
         brightness: number;
         cutoutDistance: number;
         data: PieChartDataObject;
+        dataNameLabel: BaseSettingsLabelStyle;
         /** Whether to expand the slice as a default click behavior. */
         expandable: boolean;
         fillColor: string;
@@ -4535,6 +4665,7 @@ declare module ZoomCharts.Configuration {
         
         Note that value is already multiplied by 100, so if there are two equal slices, both would have the value of `50`, instead of `0.5`. */
         percent: number;
+        percentLabel: BaseSettingsLabelStyle;
         pie: PieChartPie;
         removed: boolean;
         /** Swipe distance towards the center of the pie */

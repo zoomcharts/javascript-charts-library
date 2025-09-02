@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.7 */
+/** TypeScript definition file for ZoomCharts 1.21.8 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -166,6 +166,23 @@ declare module ZoomCharts.Configuration {
         /** Re-evaluate style for all objects on next paint. */
         public updateStyle(): void;
     }
+    export interface BaseBarnesHutElement {
+        defaultMass: number;
+        mass: number;
+        x: number;
+        y: number;
+    }
+    export interface BaseIAABB {
+        getBHTreeMass?: () => number;
+        hHeight: number;
+        hWidth: number;
+        maxX: number;
+        maxY: number;
+        minX: number;
+        minY: number;
+        x: number;
+        y: number;
+    }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface BaseChartErrorEventArguments extends BaseChartEventArguments {
         /** Any additional arguments that were passed to the error handler. */
@@ -224,14 +241,84 @@ declare module ZoomCharts.Configuration {
         aligned in the top-left corner. */
         width?: number;
     }
+    export interface BaseLabelFitInRectResult {
+        prop: number;
+        singleLineHHeight: number;
+    }
+    export interface BaseLabelLine {
+        font: string;
+        row: number;
+        text: string;
+        width: number;
+    }
+    export interface BaseLabelLocationDelegate {
+    }
+    export interface BaseLabelLocationDelegate2 {
+    }
+    export interface BaseLabelTagParserResult {
+        breaks: Array<number>;
+        maxLines: number;
+        sourceFont: string;
+        sourceText: string;
+        words: Array<BaseLabelWord>;
+    }
+    export interface BaseLabelWord {
+        font: string;
+        spaceWidth: number;
+        width: number;
+        word: string;
+    }
     export interface BaseLabel {
+        fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         hheight: number;
         hwidth: number;
+        isMultiline(): boolean;
+        paint(labelRenderer: BaseLabelRenderer, g: CanvasRenderingContext2D, x: number, y: number, scale: number): void;
+        setAlign(align: "center" | "right" | "left"): void;
         /** The style settings used to render this label. */
         style: BaseSettingsLabelStyle;
         /** The text the label renders. This property overrides the text specified in the style settings. */
         text: string;
         visible: boolean;
+    }
+    export interface BaseLabelLayoutBase {
+        /** Add rows, recalculate offsets, add ellipsis if necessary */
+        addLine(g: CanvasRenderingContext2D, label: BaseLabel, line: string, row: number, addEllipsis: boolean): void;
+        /** places label */
+        fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
+        /** places label
+        locationFromHeight(halfHeight) -> [centerX, centerY, directionX, directionY, width] */
+        fitLabelInRect(g: CanvasRenderingContext2D, label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
+        fitLabelInRectWithDetails(g: CanvasRenderingContext2D, label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean, forceAlign?: "center" | "right" | "left", preserveLeadingWhitespace?: boolean): BaseLabelFitInRectResult;
+        getAvailableWidth(label: BaseLabel, locationFromHeight: BaseLabelLocationDelegate): number;
+        /** Format full or partial multi line label text based on available space. It will add
+        elipsis to any row if it does not fit in available space. */
+        getFormatedText(g: CanvasRenderingContext2D, label: BaseLabel, availableWidth: number, availableHeight: number, locationFromHeight: BaseLabelLocationDelegate2, defaultLabelText: string): void;
+        /** Binary split words and measure whether it exceeds available width. */
+        getIncludingPart(g: CanvasRenderingContext2D, textStyle: BaseSettingsTextStyle, t: string, subText: string, availableWidth: number, subWidth: number): string;
+        splitWordsToLines(words: Array<BaseLabelWord>, breaks: Array<number>, lineCount: number, availableWidthFunc: (lineNo: number) => number): {
+                prop: number;
+                actualWidthForLines: Array<number>;
+                positions: Array<number>;
+            };
+        stringsByFont(words: Array<BaseLabelWord>, bestLineBreaks: Array<number>): {
+                subLines: Array<BaseLabelLine>;
+                rowWidths: Array<number>;
+            };
+        styleTagParser(g: CanvasRenderingContext2D, label: BaseLabel, preserveLeadingWhitespace?: boolean): BaseLabelTagParserResult;
+        styleTagParser2(g: CanvasRenderingContext2D, text: string, textStyle: BaseSettingsTextStyle, preserveLeadingWhitespace?: boolean): BaseLabelTagParserResult;
+        /** Calculates the total padding of the given label that includes the border width. */
+        totalPadding(style: BaseSettingsLabelStyle): number;
+    }
+    export interface BaseLabelRenderer {
+        /** If set to `false`, label cache will not be used even if it is enabled in the settings. */
+        allowCache: boolean;
+        calcLabelBounds(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel): void;
+        finishFrame(): void;
+        measure(g: CanvasRenderingContext2D, item: BaseLabel): void;
+        paint(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel): void;
+        paintIfNonOverlapping(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel, labelQuadTree: BaseQuadTree): boolean;
+        startFrame(width: number, height: number, scaleX: number, scaleY: number): void;
     }
     /** Represents a single pointer. On multitouch, separate event for each pointer will be fired. */
     export interface BaseMouseEvent {
@@ -289,6 +376,31 @@ declare module ZoomCharts.Configuration {
     export interface BaseProfiler {
         hasPendingRequests(): boolean;
         measureFps(measureFpsIters: number, measureFpsCallback: (fps: number, iterations: number, time: number) => void): boolean;
+    }
+    export interface BaseQuadTree {
+        add(obj: BaseIAABB): void;
+        addValidAABB(obj: BaseIAABB): void;
+        barnesHutVisit(fn: (data: BaseBarnesHutElement, x: number, y: number, mass: number) => void, data: BaseBarnesHutElement, thetaSq: number): void;
+        canMove(obj: BaseIAABB, xDiff: number, yDiff: number): boolean;
+        centerPos(): BaseQuadTreeCenterPos;
+        clear(): void;
+        getMinimumBoundingAABB(filterFunc?: (x: BaseIAABB) => boolean): BaseIAABB;
+        isDirty: boolean;
+        isSoftDirty: boolean;
+        queryApproximateRange(result: Array<Array<BaseIAABB>>, range: BaseIAABB): number;
+        queryRange(result: Array<BaseIAABB>, range: BaseIAABB, minObjectArea: number, minObjectDiagonalSq: number): Array<BaseIAABB>;
+        remove(obj: BaseIAABB): boolean;
+        resetCachedTotalMass(): void;
+        resetDirtyFlag(): void;
+        resetSoftDirtyFlag(): void;
+        setDirtyFlag(): void;
+    }
+    export interface BaseQuadTreeCenterPos {
+        rawX: number;
+        rawY: number;
+        weight: number;
+        x: number;
+        y: number;
     }
     export interface BaseSettings {
         advanced?: BaseSettingsAdvanced;

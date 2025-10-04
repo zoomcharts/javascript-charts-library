@@ -3,9 +3,31 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.8
+Version 1.21.9
 
 ====== Changelog ===========================
+
+Version 1.21.9 (2025-10-04)
+
+All Charts:
+* Fix missing final line in some mixed font labels.
+* Fix click event handling for ctrl+shift+click actions.
+
+NetChart:
+* Add new recttext display mode for rectangular text nodes.
+* Fix dragging nodes in rotated hierarchy layout with centerNodes enabled
+
+PieChart:
+* Add angledConnectorBend setting to control where the bend occurs in angled connectors
+* Improve angled connector algorithm for more natural and configurable label connections
+* Remove xOffset setting (replaced by angledConnectorBend for better control)
+* Add strictAngled connector type for connectors that always move directly away
+from the pie but are less configurable.
+* Add support for styling the spacing independently of any other parts of the label in multi label style mode.
+* Add support for center circle behavior when startAngle and endAngle are less than a full circle
+* Fix hitbox for back button when startAngle and endAngle are less than a full circle
+
+--------------------------------------------
 
 Version 1.21.8 (2025-09-02)
 

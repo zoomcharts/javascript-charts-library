@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.8 */
+/** TypeScript definition file for ZoomCharts 1.21.9 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1769,7 +1769,7 @@ declare module ZoomCharts.Configuration {
         cursor?: string;
         /** Custom shape settings supplied, if display == "customShape" */
         customShape?: ItemsChartSettingsCustomShape;
-        /** Valid values: circle (default), text, roundtext, droplet, rectangle, rhombus, diamond, customShape */
+        /** Valid values: circle (default), text, rectText, roundtext, droplet, rectangle, rhombus, diamond, customShape */
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;

@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.9 */
+/** TypeScript definition file for ZoomCharts 1.21.10 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -241,6 +241,10 @@ declare module ZoomCharts.Configuration {
         aligned in the top-left corner. */
         width?: number;
     }
+    export interface BaseLabelApplyEllipsisToRowsResult {
+        hasEllipsis: boolean;
+        hasText: boolean;
+    }
     export interface BaseLabelFitInRectResult {
         prop: number;
         singleLineHHeight: number;
@@ -268,7 +272,23 @@ declare module ZoomCharts.Configuration {
         width: number;
         word: string;
     }
+    export interface BaseLayoutableLabel {
+        applyEllipsis: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number) => void;
+        fitInRect: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition: boolean) => number;
+        hheight: number;
+        hwidth: number;
+        isMultiline: () => boolean;
+        originX: number;
+        paint: (labelRenderer: BaseLabelRenderer, g: CanvasRenderingContext2D, x: number, y: number, scale: number) => void;
+        prop: number;
+        setAlign: (align: "center" | "right" | "left") => void;
+        userPlaced: boolean;
+        visible: boolean;
+        x: number;
+        y: number;
+    }
     export interface BaseLabel {
+        applyEllipsis(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number): void;
         fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         hheight: number;
         hwidth: number;
@@ -284,6 +304,11 @@ declare module ZoomCharts.Configuration {
     export interface BaseLabelLayoutBase {
         /** Add rows, recalculate offsets, add ellipsis if necessary */
         addLine(g: CanvasRenderingContext2D, label: BaseLabel, line: string, row: number, addEllipsis: boolean): void;
+        /** Adjusts label position to ensure it stays within screen boundaries after ellipsis is applied. */
+        adjustLabelPositionForBounds(label: BaseLayoutableLabel, left: number, right: number): void;
+        /** Apply ellipsis to label rows that exceed the specified maxWidth.
+        This method modifies the label's rows in-place to truncate text with ellipsis. */
+        applyEllipsisToRows(g: CanvasRenderingContext2D, label: BaseLabel, maxWidth: number): BaseLabelApplyEllipsisToRowsResult;
         /** places label */
         fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
         /** places label

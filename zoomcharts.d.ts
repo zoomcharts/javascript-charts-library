@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.9 */
+/** TypeScript definition file for ZoomCharts 1.21.10 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -252,6 +252,10 @@ declare module ZoomCharts.Configuration {
         aligned in the top-left corner. */
         width?: number;
     }
+    export interface BaseLabelApplyEllipsisToRowsResult {
+        hasEllipsis: boolean;
+        hasText: boolean;
+    }
     export interface BaseLabelFitInRectResult {
         prop: number;
         singleLineHHeight: number;
@@ -279,9 +283,25 @@ declare module ZoomCharts.Configuration {
         width: number;
         word: string;
     }
+    export interface BaseLayoutableLabel {
+        applyEllipsis: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number) => void;
+        fitInRect: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition: boolean) => number;
+        hheight: number;
+        hwidth: number;
+        isMultiline: () => boolean;
+        originX: number;
+        paint: (labelRenderer: BaseLabelRenderer, g: CanvasRenderingContext2D, x: number, y: number, scale: number) => void;
+        prop: number;
+        setAlign: (align: "center" | "right" | "left") => void;
+        userPlaced: boolean;
+        visible: boolean;
+        x: number;
+        y: number;
+    }
     export interface BaseSettingsClassMap {
     }
     export interface BaseLabel {
+        applyEllipsis(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number): void;
         fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         hheight: number;
         hwidth: number;
@@ -297,6 +317,11 @@ declare module ZoomCharts.Configuration {
     export interface BaseLabelLayoutBase {
         /** Add rows, recalculate offsets, add ellipsis if necessary */
         addLine(g: CanvasRenderingContext2D, label: BaseLabel, line: string, row: number, addEllipsis: boolean): void;
+        /** Adjusts label position to ensure it stays within screen boundaries after ellipsis is applied. */
+        adjustLabelPositionForBounds(label: BaseLayoutableLabel, left: number, right: number): void;
+        /** Apply ellipsis to label rows that exceed the specified maxWidth.
+        This method modifies the label's rows in-place to truncate text with ellipsis. */
+        applyEllipsisToRows(g: CanvasRenderingContext2D, label: BaseLabel, maxWidth: number): BaseLabelApplyEllipsisToRowsResult;
         /** places label */
         fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
         /** places label
@@ -3104,6 +3129,9 @@ declare module ZoomCharts.Configuration {
         was hovered or clicked. This value is copied by reference. */
         extra?: any;
         id?: string;
+        /** Whether this series should be included when calculating the stacked value.
+        When set to false, this series' values will not be included in the sum displayed by total value labels. */
+        includeInStackedValue?: boolean;
         /** Disables series rendering, but otherwise process it as normal.
         Useful if the series still needs to influence e.g. the value axis
         size, or be present in the legend or tooltip. */
@@ -4514,6 +4542,10 @@ declare module ZoomCharts.Configuration {
     export interface PieChartSettingsLabelGroupLabelStyle extends BaseSettingsLabelStyle {
         multiLabelOrder?: number;
     }
+    export interface PieChartSettingsLabelGroupStyle {
+        margin?: number;
+        padding?: number;
+    }
     export interface PieChartSettingsLabels {
         /** Label rotation angle. */
         angle?: number;
@@ -4541,7 +4573,7 @@ declare module ZoomCharts.Configuration {
         /** Maximum width of the multi label, with null or undefined for no limit. */
         maxMultiLabelWidth?: number;
         /** Outside labels placement method. */
-        placement?: "aligned" | "wrap";
+        placement?: "aligned" | "forceAligned" | "wrap";
         /** Whether to use multiple label styles for the same slice. */
         useMultiLabelStyles?: boolean;
     }
@@ -4613,6 +4645,8 @@ declare module ZoomCharts.Configuration {
         insideLabel?: PieChartSettingsLabelGroupLabelStyle;
         /** Gets or sets the style of the external label. Use `label.text` to specify the text that will be displayed. */
         label?: PieChartSettingsLabelGroupLabelStyle;
+        /** Styling specific to the label group overall */
+        labelGroupStyle?: PieChartSettingsLabelGroupStyle;
         /** Brightness applied to slice line color */
         lineBrightness?: number;
         /** Outline color. */
@@ -4663,6 +4697,7 @@ declare module ZoomCharts.Configuration {
         insideLabelStyle: BaseSettingsLabelStyle;
         /** Gets or sets the style of the external label. Use `label.text` to specify the text that will be displayed. */
         label: PieChartSettingsLabelGroupLabelStyle;
+        labelGroupStyle: PieChartSettingsLabelGroupStyle;
         /** 
         @deprecated use `label` instead. */
         labelStyle: BaseSettingsLabelStyle;

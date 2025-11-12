@@ -3,9 +3,32 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.9
+Version 1.21.10
 
 ====== Changelog ===========================
+
+Version 1.21.10 (2025-11-12)
+
+PieChart:
+* Labels will be truncated rather than going out of bounds if the pie is too big
+* Multistyle labels respect label lineSpacing setting
+* Multistyle labels respect newline characters at the beginning and end of individual labels
+* Multistyle labels support borderRadius and padding settings
+* Add margin/padding settings for label groups overall
+* Add forceAligned label wrap mode to prevent labels from being wrapped even if not enough space is present.
+
+NetChart:
+* Change dragging nodes in hierarchy layout with centerNodes so locked nodes will not cause other nodes to re-center in response to the new positions.
+* Fix node item positioning with text nodes
+* Fix orthogonal link end positions
+
+FacetChart/TimeChart:
+* Add ability to exclude series from total label value calculations
+
+TimeChart:
+* Time axis labels will respect alignment even when there isn't enough space
+
+--------------------------------------------
 
 Version 1.21.9 (2025-10-04)
 

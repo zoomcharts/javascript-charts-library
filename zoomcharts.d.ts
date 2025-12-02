@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.10 */
+/** TypeScript definition file for ZoomCharts 1.21.11 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -3291,6 +3291,8 @@ declare module ZoomCharts.Configuration {
         degenerateLineColumnWidthScale?: number;
         /** What to do if a line only has a single point. */
         degenerateLinePolicy?: "point" | "zero" | "column";
+        /** If drawing stepped lines, whether they should be disconnected */
+        disconnectedSteps?: boolean;
         /** Marker highlight data points on line. They can be in different sizes, shapes and colors. */
         marker?: LinearChartSettingsSeriesStyleMarker;
         /** Enables customizing the marker for each particular data point. The function receives an array of all horizontal indices that are being painted and
@@ -3307,6 +3309,8 @@ declare module ZoomCharts.Configuration {
         shadowBlur?: number;
         /** Whether to draw smoothed line. */
         smoothing?: boolean;
+        /** Controls how much of the width the steps take up, between 0.0 and 1.0. Using smaller scales creates angled edges between steps. Using 0.0 creates the same basic effect as non-step mode */
+        stepScale?: number;
         /** Whether to draw the line using horizontal segments instead of oblique. */
         steps?: boolean;
     }
@@ -5375,7 +5379,7 @@ declare module ZoomCharts.Configuration {
         Note that this value applies to the whole cluster and not a single series. That is, if you have two columns for each timestamp side by side, both of them
         have to fit within this limit. */
         maxUnitWidth?: number;
-        /** Minimum width of a single time axis display unit, in px. If the width is smaller than this, the cgart will switch to bigger time units
+        /** Minimum width of a single time axis display unit, in px. If the width is smaller than this, the chart will switch to bigger time units
         (e.g. from minutes to hours).
         
         Note that this value applies to the whole cluster and not a single series. That is, if you have two columns for each timestamp side by side, each of them

@@ -3,9 +3,26 @@ ZoomCharts javascript library.
 Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.10
+Version 1.21.11
 
 ====== Changelog ===========================
+
+Version 1.21.11 (2025-12-01)
+
+PieChart:
+* Allow individual multilabel padding even without a background color
+* Fix misaligned multilabels
+
+FacetChart/TimeChart:
+* Support disconnectedSteps for line series types
+* Support stepScale for stepped line series
+
+NetChart:
+* Fix link decorations intersecting with rhombus node outlines
+* Fix link decorations intersecting with diamond node outlines
+* Fix link decorations intersecting with rectangle node outlines with a non-1 aspect ratio
+
+--------------------------------------------
 
 Version 1.21.10 (2025-11-12)
 

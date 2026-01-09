@@ -1,3 +1,3 @@
-Version: 1.21.11
-Time: 2025-12-02T01:16:32.225Z
-GIT Revision: a87de83acc74a1172ffdab55e3c7b62f96733425
+Version: 1.21.12
+Time: 2026-01-09T21:16:16.810Z
+GIT Revision: 35ebd62ca654665a8bb0e1b82c2c0b4ba7a7095a

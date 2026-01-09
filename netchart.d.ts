@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.11 */
+/** TypeScript definition file for ZoomCharts 1.21.12 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -436,6 +436,8 @@ declare module ZoomCharts.Configuration {
         Note that the library will try to determine its location automatically by searching the included script tags.
         So this property can be skipped if the assets folder is located next to 'zoomcharts.js' file on the server. */
         assetsUrlBase?: string;
+        /** Breadcrumb navigation display settings. */
+        breadcrumb?: BaseSettingsBreadcrumb;
         callbacks?: BaseSettingsCallbacks;
         /** Element of the page where the chart will be inserted. Any HTML element should work, for example you can use a `<div>`. 
         
@@ -665,6 +667,27 @@ declare module ZoomCharts.Configuration {
         shadowOffsetX?: number;
         shadowOffsetY?: number;
     }
+    export interface BaseSettingsBreadcrumb {
+        /** Breadcrumb alignment. */
+        align?: "left" | "right" | "center";
+        /** Background color for the breadcrumb */
+        backgroundColor?: string;
+        /** CSS class name for the breadcrumb HTML panel. */
+        cssClass?: string;
+        /** Show/hide breadcrumb. */
+        enabled?: boolean;
+        /** Font specification for the breadcrumb text. Can include size and family (e.g., "12px Arial, sans-serif") or just family (e.g., "Arial, sans-serif").
+        If size is not specified, defaults to 12px. Allows customization of the font while preserving other font adjustments (e.g., bolding). */
+        font?: string;
+        /** Margin around the breadcrumb */
+        margin?: number;
+        /** Padding inside the breadcrumb */
+        padding?: number;
+        /** Breadcrumb placement side. */
+        side?: "top" | "bottom" | "left" | "right";
+        /** Text color for the breadcrumb */
+        textColor?: string;
+    }
     export interface BaseSettingsCallbacks {
         renderFailed?: (err: any) => void;
         renderFinish?: () => void;
@@ -795,7 +818,7 @@ declare module ZoomCharts.Configuration {
         Note that the full screen button used as a main alternative to get a full screen by one click. */
         resizing?: BaseSettingsResizer;
     }
-    export interface BaseSettingsLabelStyle {
+    export interface BaseSettingsLabelBaseStyle {
         /** Text alignment. */
         align?: "center" | "right" | "left";
         /** The angle at which the label are rotated */
@@ -826,6 +849,8 @@ declare module ZoomCharts.Configuration {
         padding?: number;
         /** Label text. */
         text?: string;
+    }
+    export interface BaseSettingsLabelStyle extends BaseSettingsLabelBaseStyle {
         /** Text style including fill color and font. */
         textStyle?: BaseSettingsTextStyle;
     }
@@ -1644,6 +1669,8 @@ declare module ZoomCharts.Configuration {
         lineDash?: Array<number>;
         lineDashBackgroundFillColor?: string;
         lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
+        /** What mode of orthogonal link drawing is used. */
+        orthogonalMode?: "floating" | "fixed" | "fixedHorizontal" | "fixedVertical";
         /** Where along the link should an orthogonal link split to the other
         link between 0.0 and 1.0 for the start and end respectively. Note it must not be
         exactly 0.0 or 1.0. */

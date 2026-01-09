@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.11 */
+/** TypeScript definition file for ZoomCharts 1.21.12 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -449,6 +449,8 @@ declare module ZoomCharts.Configuration {
         Note that the library will try to determine its location automatically by searching the included script tags.
         So this property can be skipped if the assets folder is located next to 'zoomcharts.js' file on the server. */
         assetsUrlBase?: string;
+        /** Breadcrumb navigation display settings. */
+        breadcrumb?: BaseSettingsBreadcrumb;
         callbacks?: BaseSettingsCallbacks;
         /** Element of the page where the chart will be inserted. Any HTML element should work, for example you can use a `<div>`. 
         
@@ -678,6 +680,27 @@ declare module ZoomCharts.Configuration {
         shadowOffsetX?: number;
         shadowOffsetY?: number;
     }
+    export interface BaseSettingsBreadcrumb {
+        /** Breadcrumb alignment. */
+        align?: "left" | "right" | "center";
+        /** Background color for the breadcrumb */
+        backgroundColor?: string;
+        /** CSS class name for the breadcrumb HTML panel. */
+        cssClass?: string;
+        /** Show/hide breadcrumb. */
+        enabled?: boolean;
+        /** Font specification for the breadcrumb text. Can include size and family (e.g., "12px Arial, sans-serif") or just family (e.g., "Arial, sans-serif").
+        If size is not specified, defaults to 12px. Allows customization of the font while preserving other font adjustments (e.g., bolding). */
+        font?: string;
+        /** Margin around the breadcrumb */
+        margin?: number;
+        /** Padding inside the breadcrumb */
+        padding?: number;
+        /** Breadcrumb placement side. */
+        side?: "top" | "bottom" | "left" | "right";
+        /** Text color for the breadcrumb */
+        textColor?: string;
+    }
     export interface BaseSettingsCallbacks {
         renderFailed?: (err: any) => void;
         renderFinish?: () => void;
@@ -808,7 +831,7 @@ declare module ZoomCharts.Configuration {
         Note that the full screen button used as a main alternative to get a full screen by one click. */
         resizing?: BaseSettingsResizer;
     }
-    export interface BaseSettingsLabelStyle {
+    export interface BaseSettingsLabelBaseStyle {
         /** Text alignment. */
         align?: "center" | "right" | "left";
         /** The angle at which the label are rotated */
@@ -839,6 +862,8 @@ declare module ZoomCharts.Configuration {
         padding?: number;
         /** Label text. */
         text?: string;
+    }
+    export interface BaseSettingsLabelStyle extends BaseSettingsLabelBaseStyle {
         /** Text style including fill color and font. */
         textStyle?: BaseSettingsTextStyle;
     }
@@ -1021,6 +1046,12 @@ declare module ZoomCharts.Configuration {
         lineDash?: Array<number>;
         /** Specifies the width of the boundary lines. */
         lineWidth?: number;
+    }
+    export interface BaseSettingsThresholdTypeLabelPositioning {
+        labelHorizontalPadding?: number;
+        labelHorizontalPosition?: "center" | "right" | "left";
+        labelVerticalPadding?: number;
+        labelVerticalPosition?: "center" | "above" | "under";
     }
     export interface BaseSettingsTitle {
         /** Advanced settings */
@@ -2544,6 +2575,8 @@ declare module ZoomCharts.Configuration {
         lineDash?: Array<number>;
         lineDashBackgroundFillColor?: string;
         lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
+        /** What mode of orthogonal link drawing is used. */
+        orthogonalMode?: "floating" | "fixed" | "fixedHorizontal" | "fixedVertical";
         /** Where along the link should an orthogonal link split to the other
         link between 0.0 and 1.0 for the start and end respectively. Note it must not be
         exactly 0.0 or 1.0. */
@@ -3265,6 +3298,13 @@ declare module ZoomCharts.Configuration {
         /** If true, zero mode sets every null to zero regardless of data range.
         If false, zero mode only sets nulls within the data range to zero */
         alwaysZeroMode?: boolean;
+        /** The position of the line used to join empty data points. 0 is the
+        vertical position at the previous data point, 1 is the vertical
+        position of the next valid data point. */
+        joinModeOffset?: number;
+        /** The slope of the line used to join empty data points. 1 equals the
+        slope that would directly connect to the next valid data point. */
+        joinModeSlope?: number;
         /** Method used to fill in time intervals that have no data. Used only for line series. */
         noDataPolicy?: "join" | "skip" | "zero";
         /** Controls the percentile level for percentile and threshold
@@ -3309,10 +3349,18 @@ declare module ZoomCharts.Configuration {
         shadowBlur?: number;
         /** Whether to draw smoothed line. */
         smoothing?: boolean;
+        /** When useStyledSteppedLines is true, the style for vertical segments moving downwards */
+        stepDownLineStyle?: LinearChartSettingsStepLineStyle;
+        /** Padding for stepped lines. 0th element - left padding, 1st element - right padding. */
+        stepPadding?: [number, number];
         /** Controls how much of the width the steps take up, between 0.0 and 1.0. Using smaller scales creates angled edges between steps. Using 0.0 creates the same basic effect as non-step mode */
         stepScale?: number;
+        /** When useStyledSteppedLines is true, the style for vertical segments moving upwards */
+        stepUpLineStyle?: LinearChartSettingsStepLineStyle;
         /** Whether to draw the line using horizontal segments instead of oblique. */
         steps?: boolean;
+        /** Whether to use specialized styling for the vertical segments of stepped lines */
+        useStyledSteppedLines?: boolean;
     }
     export interface LinearChartSettingsSeriesStyle {
         depth?: number;
@@ -3426,6 +3474,14 @@ declare module ZoomCharts.Configuration {
         separateNegativeValues?: boolean;
         /** Different representation of stacked series values. */
         type?: "normal" | "proportional" | "based";
+    }
+    export interface LinearChartSettingsStepArrowStyle extends BaseSettingsBackgroundStyle {
+        arrowSize?: number;
+    }
+    export interface LinearChartSettingsStepLineStyle extends BaseSettingsBackgroundStyle, BaseSettingsThresholdTypeLabelPositioning {
+        arrowStyle?: LinearChartSettingsStepArrowStyle;
+        labelStyle?: BaseSettingsLabelStyle;
+        labelValueFunction?: (from: number, to: number) => string;
     }
     export interface LinearChartSettingsTotalValueLabel {
         /** Whether to allow skipping  some labels if there isn't enough space
@@ -4232,6 +4288,8 @@ declare module ZoomCharts.Configuration {
     export interface PieChartSettings extends BaseSettings {
         /** Advanced chart settings. Be advised that they are subject to change, backwards compatibility is not guaranteed. */
         advanced?: PieChartSettingsAdvanced;
+        /** Breadcrumb navigation display settings. */
+        breadcrumb?: BaseSettingsBreadcrumb;
         /** Settings used to load data into chart. Customise preferred data source feeding methods.
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<PieChartSettingsData>;
@@ -4970,6 +5028,8 @@ declare module ZoomCharts.Configuration {
         selection?: TimeChartSettingsAreaStyleSelection;
         /** Time period selection text style. */
         selectionLabel?: BaseSettingsTextStyle;
+        /** Time period selection label style other than the text. */
+        selectionLabelStyle?: BaseSettingsLabelBaseStyle;
     }
     export interface TimeChartSettingsAreaStyleSelection {
         /** Specifies if the selection is drawn behind or above the series themselves. */

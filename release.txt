@@ -1,11 +1,37 @@
 ZoomCharts javascript library.
 
-Copyright 2014-2025, SIA Data Visualization Software Lab. All rights reserved.
+Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.11
+Version 1.21.12
 
 ====== Changelog ===========================
+
+Version 1.21.12 (2026-01-09)
+
+PieChart:
+* Add breadcrumb support
+
+NetChart:
+* Support fixed orthogonal link starting/ending points
+* Ensure node menu always stays on screen if it's smaller than scene width
+* Ensure node menu is positioned correctly if scaled
+* Fix link decorations intersecting with rectangle text nodes
+
+FacetChart/TimeChart:
+* Support disconnectedSteps for line series types
+* Support stepPadding for stepped line series
+* Support custom styles and labels for the vertical connectors in stepped lines
+* Support customizing how noDataPolicy join draws the join line using
+joinModeSlope and joinModeOffset settings.
+
+TimeChart:
+* Allow full label style settings for selection labels
+
+FacetChart:
+* Add breadcrumb support
+
+--------------------------------------------
 
 Version 1.21.11 (2025-12-01)
 

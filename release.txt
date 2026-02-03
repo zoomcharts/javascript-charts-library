@@ -3,9 +3,36 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.12
+Version 1.21.13
 
 ====== Changelog ===========================
+
+Version 1.21.13 (2026-02-03)
+
+PieChart:
+* Allow arbitrary numbers of extra labels in multilabel style mode
+
+PieChart/FacetChart:
+* Support breadcrumbs being positioned outside of the chart area
+* Support custom separator strings for breadcrumbs
+* Support condensing breadcrumb separators in small charts
+* Support font styles for breadcrumbs
+* Support customizing the text for breadcrumb items
+* Support breadcrumbs in horizontal mode
+* Add borderRadius setting for breadcrumbs
+* Fix breadcrumbs start position in outside mode
+* Fix breadcrumbs overlapping inline legend in specific configurations
+* Fix breadcrumbs with large fonts overlapping the toolbar
+
+FacetChart/TimeChart:
+* Support having scroll buttons outside of the main chart area using the location setting
+* Fix console error with custom marker types
+
+NetChart:
+* Support orthogonalModeTolerance for fixed orthogonal link modes
+* Add verticalrecttext display mode
+
+--------------------------------------------
 
 Version 1.21.12 (2026-01-09)
 

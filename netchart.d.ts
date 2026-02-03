@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.12 */
+/** TypeScript definition file for ZoomCharts 1.21.13 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -672,6 +672,8 @@ declare module ZoomCharts.Configuration {
         align?: "left" | "right" | "center";
         /** Background color for the breadcrumb */
         backgroundColor?: string;
+        /** Border radius for the background */
+        borderRadius?: number;
         /** CSS class name for the breadcrumb HTML panel. */
         cssClass?: string;
         /** Show/hide breadcrumb. */
@@ -679,10 +681,17 @@ declare module ZoomCharts.Configuration {
         /** Font specification for the breadcrumb text. Can include size and family (e.g., "12px Arial, sans-serif") or just family (e.g., "Arial, sans-serif").
         If size is not specified, defaults to 12px. Allows customization of the font while preserving other font adjustments (e.g., bolding). */
         font?: string;
+        itemNameFunction?: (defaultName: string, itemId: string, chart: any) => string;
+        /** Toolbar location inside chart. */
+        location?: "inside" | "outside";
         /** Margin around the breadcrumb */
         margin?: number;
         /** Padding inside the breadcrumb */
         padding?: number;
+        /** What symbol should be used to separate breadcrumb entries */
+        separator?: string;
+        /** What character should be used for spacing the breadcrumb separators */
+        separatorSpace?: string;
         /** Breadcrumb placement side. */
         side?: "top" | "bottom" | "left" | "right";
         /** Text color for the breadcrumb */
@@ -995,6 +1004,8 @@ declare module ZoomCharts.Configuration {
         /** How long (in seconds) it should take for a hovered button to change
         from full size back to initial size */
         hoverSizeInactiveAnimationTime?: number;
+        /** Location inside chart. */
+        location?: "inside" | "outside";
         /** Button height or width. */
         size?: number;
         /** Scroll button style */
@@ -1671,6 +1682,16 @@ declare module ZoomCharts.Configuration {
         lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
         /** What mode of orthogonal link drawing is used. */
         orthogonalMode?: "floating" | "fixed" | "fixedHorizontal" | "fixedVertical";
+        /** In fixedVertical mode, if a link is almost directly left/right, it
+        can draw that link as connecting to the left and right of nodes, even
+        though the mode would normally disallow it. The setting controls how
+        close to the directly left/right direction a link must be in order to
+        apply this effect; a value of 0 completely disables this effect, and
+        a value of 1 always applies it.
+        
+        The same effect applies in fixedHorizontal mode, but for links that
+        are almost directly up/down. */
+        orthogonalModeTolerance?: number;
         /** Where along the link should an orthogonal link split to the other
         link between 0.0 and 1.0 for the start and end respectively. Note it must not be
         exactly 0.0 or 1.0. */
@@ -1821,7 +1842,7 @@ declare module ZoomCharts.Configuration {
         cursor?: string;
         /** Custom shape settings supplied, if display == "customShape" */
         customShape?: ItemsChartSettingsCustomShape;
-        /** Valid values: circle (default), text, rectText, roundtext, droplet, rectangle, rhombus, diamond, customShape */
+        /** Valid values: circle (default), text, rectText, verticalRectText, roundtext, droplet, rectangle, rhombus, diamond, customShape */
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;

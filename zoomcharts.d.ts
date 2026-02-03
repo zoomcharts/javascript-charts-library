@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.12 */
+/** TypeScript definition file for ZoomCharts 1.21.13 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -685,6 +685,8 @@ declare module ZoomCharts.Configuration {
         align?: "left" | "right" | "center";
         /** Background color for the breadcrumb */
         backgroundColor?: string;
+        /** Border radius for the background */
+        borderRadius?: number;
         /** CSS class name for the breadcrumb HTML panel. */
         cssClass?: string;
         /** Show/hide breadcrumb. */
@@ -692,10 +694,17 @@ declare module ZoomCharts.Configuration {
         /** Font specification for the breadcrumb text. Can include size and family (e.g., "12px Arial, sans-serif") or just family (e.g., "Arial, sans-serif").
         If size is not specified, defaults to 12px. Allows customization of the font while preserving other font adjustments (e.g., bolding). */
         font?: string;
+        itemNameFunction?: (defaultName: string, itemId: string, chart: any) => string;
+        /** Toolbar location inside chart. */
+        location?: "inside" | "outside";
         /** Margin around the breadcrumb */
         margin?: number;
         /** Padding inside the breadcrumb */
         padding?: number;
+        /** What symbol should be used to separate breadcrumb entries */
+        separator?: string;
+        /** What character should be used for spacing the breadcrumb separators */
+        separatorSpace?: string;
         /** Breadcrumb placement side. */
         side?: "top" | "bottom" | "left" | "right";
         /** Text color for the breadcrumb */
@@ -863,6 +872,13 @@ declare module ZoomCharts.Configuration {
         /** Label text. */
         text?: string;
     }
+    export interface BaseSettingsLabelGroupLabelStyle extends BaseSettingsLabelStyle {
+        multiLabelOrder?: number;
+    }
+    export interface BaseSettingsLabelGroupStyle {
+        margin?: number;
+        padding?: number;
+    }
     export interface BaseSettingsLabelStyle extends BaseSettingsLabelBaseStyle {
         /** Text style including fill color and font. */
         textStyle?: BaseSettingsTextStyle;
@@ -1008,6 +1024,8 @@ declare module ZoomCharts.Configuration {
         /** How long (in seconds) it should take for a hovered button to change
         from full size back to initial size */
         hoverSizeInactiveAnimationTime?: number;
+        /** Location inside chart. */
+        location?: "inside" | "outside";
         /** Button height or width. */
         size?: number;
         /** Scroll button style */
@@ -2577,6 +2595,16 @@ declare module ZoomCharts.Configuration {
         lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
         /** What mode of orthogonal link drawing is used. */
         orthogonalMode?: "floating" | "fixed" | "fixedHorizontal" | "fixedVertical";
+        /** In fixedVertical mode, if a link is almost directly left/right, it
+        can draw that link as connecting to the left and right of nodes, even
+        though the mode would normally disallow it. The setting controls how
+        close to the directly left/right direction a link must be in order to
+        apply this effect; a value of 0 completely disables this effect, and
+        a value of 1 always applies it.
+        
+        The same effect applies in fixedHorizontal mode, but for links that
+        are almost directly up/down. */
+        orthogonalModeTolerance?: number;
         /** Where along the link should an orthogonal link split to the other
         link between 0.0 and 1.0 for the start and end respectively. Note it must not be
         exactly 0.0 or 1.0. */
@@ -2727,7 +2755,7 @@ declare module ZoomCharts.Configuration {
         cursor?: string;
         /** Custom shape settings supplied, if display == "customShape" */
         customShape?: ItemsChartSettingsCustomShape;
-        /** Valid values: circle (default), text, rectText, roundtext, droplet, rectangle, rhombus, diamond, customShape */
+        /** Valid values: circle (default), text, rectText, verticalRectText, roundtext, droplet, rectangle, rhombus, diamond, customShape */
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;
@@ -3031,7 +3059,7 @@ declare module ZoomCharts.Configuration {
         Values:
         - `inside` - Displays the info popup inside the chart area right below the toolbars. This is the default behavior which is well suited for larger charts.
         - `outside` - Displays the info popup above the chart area. This mode is intended for very small charts where the info popup would overlap the whole chart. */
-        position?: "outside" | "inside";
+        position?: "inside" | "outside";
         /** Whether to show the info popup at the data point itself */
         showAtDataPoint?: boolean;
         /** Whether to show series with no data in hovered time period. */
@@ -4601,13 +4629,6 @@ declare module ZoomCharts.Configuration {
             tolerance?: number;
         };
     }
-    export interface PieChartSettingsLabelGroupLabelStyle extends BaseSettingsLabelStyle {
-        multiLabelOrder?: number;
-    }
-    export interface PieChartSettingsLabelGroupStyle {
-        margin?: number;
-        padding?: number;
-    }
     export interface PieChartSettingsLabels {
         /** Label rotation angle. */
         angle?: number;
@@ -4692,11 +4713,13 @@ declare module ZoomCharts.Configuration {
         /** Distance how far the slice is moved away from pie. */
         cutoutDistance?: number;
         /** Gets or sets the style of the label shown for the name from the data when labels.useMultiLabelStyles is true. Use `dataNameLabel.text` to specify the text that will be displayed. */
-        dataNameLabel?: PieChartSettingsLabelGroupLabelStyle;
+        dataNameLabel?: BaseSettingsLabelGroupLabelStyle;
         /** Specifies if the slice is expandable. */
         expandable?: boolean;
         /** An additional label that can be inserted between other labels when labels.useMultiLabelStyles is true. Use `extraLabel.text` to specify the text that will be displayed. */
-        extraLabel?: PieChartSettingsLabelGroupLabelStyle;
+        extraLabel?: BaseSettingsLabelGroupLabelStyle;
+        /** Further additional labels that can be inserted between other labels when labels.useMultiLabelStyles is true. For unspecified settings, each label in this array will default to the values in "extraLabel" */
+        extraLabels?: Array<BaseSettingsLabelGroupLabelStyle>;
         /** Slice fill color. */
         fillColor?: string;
         /** Gradient definition for the pie slice */
@@ -4704,11 +4727,11 @@ declare module ZoomCharts.Configuration {
         /** Icon to display on slice. */
         icon?: string;
         /** Gets or sets the style of the label shown inside the slice. Use `insideLabel.text` to specify the text that will be displayed. */
-        insideLabel?: PieChartSettingsLabelGroupLabelStyle;
+        insideLabel?: BaseSettingsLabelGroupLabelStyle;
         /** Gets or sets the style of the external label. Use `label.text` to specify the text that will be displayed. */
-        label?: PieChartSettingsLabelGroupLabelStyle;
+        label?: BaseSettingsLabelGroupLabelStyle;
         /** Styling specific to the label group overall */
-        labelGroupStyle?: PieChartSettingsLabelGroupStyle;
+        labelGroupStyle?: BaseSettingsLabelGroupStyle;
         /** Brightness applied to slice line color */
         lineBrightness?: number;
         /** Outline color. */
@@ -4719,7 +4742,7 @@ declare module ZoomCharts.Configuration {
         /** Width of the slice outline. */
         lineWidth?: number;
         /** Gets or sets the style of the label shown for the percent from the data when labels.useMultiLabelStyles is true. Use `percentLabel.text` to specify the text that will be displayed. */
-        percentLabel?: PieChartSettingsLabelGroupLabelStyle;
+        percentLabel?: BaseSettingsLabelGroupLabelStyle;
         /** Specifies markers positioned relative to the pie */
         pieMarkers?: Array<PieChartSettingsPieMarker>;
         /** Specifies markers positioned relative to the slice */
@@ -4734,10 +4757,11 @@ declare module ZoomCharts.Configuration {
         brightness: number;
         cutoutDistance: number;
         data: PieChartDataObject;
-        dataNameLabel: PieChartSettingsLabelGroupLabelStyle;
+        dataNameLabel: BaseSettingsLabelGroupLabelStyle;
         /** Whether to expand the slice as a default click behavior. */
         expandable: boolean;
-        extraLabel: PieChartSettingsLabelGroupLabelStyle;
+        extraLabel: BaseSettingsLabelGroupLabelStyle;
+        extraLabels: Array<BaseSettingsLabelGroupLabelStyle>;
         fillColor: string;
         fillColor2: string;
         fillGradient: GradientDefinition;
@@ -4753,13 +4777,13 @@ declare module ZoomCharts.Configuration {
         /** Gets or sets the style of the label shown inside the slice. Use `insideLabel.text` to specify the text that will be displayed.
         Note that for backwards compatibility it is possible to set this property to a string directly - in this case the value will be
         written the `insideLabel.text` but also `label.text` will be cleared. */
-        insideLabel: PieChartSettingsLabelGroupLabelStyle;
+        insideLabel: BaseSettingsLabelGroupLabelStyle;
         /** 
         @deprecated use `insideLabel` instead. */
         insideLabelStyle: BaseSettingsLabelStyle;
         /** Gets or sets the style of the external label. Use `label.text` to specify the text that will be displayed. */
-        label: PieChartSettingsLabelGroupLabelStyle;
-        labelGroupStyle: PieChartSettingsLabelGroupStyle;
+        label: BaseSettingsLabelGroupLabelStyle;
+        labelGroupStyle: BaseSettingsLabelGroupStyle;
         /** 
         @deprecated use `label` instead. */
         labelStyle: BaseSettingsLabelStyle;
@@ -4776,7 +4800,7 @@ declare module ZoomCharts.Configuration {
         
         Note that value is already multiplied by 100, so if there are two equal slices, both would have the value of `50`, instead of `0.5`. */
         percent: number;
-        percentLabel: PieChartSettingsLabelGroupLabelStyle;
+        percentLabel: BaseSettingsLabelGroupLabelStyle;
         pie: PieChartPie;
         removed: boolean;
         /** Swipe distance towards the center of the pie */

@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.13 */
+/** TypeScript definition file for ZoomCharts 1.21.14 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1472,6 +1472,10 @@ declare module ZoomCharts.Configuration {
         sortField?: string | Array<string> | ((a: FacetChartDataObject, b: FacetChartDataObject) => number);
     }
     export interface FacetChartSettingsFacetAxis {
+        /** How much of the available width the default view attempts to fill. 
+        1.0 tries to fit in as many facets as possible, while smaller 
+        fractions use fewer facets but leave more room to zoom out. */
+        defaultAvailableWidthScale?: number;
         /** Default width of one item. Used to calculate initial view. */
         defaultUnitWidth?: number;
         /** Show/hide facet axis. */
@@ -2759,6 +2763,8 @@ declare module ZoomCharts.Configuration {
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;
+        /** Additional labels present in vertical node text mode */
+        extraLabels?: Array<BaseSettingsLabelGroupLabelStyle>;
         fillColor?: string | CanvasGradient;
         /** Fill gradient.
         For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
@@ -2771,9 +2777,17 @@ declare module ZoomCharts.Configuration {
         /** Forces hierarchy layout to place the node a certain number of
         levels above or below it's expected location */
         hierarchyOffset?: number;
+        /** How much padding is between the left/right of the node and the inner contents. Currently only applies in verticalrecttext mode. */
+        horizontalPadding?: number;
         image?: string;
+        /** Specifies how the image should be aligned. Currently only applies in verticalrecttext mode. */
+        imageAlign?: "center" | "right" | "left";
         /** Specifies the image cropping method. Valid values are `false` (disable cropping), `true` (default cropping mode), `"crop"`, `"letterbox"` and `"fit"`. */
         imageCropping?: "fit" | boolean | "crop" | "letterbox";
+        /** How much padding is around the image. Currently only applies in verticalrecttext mode. */
+        imagePadding?: number;
+        /** The size of the image relative to the node size. 1.0 is directly proportional to the node radius. Currently only applies in verticalrecttext mode. */
+        imageScale?: number;
         /** Specifies if the node is invisible - thus completely skipping the drawing and hit testing. This can be used, for example, to hide all nodes
         and showing only ones that meet certain criteria using `nodeStyleFunction`. */
         invisible?: boolean;
@@ -2793,6 +2807,8 @@ declare module ZoomCharts.Configuration {
         shadowColor?: string;
         shadowOffsetX?: number;
         shadowOffsetY?: number;
+        /** How much padding is between the top/bottom of the node and the inner contents. Currently only applies in verticalrecttext mode. */
+        verticalPadding?: number;
     }
     export interface ItemsChartSettingsNodesLayerAuras {
         /** The cell size of the grid (in display pixels). Smaller values result in more precise aura calculations but
@@ -3278,6 +3294,11 @@ declare module ZoomCharts.Configuration {
         gradient?: number;
         /** Outline color. */
         lineColor?: string;
+        /** Amount the outline is offset from the item itself. If the outline would go beyond the scene bounds due to the offset, then the outline will clamp to stay in bounds. */
+        lineOffset?: number;
+        /** The maximum width a column is drawn at. Any available space beyond
+        this will be empty. */
+        maxDrawnWidth?: number;
         /** Minimum height of a column in px. */
         minHeight?: number;
         /** Padding for column. 0th element - left padding, 1st element - right padding. */

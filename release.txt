@@ -3,9 +3,27 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.13
+Version 1.21.14
 
 ====== Changelog ===========================
+
+Version 1.21.14 (2026-03-03)
+
+NetChart:
+* Fix hover node staying hovered long after the mouse moves away from it
+* Add imageScale setting for verticalrecttext display mode
+* Add imagePadding setting for verticalrecttext display mode
+* Add imageAlign setting for verticalrecttext display mode
+* Add verticalPadding setting for verticalrecttext display mode
+* Add horizontalPadding setting for verticalrecttext display mode
+* Link decorations no longer try to stay on screen when a node moves off screen.
+
+FacetChart/TimeChart:
+* Add maxDrawnWidth setting for columns to allow limiting the maximum drawn width separately from the space allocated to the column
+* Add lineOffset setting for columns to allow positioning outlines beyond normal boundaries
+* Allow changing horizontal mode after chart creation
+
+--------------------------------------------
 
 Version 1.21.13 (2026-02-03)
 

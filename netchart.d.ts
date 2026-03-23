@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.14 */
+/** TypeScript definition file for ZoomCharts 1.21.15 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -275,6 +275,8 @@ declare module ZoomCharts.Configuration {
     export interface BaseLayoutableLabel {
         applyEllipsis: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number) => void;
         fitInRect: (layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition: boolean) => number;
+        getDrawOrder: () => number;
+        getOverlapStrategy: () => string;
         hheight: number;
         hwidth: number;
         isMultiline: () => boolean;
@@ -290,6 +292,8 @@ declare module ZoomCharts.Configuration {
     export interface BaseLabel {
         applyEllipsis(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number): void;
         fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
+        getDrawOrder(): number;
+        getOverlapStrategy(): string;
         hheight: number;
         hwidth: number;
         isMultiline(): boolean;
@@ -838,6 +842,12 @@ declare module ZoomCharts.Configuration {
         backgroundStyle?: BaseSettingsBackgroundStyle;
         /** Radius of item border. Similar to CSS border radius property. Zero radius will show a rectangle */
         borderRadius?: number;
+        /** Controls the order the label is drawn in if the label supports
+        configurable draw order. Lower numbers are always drawn before later
+        numbers, and any non-zero drawOrder is always drawn after other chart
+        elements. Note this cannot force drawing order to change beyond
+        the boundaries of things like rendering clips. */
+        drawOrder?: number;
         /** Extra data associated with the label */
         extra?: any;
         forceNoWrap?: boolean;
@@ -854,6 +864,9 @@ declare module ZoomCharts.Configuration {
         /** The minimum space, in pixels, that a label must display before
         shortening the label with ellipsis is considered. */
         minNonEllipsisWidth?: number;
+        /** Specifies how the label handles overlap if the label supports
+        configurable overlap strategy. */
+        overlapStrategy?: "none" | "skip" | "moveup" | "movedown" | "movevertical";
         /** Padding between item content and item border. */
         padding?: number;
         /** Label text. */

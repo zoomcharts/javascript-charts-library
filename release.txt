@@ -3,9 +3,25 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.14
+Version 1.21.15
 
 ====== Changelog ===========================
+
+Version 1.21.15 (2026-03-23)
+
+NetChart/PieChart:
+* Fix double and triple click events failing to reach NetChart when a PieChart is on top of it
+
+NetChart:
+* Fix onChartUpdate event not being triggered by node filter updates
+
+FacetChart/TimeChart:
+* Add overlapStrategy setting to labels to allow customizing how they handle overlap
+
+TimeChart:
+* Add showMinorTickAtMajorBoundary to allow ticks even where a gridline would be
+
+--------------------------------------------
 
 Version 1.21.14 (2026-03-03)
 

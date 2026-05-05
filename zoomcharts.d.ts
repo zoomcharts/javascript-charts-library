@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.15 */
+/** TypeScript definition file for ZoomCharts 1.21.16 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1250,6 +1250,7 @@ declare module ZoomCharts.Configuration {
         activeItemId: string;
         count: number;
         data: PieChartPieData;
+        drawOffset: number;
         from: number;
         getActiveItem(): FacetChartItem;
         id: string;
@@ -1364,6 +1365,7 @@ declare module ZoomCharts.Configuration {
         value: number;
     }
     export interface FacetChartSettings extends LinearChartSettings {
+        advanced?: FacetChartSettingsAdvanced;
         /** Chart area related settings. */
         area?: FacetChartSettingsArea;
         /** Default series settings for each series rendering type. Use this to configure all series of specific type to get line
@@ -1423,11 +1425,21 @@ declare module ZoomCharts.Configuration {
         series?: Array<FacetChartSettingsSeries>;
         /** The default series used as the chart dominant data. Use settings.series array to specify actual series. */
         seriesDefault?: FacetChartSettingsSeries;
+        sidePreview?: FacetChartSettingsFacetSidePreview;
         /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
         themes. */
         theme?: FacetChartSettings;
         /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
         toolbar?: FacetChartSettingsToolbar;
+    }
+    export interface FacetChartSettingsAdvanced extends BaseSettingsAdvanced {
+        /** The number of extra items loaded beyond the end/beginning of the
+        visible facet. Setting to higher values or even infinity will ensure
+        the facet always includes all loaded data, and may be useful for
+        features like the side panels that depend on offscreen data. However,
+        it will take extra memory and it may not be compatible with dynamic
+        data sets that have no fixed maximum number of items. */
+        facetItemWindowMargin?: number;
     }
     export interface FacetChartSettingsArea extends LinearChartSettingsArea {
         /** Area style. */
@@ -1485,6 +1497,18 @@ declare module ZoomCharts.Configuration {
         sortField?: string | Array<string> | ((a: FacetChartDataObject, b: FacetChartDataObject) => number);
     }
     export interface FacetChartSettingsFacetAxis {
+        /** When columns cannot occupy the full plot width (after the usual
+        scroll/unit-width rules), controls where the leftover horizontal
+        space goes.
+        
+        Whenever the visible columns can span the full width, they always do.
+        This setting applies only when there would otherwise be empty space
+        next to the column block.
+        
+        - `left` - The visible chart is on the left and unused space remains on the right.
+        - `right` - unused space on the left; last column touches the right edge of the plot (root facet only).
+        - `center` - unused space split evenly on left and right (root facet only). */
+        columnStripAlign?: "center" | "right" | "left";
         /** How much of the available width the default view attempts to fill. 
         1.0 tries to fit in as many facets as possible, while smaller 
         fractions use fewer facets but leave more room to zoom out. */
@@ -1552,6 +1576,14 @@ declare module ZoomCharts.Configuration {
         panel?: BaseSettingsChartPanel;
         scrollAnimationDuration?: number;
         scrollButtons?: BaseSettingsScrollButtons;
+        width?: number;
+    }
+    export interface FacetChartSettingsFacetSidePreview {
+        aggregation?: "sum" | "average" | "minimum" | "maximum" | "median" | "first" | "last" | "percentile";
+        enabled?: boolean;
+        /** Controls the percentile level for percentile aggregation modes.
+        Range 0 to 100, must be integer. */
+        percentile?: number;
         width?: number;
     }
     export interface FacetChartSettingsFacetStyle extends FacetChartSettingsSeriesColumnsStyle {
@@ -2767,6 +2799,8 @@ declare module ZoomCharts.Configuration {
         
         Note that if multiple auras for a single node are specified, `auras.overlap` setting should be set to `true`. */
         aura?: string | Array<string>;
+        /** When display is rectText or verticalRectText, corner radius in node scene units (i.e. same units as regular radius, not screen pixels). */
+        borderRadius?: number;
         coordinates?: Array<number> | Array<Array<number>>;
         /** Cursor to show when node is hovered. */
         cursor?: string;

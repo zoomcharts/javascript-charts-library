@@ -3,9 +3,29 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.15
+Version 1.21.16
 
 ====== Changelog ===========================
+
+Version 1.21.16 (2026-05-05)
+
+FacetChart/TimeChart:
+* Fix console error sometimes appearing when label drawOrder is used
+
+FacetChart:
+* Add sidePreview that shows aggregated preview of offscreen data.
+* Add facetItemWindowMargin to control the number of offscreen items. Works well
+with the new sidePreview feature.
+* Add columnStripAlign setting to control where columns appear in the chart area if empty space remains.
+* Fix click and drag to zoom causing chart flicker
+* Fix navigation buttons not affecting the back button
+* Fix back button changing the zoom level in some cases
+
+NetChart:
+* Add borderRadius for rectangular text modes
+* Fix vertical padding not working in verticalrecttext mode with no image
+
+--------------------------------------------
 
 Version 1.21.15 (2026-03-23)
 

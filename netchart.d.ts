@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.15 */
+/** TypeScript definition file for ZoomCharts 1.21.16 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1853,6 +1853,8 @@ declare module ZoomCharts.Configuration {
         
         Note that if multiple auras for a single node are specified, `auras.overlap` setting should be set to `true`. */
         aura?: string | Array<string>;
+        /** When display is rectText or verticalRectText, corner radius in node scene units (i.e. same units as regular radius, not screen pixels). */
+        borderRadius?: number;
         coordinates?: Array<number> | Array<Array<number>>;
         /** Cursor to show when node is hovered. */
         cursor?: string;

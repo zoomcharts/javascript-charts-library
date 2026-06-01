@@ -58,3 +58,8 @@ United States Patent No. 11,645,343; 11,921,804; 12,346,389
     author: Matthias Ferch
     license: BSD
     github.com/matthiasferch/tsm
+    
+  martinez-polygon-clipping
+    author: Alexander Milevski
+    license: MIT
+    https://github.com/w8r/martinez

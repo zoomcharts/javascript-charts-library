@@ -3,9 +3,30 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.16
+Version 1.21.17
 
 ====== Changelog ===========================
+
+Version 1.21.17 (2026-06-01)
+
+FacetChart/TimeChart:
+* Add onItemClick setting for legend to customize legend behavior
+* Add legendEnabledOverride for series to control whether they appear as enabled
+in the legend even if the series itself is enabled
+* Add columnStackRadius setting to allow curvature applied to entire stacks, not just series within them.
+* Add disconnect setting to allow a zig-zag disconnect line for columns that
+have a true value bigger than displayed
+* Add maxDrawWidthClampOffset to configure how clamped width columns get
+positioned.
+* Add seriesLabels settings, allowing a single label at the side of an entire series
+
+FacetChart:
+* Fix setPie causing strange zoom level changes in some cases
+
+NetChart:
+* Fix multiple lines of text overlapping in rectangular text nodes
+
+--------------------------------------------
 
 Version 1.21.16 (2026-05-05)
 

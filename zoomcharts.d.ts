@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.16 */
+/** TypeScript definition file for ZoomCharts 1.21.17 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -361,6 +361,31 @@ declare module ZoomCharts.Configuration {
         paint(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel): void;
         paintIfNonOverlapping(g: CanvasRenderingContext2D, x: number, y: number, scale: number, item: BaseLabel, labelQuadTree: BaseQuadTree): boolean;
         startFrame(width: number, height: number, scaleX: number, scaleY: number): void;
+    }
+    export interface BaseLegendEntry {
+        curHeight: number;
+        curWidth: number;
+        curX: number;
+        curY: number;
+        /** Whether the item is enabled */
+        enabled: boolean;
+        /** Group identifier, used for enabling/disabling logic. */
+        groupId: string;
+        /** How enabling/disabling grouped legend items should behave */
+        groupMode: "toggle";
+        /** Count of pointers hovering over the legend item */
+        hoverCount: number;
+        /** Determines if the item is enabled. Override if the item is also considered enabled/disabled depending on some external circumstance. */
+        isEnabled(): boolean;
+        /** Determines if the item is hovered. Override if the item is also considered hovered depending on some external circumstance. */
+        isHovered(): boolean;
+        /** Cached label that will be painted when the item is disabled. */
+        labelDisabled: BaseLabel;
+        /** Cached label that will be painted when the item is enabled. */
+        labelEnabled: BaseLabel;
+        labelText: string;
+        textColorDisabled: string;
+        textColorEnabled: string;
     }
     /** Represents a single pointer. On multitouch, separate event for each pointer will be fired. */
     export interface BaseMouseEvent {
@@ -2934,6 +2959,10 @@ declare module ZoomCharts.Configuration {
         as determined by the shape. 1 is the default width. Must be non-negative. */
         selfLinkWidthFactor?: number;
     }
+    export interface LinearChartItemClickParams {
+        baseLegendClick: (event: BaseMouseEvent, item: LinearChartLegendEntry) => void;
+        entries: Array<LinearChartLegendEntry>;
+    }
     export interface LinearChartRendererData {
         config?: Array<FacetChartItemValue>;
         /** The number of value points aggregated for each value. Used for calculating averages based on the values for larger units. */
@@ -2955,6 +2984,13 @@ declare module ZoomCharts.Configuration {
         toIndex: number;
         values: Array<number>;
         xes: Array<number>;
+    }
+    export interface LinearChartLegendEntry extends BaseLegendEntry {
+        disabledSeries: LinearChartSettingsSeries;
+        /** Determines if the item is hovered. Override if the item is also considered hovered depending on some external circumstance. */
+        isHovered(): boolean;
+        series: Array<LinearChartSettingsSeries>;
+        seriesHovered: boolean;
     }
     export interface LinearChartSeriesStackData {
         config: LinearChartSettingsStack;
@@ -3009,6 +3045,7 @@ declare module ZoomCharts.Configuration {
         series?: Array<LinearChartSettingsSeries>;
         /** The default series used as the chart dominant data. Use settings.series array to specify actual series. */
         seriesDefault?: LinearChartSettingsSeries;
+        seriesLabels?: LinearChartSettingsSeriesLabels;
         /** Defines stack settings to use in series. Each property is a stack name and value is stack settings.
         Values stack of each series on top of each other in the specified series order. Those, stacked bars help
         to visualize data that is a sum of parts, each of which is in a series. */
@@ -3017,6 +3054,8 @@ declare module ZoomCharts.Configuration {
         style?: {
             /** The default colors applied to the series with `type: "columns"`. The colors are applied in order to all series that do not specify an explicit style. */
             columnColors?: Array<string>;
+            /** How much the corners of the stack as a whole (as opposed to individual series) are rounded. For corner rounding on individual series, see the radius setting on SettingsSeriesColumnsStyle. Radius for top-left, top-right, bottom-right, bottom-left corner */
+            columnStackRadius?: Array<number>;
             /** The default colors applied to the series with `type: "line"`. The colors are applied in order to all series that do not specify an explicit style. */
             lineColors?: Array<string>;
         };
@@ -3066,6 +3105,12 @@ declare module ZoomCharts.Configuration {
             shadowOffsetX?: number;
             shadowOffsetY?: number;
         };
+    }
+    export interface LinearChartSettingsColumnDisconnect {
+        amplitude?: number;
+        peaks?: number;
+        thickness?: number;
+        yFraction?: number;
     }
     export interface LinearChartSettingsEvents<TArguments extends BaseChartEventArguments, TClickArguments extends BaseChartEventArguments> extends BaseSettingsEvents<TArguments, TClickArguments> {
         /** Function called when chart scrolling animation is finished. */
@@ -3201,6 +3246,7 @@ declare module ZoomCharts.Configuration {
         /** Visual element of legend entry with appropriate style to a slice color it corresponds. The content of each legend marker is the
         same as info popup appearing while hovering on slice. */
         marker?: LinearChartSettingsLegendMarker;
+        onItemClick?: (event: BaseMouseEvent, args: BaseChartEventArguments, item: LinearChartLegendEntry, extra: LinearChartItemClickParams) => void;
         /** Legend enclosing panel settings. */
         panel?: BaseSettingsLegendPanel;
     }
@@ -3260,6 +3306,10 @@ declare module ZoomCharts.Configuration {
         Useful if the series still needs to influence e.g. the value axis
         size, or be present in the legend or tooltip. */
         invisible?: boolean;
+        /** Whether the legend entry is considered enabled. If "null", matches
+        whether the series is enabled. Otherwise, this value determines
+        whether the legend entry is enabled or not. */
+        legendEnabledOverride?: boolean;
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
@@ -3328,6 +3378,8 @@ declare module ZoomCharts.Configuration {
         depth?: number;
         /** Brightness applied to depth components. */
         depthBrightness?: number;
+        /** Settings for a zig-zag disconnect line through the column */
+        disconnect?: LinearChartSettingsColumnDisconnect;
         /** Whether to draw an outline around the columns */
         enableOutlineLines?: boolean;
         /** Fill gradient orientation for manual fill gradient mode. In use with fillGradient property.
@@ -3343,6 +3395,12 @@ declare module ZoomCharts.Configuration {
         lineColor?: string;
         /** Amount the outline is offset from the item itself. If the outline would go beyond the scene bounds due to the offset, then the outline will clamp to stay in bounds. */
         lineOffset?: number;
+        /** Defines the point the draw width clamps to if max draw width is
+        exceeded. 0.0 clamps to the left of the column, 0.5 to the center,
+        and 1.0 to the right. Larger values or negative can be used to exceed
+        the normal positioning limits in order to, for example, make clusters
+        of columns all group together */
+        maxDrawWidthClampOffset?: number;
         /** The maximum width a column is drawn at. Any available space beyond
         this will be empty. */
         maxDrawnWidth?: number;
@@ -3412,6 +3470,21 @@ declare module ZoomCharts.Configuration {
         valueFunction?: (
             /** entry in data values array where the value at index 0 is the timestamp */
             data: Array<number>) => number;
+    }
+    export interface LinearChartSettingsSeriesLabels {
+        /** Horizontal connector length before the label. */
+        connectorLength?: number;
+        connectorStyle?: BaseSettingsLineStyle;
+        enabled?: boolean;
+        /** Extra vertical gap between adjacent labels after layout. */
+        labelSpacing?: number;
+        labelStyle?: BaseSettingsLabelStyle;
+        labelStyleFunction?: (labelStyle: BaseSettingsLabelStyle, series: LinearChartSettingsSeries) => void;
+        /** Omit labels displaced farther than this from their desired Y. `null` keeps all labels. */
+        maxDisplacement?: number;
+        panel?: BaseSettingsChartPanel;
+        /** Fixed panel width in pixels. */
+        width?: number;
     }
     export interface LinearChartSettingsSeriesLines extends LinearChartSettingsSeries {
         /** Default style for line type series. */

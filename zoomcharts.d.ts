@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.17 */
+/** TypeScript definition file for ZoomCharts 1.21.18 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -861,6 +861,8 @@ declare module ZoomCharts.Configuration {
             /** The mouse event. */
             event: BaseMouseEvent, args: TClickArguments) => void;
     }
+    export interface BaseSettingsGeneralBackgroundStyle extends BaseSettingsLineStyleBase, BaseSettingsBackgroundStyleBase {
+    }
     export interface BaseSettingsInteraction {
         /** Controls chart resize handles.
         
@@ -1311,6 +1313,10 @@ declare module ZoomCharts.Configuration {
     }
     /** Describes a single slice in the data. Can include the nested items for that slice as well. */
     export interface FacetChartDataObject extends FacetChartDataObjectCommon {
+        /** When true, the drilldown level opened through this item is treated as auxiliary
+        navigation: it does not appear in breadcrumbs and logical zoom-out skips over it as part
+        of the preceding non-flagged level (or root). */
+        auxiliaryNavigation?: boolean;
         /** The ID of the slice. Note that if the ID is set then by default the chart assumes that the
         slice is expandable. To avoid this, set `style.expandable` to `false`.
         The slice ID is used to load the nested items and is the same value as the ID of the inner pie
@@ -1465,6 +1471,11 @@ declare module ZoomCharts.Configuration {
         it will take extra memory and it may not be compatible with dynamic
         data sets that have no fixed maximum number of items. */
         facetItemWindowMargin?: number;
+        /** When enabled, `facetAxis.defaultUnitWidth`, `facetAxis.minUnitWidth`,
+        and `facetAxis.maxUnitWidth` are used directly in initial view
+        calculations without adjusting for toolbar CSS transform scale.
+        Other scale-dependent behavior is unaffected. */
+        unitWidthIgnoresCssScale?: boolean;
     }
     export interface FacetChartSettingsArea extends LinearChartSettingsArea {
         /** Area style. */
@@ -1542,6 +1553,12 @@ declare module ZoomCharts.Configuration {
         defaultUnitWidth?: number;
         /** Show/hide facet axis. */
         enabled?: boolean;
+        /** Number of items beyond the visible facet range that are considered
+        when calculating the maximum label width for axis sizing. Uses the
+        same window logic as `advanced.facetItemWindowMargin`, but affects
+        only label measurement, not data loading.
+        If set to null or undefined, then uses the full loaded range of data */
+        labelWidthWindowMargin?: number;
         /** Facet axis name settings. */
         labels?: FacetChartSettingsFacetAxisLabels;
         /** Maximum size x axis will grow to while fitting labels */
@@ -1615,6 +1632,8 @@ declare module ZoomCharts.Configuration {
         comment?: FacetChartSettingsFacetComment;
         /** Specifies if the item can be expanded. */
         expandable?: boolean;
+        /** If true, item counts as always having pointer cursor */
+        isAlwaysPointerCursor?: boolean;
     }
     export interface FacetChartSettingsInteraction extends LinearChartSettingsInteraction {
         /** Chart animation settings. */
@@ -3142,9 +3161,17 @@ declare module ZoomCharts.Configuration {
                     /** Calculate the text shadow that would normally be used */
                     computeTextShadow: (group: LinearChartSeriesStackData, series: LinearChartSeriesStackDataItem, seriesIndex: number, color: string) => string;
                 }) => string | HTMLElement;
+            /** Create custom info popup header HTML. */
+            headerFunction?: (
+                /** The range for which the info popup is being built. */
+                range: [number, number], 
+                /** The configuration of the series object currently under the cursor */
+                series: LinearChartSettingsSeries, 
+                /** Chart-specific header data */
+                context: any) => string | HTMLElement;
             /** Controls how the selection for the info popup is created and what data is displayed. */
             scope?: "stack" | "value" | "auto";
-            /** Specifies if the default header should be included. If set to `false`, the `contentsFunction` should be used to return the header as well. */
+            /** Specifies if the info popup header should be included. If set to `false`, neither the default header nor `headerFunction` is used; the header can still be included in `contentsFunction` output. */
             showHeader?: boolean;
             /** Whether to show only the series under cursor in info popup. If `scope` is set to `value` then the info popup will be empty unless the pointer
             hovers over the value bar/line. */
@@ -3414,6 +3441,8 @@ declare module ZoomCharts.Configuration {
         shadowBlur?: number;
         /** Advanced setting: How much extra height to add to the column to ensure it is drawn at the correct subpixel boundary. */
         subpixelHeightOffset?: number;
+        /** Advanced setting: How much extra width to add to the column to ensure it is drawn at the correct subpixel boundary. */
+        subpixelWidthOffset?: number;
         /** What factor to scale the column widths by, between 0.0 and 1.0.
         
         If set to 0, the columns will be drawn as lines instead of columns. */
@@ -3475,16 +3504,28 @@ declare module ZoomCharts.Configuration {
         /** Horizontal connector length before the label. */
         connectorLength?: number;
         connectorStyle?: BaseSettingsLineStyle;
+        connectorStyleFunction?: (connectorStyle: BaseSettingsLineStyle, series: LinearChartSettingsSeries) => void;
         enabled?: boolean;
         /** Extra vertical gap between adjacent labels after layout. */
         labelSpacing?: number;
         labelStyle?: BaseSettingsLabelStyle;
         labelStyleFunction?: (labelStyle: BaseSettingsLabelStyle, series: LinearChartSettingsSeries) => void;
+        marker?: LinearChartSettingsSeriesLabelsMarker;
+        markerStyleFunction?: (markerStyle: BaseSettingsGeneralBackgroundStyle, series: LinearChartSettingsSeries) => void;
         /** Omit labels displaced farther than this from their desired Y. `null` keeps all labels. */
         maxDisplacement?: number;
         panel?: BaseSettingsChartPanel;
         /** Fixed panel width in pixels. */
         width?: number;
+    }
+    export interface LinearChartSettingsSeriesLabelsMarker {
+        enabled?: boolean;
+        /** Horizontal space between the marker and label text. */
+        padding?: number;
+        /** Marker shape. */
+        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
+        /** Marker size in pixels. `null` uses the label line height. */
+        size?: number;
     }
     export interface LinearChartSettingsSeriesLines extends LinearChartSettingsSeries {
         /** Default style for line type series. */
@@ -5809,7 +5850,11 @@ declare module ZoomCharts {
             /** For advanced use cases, can specify whether the
             zoomOut should be considered to come from the "api" (default) or the
             "user" */
-            origin?: string): void;
+            origin?: string, 
+            /** When true (default), zoom-out skips
+            auxiliary navigation levels marked with `auxiliaryNavigation` on the
+            drilled-into item. When false, pops one physical drilldown level. */
+            respectLogicalNavigation?: boolean): void;
     }
     export class GeoChart extends Configuration.BaseApi {
         public constructor(settings: Configuration.GeoChartSettings);

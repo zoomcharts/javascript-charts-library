@@ -3,9 +3,37 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.17
+Version 1.21.18
 
 ====== Changelog ===========================
+
+Version 1.21.18 (2026-07-01)
+
+All Charts:
+* Toolbar in outside mode now uses all available width
+* Fix single word labels sometimes having an extra line break
+
+NetChart/PieChart:
+* Fix PieCharts on top of NetChart node staying on top of the legend
+
+NetChart:
+* Improve default radial layout node selection
+
+FacetChart/TimeChart:
+* Add info.advanced.headerFunction to customize info popup header separately from contentsFunction
+* Support markers for series labels
+* Add marker/connector style functions for series labels
+* Fix clamped width columns not aligning with value labels
+* Fix series labels hiding if exactly at the screen boundary
+* Fix chart vanishing with extremely small value axis values
+
+FacetChart:
+* Add auxiliaryNavigation flag to enable multiple drilldown levels to be considered part of a single larger logical drilldown level
+* Add labelWidthWindowMargin to configure how many offscreen items affect the facetAxis auto-size calculation
+* Improve column size rounding and positioning
+* Fix console error when adding new series in certain cases
+
+--------------------------------------------
 
 Version 1.21.17 (2026-06-01)
 

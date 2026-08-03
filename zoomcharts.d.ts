@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.18 */
+/** TypeScript definition file for ZoomCharts 1.21.19 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1368,7 +1368,11 @@ declare module ZoomCharts.Configuration {
     }
     export interface FacetChartItem {
         active: boolean;
-        comment: FacetChartSettingsFacetComment;
+        comment: LinearChartSettingsComment;
+        /** Optional list of comments for this item. When both this and
+        {@link comment} have content, the singular comment is treated as the
+        first entry followed by this list. */
+        comments: Array<LinearChartSettingsComment>;
         currentLabel: BaseLabel;
         data: FacetChartDataObject;
         expandable: boolean;
@@ -1407,7 +1411,7 @@ declare module ZoomCharts.Configuration {
             /** Series type to connect value points by lines. */
             line?: FacetChartSettingsSeriesLines;
         };
-        comments?: FacetChartSettingsFacetComments;
+        comments?: LinearChartSettingsComments;
         /** Settings used to load data into chart. Customise preferred data source feeding methods.
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<FacetChartSettingsData>;
@@ -1603,23 +1607,6 @@ declare module ZoomCharts.Configuration {
         /** Determines if the `name` property from the data overrides the `text` value in these settings. */
         useFacetName?: boolean;
     }
-    export interface FacetChartSettingsFacetComment {
-        iconMarkerAlign?: "center" | "right" | "left";
-        iconMarkerPosition?: "default" | "top" | "bottom";
-        iconStyle?: BaseSettingsLabelStyle;
-        iconText?: string;
-        labelStyle?: BaseSettingsLabelStyle;
-        text?: string;
-    }
-    export interface FacetChartSettingsFacetComments {
-        enabled?: boolean;
-        height?: number;
-        iconMarkerPosition?: "default" | "top" | "bottom";
-        panel?: BaseSettingsChartPanel;
-        scrollAnimationDuration?: number;
-        scrollButtons?: BaseSettingsScrollButtons;
-        width?: number;
-    }
     export interface FacetChartSettingsFacetSidePreview {
         aggregation?: "sum" | "average" | "minimum" | "maximum" | "median" | "first" | "last" | "percentile";
         enabled?: boolean;
@@ -1629,7 +1616,6 @@ declare module ZoomCharts.Configuration {
         width?: number;
     }
     export interface FacetChartSettingsFacetStyle extends FacetChartSettingsSeriesColumnsStyle {
-        comment?: FacetChartSettingsFacetComment;
         /** Specifies if the item can be expanded. */
         expandable?: boolean;
         /** If true, item counts as always having pointer cursor */
@@ -1710,6 +1696,10 @@ declare module ZoomCharts.Configuration {
             items: Array<FacetChartItemValue>, verticalPositions: Array<number>) => Array<LinearChartSettingsSeriesStyleMarker>;
     }
     export interface FacetChartSettingsToolbar extends BaseSettingsToolbar {
+        /** Whether to show the comments edit dropdown. The dropdown is only
+        created when {@link LinearChart.SettingsComments.editing}.enabled is
+        also true. */
+        commentsEdit?: boolean;
         /** Show/hide toolbar. */
         enabled?: boolean;
         /** A list of toolbar items. If this is specified, it overrides all the default buttons.
@@ -2978,6 +2968,89 @@ declare module ZoomCharts.Configuration {
         as determined by the shape. 1 is the default width. Must be non-negative. */
         selfLinkWidthFactor?: number;
     }
+    /** Describes the base properties shared between all events raised by the different charts. */
+    export interface LinearChartCommentEditEventArguments extends BaseChartEventArguments {
+        /** True when this event creates a new comment rather than editing an
+        existing one. */
+        added: boolean;
+        comment: LinearChartSettingsComment;
+        commentId: string;
+        context: any;
+        /** True when the delete button was clicked. */
+        deleted: boolean;
+        panelIndex: number;
+        /** When {@link added} is true, describes where the user placed the
+        comment. Null for edit/delete of existing comments. */
+        placement: LinearChartCommentPlacementInfo;
+        /** Updated label settings, or null when deleted is true. */
+        settings: LinearChartCommentEditSettings;
+    }
+    export interface LinearChartCommentEditSettings {
+        labelStyle?: BaseSettingsLabelStyle;
+        /** Final shape end after an add/edit session. */
+        shapeEnd?: LinearChartSettingsCommentRelativePoint;
+        /** Final shape start after an add/edit session. Set when the comment has
+        a shape; otherwise null/undefined. */
+        shapeStart?: LinearChartSettingsCommentRelativePoint;
+        text?: string;
+    }
+    export interface LinearChartCommentPanelItem {
+        comment: LinearChartSettingsComment;
+        context?: any;
+    }
+    /** Placement metadata included when {@link ICommentEditEventArguments.added} is true. */
+    export interface LinearChartCommentPlacementInfo {
+        /** Horizontal position relative to the data-point slot (0 = left, 1 = right; may be outside 0..1). */
+        relativeX: number;
+        /** Vertical position relative to the chart draw area (0 = top, 1 = bottom; may be outside 0..1). */
+        relativeY: number;
+        /** Nearest resolvable series config id under the pointer; null when no
+        column series segment was found. */
+        seriesId: string;
+        /** Horizontal position relative to {@link seriesId} bounds (0 = left,
+        1 = right); null when series bounds are unavailable. */
+        seriesRelativeX: number;
+        /** Vertical position relative to {@link seriesId} bounds (0 = top,
+        1 = bottom); null when series bounds are unavailable. */
+        seriesRelativeY: number;
+        /** Relative shape end; null when the placement has no shape. */
+        shapeEnd: LinearChartSettingsCommentRelativePoint;
+        /** Relative shape start; null when the placement has no shape. */
+        shapeStart: LinearChartSettingsCommentRelativePoint;
+        /** Suggested non-relative icon alignment derived from the start point. */
+        suggestedIconMarkerAlign: "center" | "right" | "left";
+        /** Suggested relative marker offset. Set for canvas placement modes;
+        null for basic data-point comments. */
+        suggestedIconMarkerOffset: LinearChartSettingsCommentRelativePoint;
+        /** Suggested non-relative icon vertical position derived from the start point. */
+        suggestedIconMarkerPosition: "default" | "top" | "bottom";
+        /** Whether the click is closer to the series segment or the item/chart
+        slot. `"item"` when no series segment is available. */
+        suggestedMarkerBasis: "item" | "series";
+        /** Suggested align when positioning relative to the nearest series.
+        Null when series bounds are unavailable. */
+        suggestedSeriesIconMarkerAlign: "center" | "right" | "left";
+        /** Suggested vertical position when positioning relative to the nearest
+        series. Null when series bounds are unavailable. */
+        suggestedSeriesIconMarkerPosition: "default" | "top" | "bottom";
+        /** Shape type for oval/rectangle/arrow canvas modes; null otherwise. */
+        suggestedShapeType: "rectangle" | "arrow" | "oval";
+        type: "dataPoint" | "canvasText" | "canvasOval" | "canvasRectangle" | "canvasArrow";
+        /** Chart X coordinate of the placement start (click or drag start). */
+        x: number;
+        /** Chart Y coordinate of the placement start (click or drag start). */
+        y: number;
+    }
+    /** Argument passed to {@link SettingsComments.panelItemsFunction} when
+    {@link SettingsComments.panelContents} is `"allAtLevel"`. */
+    export interface LinearChartCommentsPanelItemsInfo {
+        /** Public chart API instance. */
+        chart: any;
+        /** Stable id for the current aggregation / drilldown level.
+        TimeChart: display unit string (e.g. `"d"`).
+        FacetChart: active facet id. */
+        levelId: string;
+    }
     export interface LinearChartItemClickParams {
         baseLegendClick: (event: BaseMouseEvent, item: LinearChartLegendEntry) => void;
         entries: Array<LinearChartLegendEntry>;
@@ -3131,11 +3204,138 @@ declare module ZoomCharts.Configuration {
         thickness?: number;
         yFraction?: number;
     }
+    export interface LinearChartSettingsComment {
+        /** Optional background around this comment in the comments panel. */
+        background?: LinearChartSettingsCommentBackground;
+        /** Optional group-level margin/padding for the {@link extraLabels} LabelGroup. */
+        extraLabelGroupStyle?: BaseSettingsLabelGroupStyle;
+        /** Style used for spacing between {@link extraLabels} (text ignored;
+        uses a non-breaking space). When unset, spacing is derived from the
+        first {@link extraLabels} entry. */
+        extraLabelSpacing?: BaseSettingsLabelGroupLabelStyle;
+        /** Optional multi-style labels drawn as a LabelGroup in the side panel,
+        on their own row below the icon/companion row and above the
+        below-label row (secondary, or primary when {@link swapSecondary}). */
+        extraLabels?: Array<BaseSettingsLabelGroupLabelStyle>;
+        iconMarkerAlign?: "center" | "right" | "left";
+        /** When set (and {@link iconMarkerOffset} is unset), {@link iconMarkerAlign}
+        is applied to this series' drawn X bounds instead of the item slot.
+        Use the series config id (`SettingsSeries.id`). */
+        iconMarkerAlignSeriesId?: string;
+        /** Relative icon position. x is within the column slot (like left/right
+        align) and y is within the chart draw area (like top/bottom). If set,
+        this overrides iconMarkerAlign, iconMarkerPosition, and the series id
+        fields. */
+        iconMarkerOffset?: LinearChartSettingsCommentRelativePoint;
+        iconMarkerPosition?: "default" | "top" | "bottom";
+        /** When set (and {@link iconMarkerOffset} is unset),
+        {@link iconMarkerPosition} is applied to this series' Y bounds instead
+        of the chart draw area. Use the series config id (`SettingsSeries.id`). */
+        iconMarkerPositionSeriesId?: string;
+        iconStyle?: BaseSettingsLabelStyle;
+        /** Additional style applied on top of {@link iconStyle} when drawing the
+        comment marker inside the chart while selected. The sidebar icon
+        always uses {@link iconStyle}. */
+        iconStyleSelected?: BaseSettingsLabelStyle;
+        iconText?: string;
+        /** Stable application-defined identifier used by comment edit events. */
+        id?: string;
+        labelStyle?: BaseSettingsLabelStyle;
+        secondaryLabelStyle?: BaseSettingsLabelStyle;
+        /** Optional secondary label shown in the comments panel on a new line
+        below the icon and primary text. */
+        secondaryText?: string;
+        /** Optional shape drawn in the chart area using relative start/end points. */
+        shape?: LinearChartSettingsCommentShape;
+        /** When true, the primary and secondary labels swap vertical positions
+        in the comments panel (secondary appears on the icon row; primary
+        appears on the line below). */
+        swapSecondary?: boolean;
+        text?: string;
+    }
+    export interface LinearChartSettingsCommentBackground {
+        /** Corner radius of the background in pixels. */
+        borderRadius?: number;
+        /** Space in pixels between this comment's background and the panel
+        edges / neighboring comments. */
+        margin?: number;
+        /** Space in pixels between the background edge and panel content. */
+        padding?: number;
+        /** Additional style applied on top of {@link style} when this comment is
+        selected in the comments panel. */
+        selectedStyle?: BaseSettingsBackgroundStyle;
+        /** Fill, stroke, dash, and shadow settings for the background. */
+        style?: BaseSettingsBackgroundStyle;
+    }
+    export interface LinearChartSettingsCommentRelativePoint {
+        /** Horizontal position relative to the column slot. 0 is left and 1 is
+        right; values outside 0..1 are allowed (e.g. neighboring slots). */
+        x?: number;
+        /** Vertical position relative to the chart draw area. 0 is top and 1 is
+        bottom; values outside 0..1 are allowed. */
+        y?: number;
+    }
+    export interface LinearChartSettingsCommentShape {
+        /** Arrow head size in pixels; used only when type === "arrow". */
+        arrowSize?: number;
+        end?: LinearChartSettingsCommentRelativePoint;
+        /** Decoration rendered at the start of an arrow shape. */
+        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        /** Additional style applied on top of {@link style} when this comment is
+        selected. */
+        selectedStyle?: BaseSettingsBackgroundStyle;
+        start?: LinearChartSettingsCommentRelativePoint;
+        /** Shared fill/stroke settings (fillColor, lineColor, lineWidth, lineDash, shadow*). */
+        style?: BaseSettingsBackgroundStyle;
+        /** Decoration rendered at the end of an arrow shape. */
+        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        type?: "rectangle" | "arrow" | "oval";
+    }
+    export interface LinearChartSettingsComments {
+        /** When enabled, a tooltip is shown for every visible comment marker,
+        anchored above (or below) the marker. When disabled, a tooltip appears
+        only while hovering a marker and follows the mouse cursor. */
+        alwaysShowMarkerTooltip?: boolean;
+        editing?: LinearChartSettingsCommentsEditing;
+        enabled?: boolean;
+        height?: number;
+        iconMarkerPosition?: "default" | "top" | "bottom";
+        /** How chart comment markers resolve overlaps with each other.
+        - `default`: bottom markers use `moveup`, top markers use `movedown`,
+           and markers with {@link SettingsComment.iconMarkerOffset} keep an
+           exact position (`none`).
+        - `none`: markers always draw at their layout position (may overlap). */
+        markerOverlap?: "default" | "none";
+        panel?: BaseSettingsChartPanel;
+        /** Controls which comments appear in the side panel.
+        - `visible` (default): comments whose marker center, shape endpoint,
+           or (when there is no marker) data-item bounds intersect the chart.
+        - `allLoaded`: every comment from data currently loaded at this level.
+        - `allAtLevel`: every comment for the current aggregation/drilldown
+           level, supplied by {@link panelItemsFunction} (not limited to
+           currently loaded chart data). Falls back to `allLoaded` when the
+           function is missing or returns null/undefined. */
+        panelContents?: "visible" | "allLoaded" | "allAtLevel";
+        /** App-provided source of side-panel comments for
+        {@link panelContents} === `"allAtLevel"`. Should return every comment
+        that belongs to the current aggregation/drilldown level. Chart markers
+        are unaffected and still come only from loaded data. */
+        panelItemsFunction?: (info: LinearChartCommentsPanelItemsInfo) => Array<LinearChartCommentPanelItem>;
+        scrollAnimationDuration?: number;
+        scrollButtons?: BaseSettingsScrollButtons;
+        width?: number;
+    }
+    export interface LinearChartSettingsCommentsEditing {
+        /** Enables editing controls in the comments side panel. */
+        enabled?: boolean;
+    }
     export interface LinearChartSettingsEvents<TArguments extends BaseChartEventArguments, TClickArguments extends BaseChartEventArguments> extends BaseSettingsEvents<TArguments, TClickArguments> {
         /** Function called when chart scrolling animation is finished. */
         onAnimationDone?: (
             /** An empty mouse event. */
             event: BaseMouseEvent, args: TArguments) => void;
+        /** Function called when an edited side-panel comment is saved. */
+        onCommentEdit?: (event: BaseMouseEvent, args: LinearChartCommentEditEventArguments) => void;
     }
     export interface LinearChartSettingsHighlightStyle {
         /** Fade in duration. It will only be used when the highlight is displayed the first time. If highlight of the same category is already
@@ -3288,7 +3488,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface LinearChartSettingsLegendMarker extends BaseSettingsLegendMarker {
         /** Specifies the shape for markers in the legend. If the value is `null` then the small icon representing the series is drawn. */
-        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
+        shape?: "triangle" | "circle" | "square" | "rhombus" | "triangle2";
     }
     export interface LinearChartSettingsLocalization extends BaseSettingsLocalization {
         /** Text to show on the info popup when there is no data in the selected range. */
@@ -3301,6 +3501,24 @@ declare module ZoomCharts.Configuration {
         valueUnits?: Dictionary<number>;
     }
     export interface LinearChartSettingsLocalizationToolbar extends BaseSettingsLocalizationToolbar {
+        /** Add an arrow canvas comment with text. */
+        addArrowComment?: string;
+        /** Add a freeform canvas comment; expands a shape submenu. */
+        addCanvasComment?: string;
+        /** Comments edit toolbar button title. */
+        addCommentTitle?: string;
+        /** Add a comment attached to a data point. */
+        addDataPointComment?: string;
+        /** Add an oval canvas comment with text. */
+        addOvalComment?: string;
+        /** Add a rectangle canvas comment with text. */
+        addRectangleComment?: string;
+        /** Add a text-only canvas comment. */
+        addTextComment?: string;
+        /** Comments edit toolbar button text. */
+        commentsEditButton?: string;
+        /** Title for the comment text editor when editing an existing comment. */
+        editCommentTitle?: string;
         /** Linear mode button text. */
         linButton?: string;
         /** Lin/Log button title. */
@@ -3523,7 +3741,7 @@ declare module ZoomCharts.Configuration {
         /** Horizontal space between the marker and label text. */
         padding?: number;
         /** Marker shape. */
-        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
+        shape?: "triangle" | "circle" | "square" | "rhombus" | "triangle2";
         /** Marker size in pixels. `null` uses the label line height. */
         size?: number;
     }
@@ -3573,6 +3791,11 @@ declare module ZoomCharts.Configuration {
         useStyledSteppedLines?: boolean;
     }
     export interface LinearChartSettingsSeriesStyle {
+        comment?: LinearChartSettingsComment;
+        /** Optional list of comments for this data point. When both this and
+        {@link comment} have content, the singular comment is treated as the
+        first entry followed by this list. */
+        comments?: Array<LinearChartSettingsComment>;
         depth?: number;
         /** Fill color. */
         fillColor?: string;
@@ -3665,7 +3888,7 @@ declare module ZoomCharts.Configuration {
         /** The width of the outline for the marker shape. */
         lineWidth?: number;
         /** Specify the shape of markers on the line. */
-        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
+        shape?: "triangle" | "circle" | "square" | "rhombus" | "triangle2";
         /** The width of the marker. In case when circle - interpreted as the diameter. */
         width?: number;
     }
@@ -4851,7 +5074,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface PieChartSettingsLegendMarker extends BaseSettingsLegendMarker {
         /** Specifies the shape for color markers in the legend. */
-        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
+        shape?: "triangle" | "circle" | "square" | "rhombus" | "triangle2";
     }
     export interface PieChartSettingsLocalization extends BaseSettingsLocalization {
         othersLabel?: string;
@@ -4871,7 +5094,7 @@ declare module ZoomCharts.Configuration {
         labelOffset?: number;
         labelPosition?: "position" | "endPosition" | "midPosition";
         labelStyle?: BaseSettingsLabelStyle;
-        mode?: "line" | "arrow" | "tick" | "none";
+        mode?: "arrow" | "line" | "tick" | "none";
         position?: number;
         tickLength?: number;
     }
@@ -5092,6 +5315,7 @@ declare module ZoomCharts.Configuration {
             /** Series type to connect value points by lines. */
             line?: TimeChartSettingsSeriesLines;
         };
+        comments?: TimeChartSettingsTimeComments;
         /** Moving time line that represents the current time, mainly to analyze real-time data changes. To achieve it,
         use server time of page load and adjust time zone offset. */
         currentTime?: TimeChartSettingsCurrentTime;
@@ -5725,7 +5949,13 @@ declare module ZoomCharts.Configuration {
         /** Which unit determins the vertical grid placement */
         vgridMode?: "both" | "major" | "minor";
     }
+    export interface TimeChartSettingsTimeComments extends LinearChartSettingsComments {
+    }
     export interface TimeChartSettingsToolbar extends BaseSettingsToolbar {
+        /** Whether to show the comments edit dropdown. The dropdown is only
+        created when {@link LinearChart.SettingsComments.editing}.enabled is
+        also true. */
+        commentsEdit?: boolean;
         /** Whether to show display period dropdown. */
         displayPeriod?: boolean;
         /** Whether to show the display unit dropdown. */
@@ -5803,6 +6033,8 @@ declare module ZoomCharts {
         public on(name: "animationDone", listener: (event: Configuration.BaseMouseEvent, args: Configuration.FacetChartChartEventArguments) => void): void;
         public on(name: "chartUpdate", listener: (event: Configuration.BaseMouseEvent, args: Configuration.FacetChartChartEventArguments) => void): void;
         public on(name: "click", listener: (event: Configuration.BaseMouseEvent, args: Configuration.FacetChartChartClickEventArguments) => void): void;
+        /** Adds an event listener for saved side-panel comment edits. */
+        public on(name: "commentEdit", listener: (event: Configuration.BaseMouseEvent, args: Configuration.LinearChartCommentEditEventArguments) => void): void;
         public on(name: "doubleClick", listener: (event: Configuration.BaseMouseEvent, args: Configuration.FacetChartChartClickEventArguments) => void): void;
         public on(name: "error", listener: (
                 /** An empty mouse event. */
@@ -6205,6 +6437,8 @@ declare module ZoomCharts {
         public on(name: "animationDone", listener: (event: Configuration.BaseMouseEvent, args: Configuration.TimeChartChartEventArguments) => void): void;
         public on(name: "chartUpdate", listener: (event: Configuration.BaseMouseEvent, args: Configuration.TimeChartChartEventArguments) => void): void;
         public on(name: "click", listener: (event: Configuration.BaseMouseEvent, args: Configuration.TimeChartChartEventArguments) => void): void;
+        /** Adds an event listener for saved side-panel comment edits. */
+        public on(name: "commentEdit", listener: (event: Configuration.BaseMouseEvent, args: Configuration.LinearChartCommentEditEventArguments) => void): void;
         public on(name: "doubleClick", listener: (event: Configuration.BaseMouseEvent, args: Configuration.TimeChartChartEventArguments) => void): void;
         public on(name: "error", listener: (
                 /** An empty mouse event. */

@@ -3,9 +3,36 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.18
+Version 1.21.19
 
 ====== Changelog ===========================
+
+Version 1.21.19 (2026-08-03)
+
+All Charts:
+* Fix image/PDF export failing with TypeError when labelCollections was not initialized on the export UpdateEvent
+* Move breadcrumb styles into zc.css and stop injecting an inline style element at runtime
+
+NetChart:
+* Fix impossible hovering on nodes fully within other nodes
+* Fix orthogonal links with decorations looking wrong at small orthogonalOffset values
+
+FacetChart:
+* Fix scroll button being incorrectly positioned in case of inside toolbar in horizontal mode.
+
+FacetChart/TimeChart:
+* Highlight remains even with info popup disabled unless the highlight is explicitly hidden.
+* Add secondary label for comments
+* Add shapes for comments
+* Allow custom positioning for comment markers
+* Allow editing comments
+* Allow adding and deleting comments in the chart
+* Allow tooltip on comment hover
+
+TimeChart:
+* Support comments for TimeChart
+
+--------------------------------------------
 
 Version 1.21.18 (2026-07-01)
 

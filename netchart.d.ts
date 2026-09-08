@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.19 */
+/** TypeScript definition file for ZoomCharts 1.21.20 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -291,6 +291,10 @@ declare module ZoomCharts.Configuration {
     }
     export interface BaseLabel {
         applyEllipsis(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number): void;
+        /** Floors measured half-sizes so the background is at least
+        {@link SettingsLabelBaseStyle.minWidth} ×
+        {@link SettingsLabelBaseStyle.minHeight} when those are set. */
+        applyMinimumSize(): void;
         fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         getDrawOrder(): number;
         getOverlapStrategy(): string;
@@ -670,6 +674,9 @@ declare module ZoomCharts.Configuration {
         shadowColor?: string;
         shadowOffsetX?: number;
         shadowOffsetY?: number;
+        /** Outer glow width in pixels, similar to the spread parameter of CSS `box-shadow`.
+        When set together with `shadowColor`, an expanded rounded rectangle is drawn behind the background before the main fill and stroke. */
+        shadowSpread?: number;
     }
     export interface BaseSettingsBreadcrumb {
         /** Breadcrumb alignment. */
@@ -861,9 +868,18 @@ declare module ZoomCharts.Configuration {
         margin?: number;
         /** Maximum width of the label. */
         maxWidth?: number;
+        /** Minimum total height of the label background box in pixels. After
+        content is measured, height is floored to this value (content may still
+        force a larger size). */
+        minHeight?: number;
         /** The minimum space, in pixels, that a label must display before
         shortening the label with ellipsis is considered. */
         minNonEllipsisWidth?: number;
+        /** Minimum total width of the label background box in pixels. After
+        content is measured, width is floored to this value (content may still
+        force a larger size). Useful with {@link minHeight} and a large
+        {@link borderRadius} to keep compact icons circular when text fits. */
+        minWidth?: number;
         /** Specifies how the label handles overlap if the label supports
         configurable overlap strategy. */
         overlapStrategy?: "none" | "skip" | "moveup" | "movedown" | "movevertical";
@@ -1336,7 +1352,9 @@ declare module ZoomCharts.Configuration {
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
-        (no group) or the group contains only one item. Then the item is toggled on/off individually. */
+        (no group) or the group contains only one item. Then the item is toggled on/off individually.
+        Long-pressing a legend item isolates it among all items of the same kind, ignoring groups. If no other item of that kind
+        is enabled, all of them are enabled instead. */
         legendGroupId?: string;
         /** Name to show in legend */
         nameLegend?: string;
@@ -1479,7 +1497,9 @@ declare module ZoomCharts.Configuration {
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
-        (no group) or the group contains only one item. Then the item is toggled on/off individually. */
+        (no group) or the group contains only one item. Then the item is toggled on/off individually.
+        Long-pressing a legend item isolates it among all items of the same kind, ignoring groups. If no other item of that kind
+        is enabled, all of them are enabled instead. */
         legendGroupId?: string;
         /** Name to use in legend */
         nameLegend?: string;
@@ -2029,6 +2049,7 @@ declare module ZoomCharts.Configuration {
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartClickEventArguments extends NetChartChartEventArguments {
         clickItem: BaseLabel;
+        clickLegend: NetChartLegendClickInfo;
         clickLink: ItemsChartLink;
         clickNode: ItemsChartNode;
     }
@@ -2050,6 +2071,14 @@ declare module ZoomCharts.Configuration {
         x?: number;
         /** Initial Y coordinate, used for static layout. */
         y?: number;
+    }
+    export interface NetChartLegendClickInfo {
+        /** Whether the legend entry is currently enabled. */
+        enabled: boolean;
+        /** Node/link class name or aura id. */
+        id: string;
+        /** Kind of legend entry that was pressed. */
+        type: "nodeClass" | "linkClass" | "aura";
     }
     export interface NetChartSettings extends ItemsChartSettings {
         /** Chart area related settings. */
@@ -2533,6 +2562,7 @@ declare module ZoomCharts {
                 /** An empty mouse event. */
                 event: Configuration.BaseMouseEvent, args: Configuration.BaseChartErrorEventArguments) => void): void;
         public on(name: "hoverChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
+        public on(name: "longPress", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartClickEventArguments) => void): void;
         /** Adds an event listener for pointer down event. */
         public on(name: "pointerDown", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         /** Adds an event listener for pointer down event. */
@@ -2634,6 +2664,20 @@ declare module ZoomCharts {
         [key: number]: TValue;
     }
 
+    /** An ordered list of color stops.
+
+    Each stop is a two-element tuple `[position, color]`:
+    - `position` — a number between 0 and 1 locating the stop along the gradient.
+    - `color` — a CSS color string, such as `"red"` or `"rgba(0,0,255,0.4)"`.
+
+    Colors between neighboring stops are interpolated. Values beyond the first
+    or last stop use that stop's color.
+    How `position` maps onto the chart (for example a data value, or a 0..1
+    fraction of a shape) is defined by the setting that consumes the gradient.
+
+    @example
+    [[0, "black"], [0.5, "red"], [1, "orange"]]
+    */
     export interface GradientDefinition extends Array<[number, string]> {
     }
 

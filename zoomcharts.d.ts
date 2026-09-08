@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.19 */
+/** TypeScript definition file for ZoomCharts 1.21.20 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -304,6 +304,10 @@ declare module ZoomCharts.Configuration {
     }
     export interface BaseLabel {
         applyEllipsis(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, left: number, right: number): void;
+        /** Floors measured half-sizes so the background is at least
+        {@link SettingsLabelBaseStyle.minWidth} ×
+        {@link SettingsLabelBaseStyle.minHeight} when those are set. */
+        applyMinimumSize(): void;
         fitInRect(layout: BaseLabelLayoutBase, g: CanvasRenderingContext2D, locationFromHeight: BaseLabelLocationDelegate, storePosition?: boolean): number;
         getDrawOrder(): number;
         getOverlapStrategy(): string;
@@ -708,6 +712,9 @@ declare module ZoomCharts.Configuration {
         shadowColor?: string;
         shadowOffsetX?: number;
         shadowOffsetY?: number;
+        /** Outer glow width in pixels, similar to the spread parameter of CSS `box-shadow`.
+        When set together with `shadowColor`, an expanded rounded rectangle is drawn behind the background before the main fill and stroke. */
+        shadowSpread?: number;
     }
     export interface BaseSettingsBreadcrumb {
         /** Breadcrumb alignment. */
@@ -901,9 +908,18 @@ declare module ZoomCharts.Configuration {
         margin?: number;
         /** Maximum width of the label. */
         maxWidth?: number;
+        /** Minimum total height of the label background box in pixels. After
+        content is measured, height is floored to this value (content may still
+        force a larger size). */
+        minHeight?: number;
         /** The minimum space, in pixels, that a label must display before
         shortening the label with ellipsis is considered. */
         minNonEllipsisWidth?: number;
+        /** Minimum total width of the label background box in pixels. After
+        content is measured, width is floored to this value (content may still
+        force a larger size). Useful with {@link minHeight} and a large
+        {@link borderRadius} to keep compact icons circular when text fits. */
+        minWidth?: number;
         /** Specifies how the label handles overlap if the label supports
         configurable overlap strategy. */
         overlapStrategy?: "none" | "skip" | "moveup" | "movedown" | "movevertical";
@@ -2316,7 +2332,9 @@ declare module ZoomCharts.Configuration {
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
-        (no group) or the group contains only one item. Then the item is toggled on/off individually. */
+        (no group) or the group contains only one item. Then the item is toggled on/off individually.
+        Long-pressing a legend item isolates it among all items of the same kind, ignoring groups. If no other item of that kind
+        is enabled, all of them are enabled instead. */
         legendGroupId?: string;
         /** Name to show in legend */
         nameLegend?: string;
@@ -2459,7 +2477,9 @@ declare module ZoomCharts.Configuration {
         /** Group ID for legend. Items in the same group have a different toggle behavior. When all the items in a group are enabled,
         clicking an item causes that item to stay enabled and all other items are disabled. Clicking it again enables all items
         again. Consequently, at least one item in each group is always enabled. The exception to this is if the group ID is null
-        (no group) or the group contains only one item. Then the item is toggled on/off individually. */
+        (no group) or the group contains only one item. Then the item is toggled on/off individually.
+        Long-pressing a legend item isolates it among all items of the same kind, ignoring groups. If no other item of that kind
+        is enabled, all of them are enabled instead. */
         legendGroupId?: string;
         /** Name to use in legend */
         nameLegend?: string;
@@ -3000,6 +3020,12 @@ declare module ZoomCharts.Configuration {
     }
     /** Placement metadata included when {@link ICommentEditEventArguments.added} is true. */
     export interface LinearChartCommentPlacementInfo {
+        /** Context of the rightmost item after LTR normalization when
+        {@link rangeItemCount} `>= 2`; null otherwise. */
+        endContext: any;
+        /** Inclusive item count for the placement. `1` for a single data point;
+        `>= 2` when the user dragged across multiple items. */
+        rangeItemCount: number;
         /** Horizontal position relative to the data-point slot (0 = left, 1 = right; may be outside 0..1). */
         relativeX: number;
         /** Vertical position relative to the chart draw area (0 = top, 1 = bottom; may be outside 0..1). */
@@ -3040,6 +3066,38 @@ declare module ZoomCharts.Configuration {
         x: number;
         /** Chart Y coordinate of the placement start (click or drag start). */
         y: number;
+    }
+    /** Arguments for {@link SettingsComments.placementPreviewComment}. Mirrors
+    the useful parts of an add-time {@link ICommentEditEventArguments} so
+    apps can reuse their comment styler. Does not include editor
+    {@link ICommentEditSettings} (preview is pre-text). */
+    export interface LinearChartCommentPlacementPreviewArguments {
+        chart: any;
+        /** Fresh SDK-seeded draft comment (marker/range/shape suggestions
+        already applied). The callback may clone and restyle this object. */
+        comment: LinearChartSettingsComment;
+        /** Target item context (timestamp / series / facet item, etc.). */
+        context: any;
+        /** Same placement metadata shape as on {@link ICommentEditEventArguments.added}. */
+        placement: LinearChartCommentPlacementInfo;
+    }
+    /** Argument passed to {@link SettingsComments.panelCountFunction} when
+    resolving the panel titlebar comment total. */
+    export interface LinearChartCommentsPanelCountInfo {
+        /** Public chart API instance. */
+        chart: any;
+        /** Stable id for the current aggregation / drilldown level.
+        TimeChart: display unit string (e.g. `"d"`).
+        FacetChart: active facet id. */
+        levelId: string;
+        /** Number of comments from currently painted anchors under allLoaded
+        semantics. Useful when an app wants a loaded-vs-global comparison. */
+        loadedItemCount: number;
+        /** Active {@link SettingsComments.panelContents} mode. */
+        panelContents: "visible" | "allLoaded" | "allAtLevel";
+        /** Number of comments currently listed in the side panel for this mode
+        (current-level catalog for `allAtLevel`, loaded/visible sets otherwise). */
+        panelItemCount: number;
     }
     /** Argument passed to {@link SettingsComments.panelItemsFunction} when
     {@link SettingsComments.panelContents} is `"allAtLevel"`. */
@@ -3207,8 +3265,9 @@ declare module ZoomCharts.Configuration {
     export interface LinearChartSettingsComment {
         /** Optional background around this comment in the comments panel. */
         background?: LinearChartSettingsCommentBackground;
-        /** Optional group-level margin/padding for the {@link extraLabels} LabelGroup. */
-        extraLabelGroupStyle?: BaseSettingsLabelGroupStyle;
+        /** Optional group-level margin/padding and panel layout offsets for the
+        {@link extraLabels} LabelGroup. */
+        extraLabelGroupStyle?: LinearChartSettingsCommentLabelGroupStyle;
         /** Style used for spacing between {@link extraLabels} (text ignored;
         uses a non-breaking space). When unset, spacing is derived from the
         first {@link extraLabels} entry. */
@@ -3232,16 +3291,31 @@ declare module ZoomCharts.Configuration {
         {@link iconMarkerPosition} is applied to this series' Y bounds instead
         of the chart draw area. Use the series config id (`SettingsSeries.id`). */
         iconMarkerPositionSeriesId?: string;
-        iconStyle?: BaseSettingsLabelStyle;
-        /** Additional style applied on top of {@link iconStyle} when drawing the
-        comment marker inside the chart while selected. The sidebar icon
-        always uses {@link iconStyle}. */
-        iconStyleSelected?: BaseSettingsLabelStyle;
+        iconStyle?: LinearChartSettingsCommentLabelStyle;
+        /** Optional style applied on top of {@link iconStyle} when drawing the
+        comment marker inside the chart. The sidebar icon ignores this.
+        When selected, merge order for chart markers is
+        {@link iconStyle} → this → {@link iconStyleSelected} →
+        {@link iconStyleChartSelected}. */
+        iconStyleChart?: LinearChartSettingsCommentLabelStyle;
+        /** Optional style applied on top of {@link iconStyleSelected} when
+        drawing the selected comment marker inside the chart. The sidebar
+        icon ignores this (e.g. drop shadow on chart selection only). */
+        iconStyleChartSelected?: LinearChartSettingsCommentLabelStyle;
+        /** Additional style applied on top of {@link iconStyle} when the comment
+        is selected, for both the sidebar icon and the in-chart marker.
+        Use this for shared selection changes (e.g. fill color). Chart-only
+        selection extras belong in {@link iconStyleChartSelected}. */
+        iconStyleSelected?: LinearChartSettingsCommentLabelStyle;
         iconText?: string;
         /** Stable application-defined identifier used by comment edit events. */
         id?: string;
-        labelStyle?: BaseSettingsLabelStyle;
-        secondaryLabelStyle?: BaseSettingsLabelStyle;
+        labelStyle?: LinearChartSettingsCommentLabelStyle;
+        /** Inclusive item count for a range comment (`>= 2`). Null / omitted / `1`
+        means a normal single-item comment. The comment remains associated with
+        the leftmost item; this count extends the range to the right. */
+        rangeItemCount?: number;
+        secondaryLabelStyle?: LinearChartSettingsCommentLabelStyle;
         /** Optional secondary label shown in the comments panel on a new line
         below the icon and primary text. */
         secondaryText?: string;
@@ -3267,6 +3341,33 @@ declare module ZoomCharts.Configuration {
         /** Fill, stroke, dash, and shadow settings for the background. */
         style?: BaseSettingsBackgroundStyle;
     }
+    /** Group style for {@link SettingsComment.extraLabels}. Extends
+    {@link Base.SettingsLabelGroupStyle} with the same panel-only layout
+    offsets as {@link SettingsCommentLabelStyle}. */
+    export interface LinearChartSettingsCommentLabelGroupStyle extends BaseSettingsLabelGroupStyle {
+        /** Comments panel only: horizontal shift from the default sequential
+        layout origin. Reduces available width for the group by the same
+        amount. */
+        offsetX?: number;
+        /** Comments panel only: vertical shift from the default sequential
+        layout origin. Subsequent panel content continues after the group's
+        final bounds. */
+        offsetY?: number;
+    }
+    /** Label style for comment panel content. Extends
+    {@link Base.SettingsLabelStyle} with panel-only layout offsets.
+    {@link offsetX} / {@link offsetY} shift the label in the side panel
+    flow (layout-affecting) and are ignored for in-chart markers. */
+    export interface LinearChartSettingsCommentLabelStyle extends BaseSettingsLabelStyle {
+        /** Comments panel only: horizontal shift from the default sequential
+        layout origin. Reduces available width for this label by the same
+        amount. Ignored when painting in-chart markers. */
+        offsetX?: number;
+        /** Comments panel only: vertical shift from the default sequential
+        layout origin. Subsequent panel content continues after this
+        label's final bounds. Ignored when painting in-chart markers. */
+        offsetY?: number;
+    }
     export interface LinearChartSettingsCommentRelativePoint {
         /** Horizontal position relative to the column slot. 0 is left and 1 is
         right; values outside 0..1 are allowed (e.g. neighboring slots). */
@@ -3278,9 +3379,18 @@ declare module ZoomCharts.Configuration {
     export interface LinearChartSettingsCommentShape {
         /** Arrow head size in pixels; used only when type === "arrow". */
         arrowSize?: number;
+        /** Corner radius for rectangle shapes (pixels). Ignored for oval/arrow. */
+        borderRadius?: number;
         end?: LinearChartSettingsCommentRelativePoint;
         /** Decoration rendered at the start of an arrow shape. */
         fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        /** When false, the shape is visual-only in the chart: it does not
+        participate in click/selection, context menu targeting, or
+        shape-handle editing. Comment markers and the side panel still
+        select/edit the comment as usual. Multi-item range highlight
+        bands are also treated as non-interactive even when this is left
+        at the default. */
+        interactive?: boolean;
         /** Additional style applied on top of {@link style} when this comment is
         selected. */
         selectedStyle?: BaseSettingsBackgroundStyle;
@@ -3293,9 +3403,18 @@ declare module ZoomCharts.Configuration {
     }
     export interface LinearChartSettingsComments {
         /** When enabled, a tooltip is shown for every visible comment marker,
-        anchored above (or below) the marker. When disabled, a tooltip appears
-        only while hovering a marker and follows the mouse cursor. */
+        anchored beside the marker per {@link markerTooltipPosition}. When
+        disabled, a tooltip appears only while hovering a marker and follows
+        the mouse cursor (still respecting {@link markerTooltipPosition}). */
         alwaysShowMarkerTooltip?: boolean;
+        /** When true (default), comment markers and shapes are drawn in the chart
+        area. When false, they are hidden in the chart but still listed in
+        the side panel when it is open. */
+        chartPreviewEnabled?: boolean;
+        /** Fallback fill color for new comments / the editor when a comment has
+        no {@link SettingsComment.labelStyle} text fillColor. Dark themes
+        override this to a light color so draft text stays readable. */
+        defaultTextColor?: string;
         editing?: LinearChartSettingsCommentsEditing;
         enabled?: boolean;
         height?: number;
@@ -3306,6 +3425,14 @@ declare module ZoomCharts.Configuration {
            exact position (`none`).
         - `none`: markers always draw at their layout position (may overlap). */
         markerOverlap?: "default" | "none";
+        /** Preferred side for comment marker tooltips.
+        Falls back to the opposite side when the preferred side does not fit
+        in the chart area.
+        - `top` (default): above the marker, else below
+        - `bottom`: below the marker, else above
+        - `left`: left of the marker, else right
+        - `right`: right of the marker, else left */
+        markerTooltipPosition?: "top" | "right" | "left" | "bottom";
         panel?: BaseSettingsChartPanel;
         /** Controls which comments appear in the side panel.
         - `visible` (default): comments whose marker center, shape endpoint,
@@ -3316,18 +3443,151 @@ declare module ZoomCharts.Configuration {
            currently loaded chart data). Falls back to `allLoaded` when the
            function is missing or returns null/undefined. */
         panelContents?: "visible" | "allLoaded" | "allAtLevel";
+        /** Optional app-provided value for the panel titlebar / toolbar comment
+        counter. Intended for a global (or as-global-as-possible) total:
+        especially with {@link panelContents} === `"allAtLevel"`, return the
+        size of the full multi-level catalog. When unset or when the function
+        returns null/undefined, counters fall back to the current panel list
+        length (the closest honest figure for the active mode). */
+        panelCountFunction?: (info: LinearChartCommentsPanelCountInfo) => number;
         /** App-provided source of side-panel comments for
         {@link panelContents} === `"allAtLevel"`. Should return every comment
         that belongs to the current aggregation/drilldown level. Chart markers
         are unaffected and still come only from loaded data. */
         panelItemsFunction?: (info: LinearChartCommentsPanelItemsInfo) => Array<LinearChartCommentPanelItem>;
+        /** Optional "Comments by Level" band below the titlebar (when both are
+        enabled). Lists dataset levels plus an All pseudo-level for navigating
+        and aggregating comments across levels. */
+        panelLevels?: LinearChartSettingsCommentsPanelLevels;
+        /** When true (default), the comments side panel starts open and claims
+        its configured width from the chart area. When false, it starts
+        closed (zero width). Toggled at runtime via the comments toolbar
+        dropdown or {@link ChartComments.setPanelOpen}. */
+        panelOpen?: boolean;
+        /** Duration in seconds for animating the panel open/close width change
+        ({@link FixedDurationLinearAnimation}). The chart area reflows with
+        the animated width. Use `0` for an instant snap. */
+        panelOpenAnimationDuration?: number;
+        /** Optional fixed titlebar above the scrollable comment list (icon,
+        title, optional total count, separator). Disabled by default. */
+        panelTitlebar?: LinearChartSettingsCommentsPanelTitlebar;
+        /** Optional app callback that builds a {@link SettingsComment} used only
+        for the live placement preview (ghost marker while adding a
+        data-point or canvas comment). Must not persist comments or advance
+        id counters.
+        
+        When unset, data-point mode keeps the range band on drag and no
+        mode draws an icon preview. */
+        placementPreviewComment?: (args: LinearChartCommentPlacementPreviewArguments) => LinearChartSettingsComment;
+        /** Opacity multiplier applied when painting
+        {@link placementPreviewComment} (relative to the current canvas
+        alpha). Default `0.5`. */
+        placementPreviewOpacity?: number;
         scrollAnimationDuration?: number;
         scrollButtons?: BaseSettingsScrollButtons;
+        /** Per-item icon colors for the comments toolbar dropdown menu. Icons
+        render with {@code currentColor}; these values are applied to the
+        icon wrapper at build time. */
+        toolbarDropdown?: LinearChartSettingsCommentsToolbarDropdown;
+        /** When true (default), the comments toolbar dropdown shows the same
+        resolved comment total as the panel titlebar counter
+        ({@link panelCountFunction} or panel list length) instead of the
+        localized {@link SettingsLocalizationToolbar.commentsEditButton}
+        label. The button title/tooltip remains the add-comment string. */
+        toolbarShowCount?: boolean;
         width?: number;
     }
     export interface LinearChartSettingsCommentsEditing {
         /** Enables editing controls in the comments side panel. */
         enabled?: boolean;
+    }
+    /** Optional band listing dataset levels above the scrollable comment list.
+    When enabled with {@link SettingsComments.panelTitlebar}, this band sits
+    below the titlebar separator. The comment list clip region, scroll, and
+    top arrow start below both header bands. */
+    export interface LinearChartSettingsCommentsPanelLevels {
+        /** Label for the All pseudo-level row. */
+        allLabel?: string;
+        countStyle?: BaseSettingsLabelStyle;
+        countStyleDeactivated?: BaseSettingsLabelStyle;
+        /** Text after the per-level count (e.g. `" comments"` → `"3 comments"`).
+        Empty/null shows only the number. */
+        countSuffix?: string;
+        enabled?: boolean;
+        /** Max height of the levels band in pixels (title + rows + separator).
+        Null/undefined = no absolute pixel ceiling. When content exceeds the
+        effective cap (see also {@link maxHeightFraction}), the title stays
+        fixed and the rows scroll with arrows. */
+        maxHeight?: number;
+        /** Max share of the comments panel below the titlebar that the levels
+        band may occupy (0..1). Combined with {@link maxHeight} when both are
+        set: the stricter (smaller) limit wins. Default `0.5` so levels cannot
+        dominate the panel on short charts, while still growing with resize
+        until an absolute {@link maxHeight} (if any) is reached.
+        Null/undefined disables the relative cap. */
+        maxHeightFraction?: number;
+        /** Minimum width reserved for the level name after the count label is
+        placed on the right. */
+        nameMinWidth?: number;
+        nameStyle?: BaseSettingsLabelStyle;
+        nameStyleDeactivated?: BaseSettingsLabelStyle;
+        /** Outer padding of the levels band content. */
+        padding?: number;
+        /** Margin around each level row (outside the selected background). */
+        rowMargin?: number;
+        /** Padding inside each level row (inside the selected background). */
+        rowPadding?: number;
+        scrollButtons?: BaseSettingsScrollButtons;
+        /** Background of the selected row (padding box; excludes row margin). */
+        selectedBackground?: BaseSettingsBackgroundStyle;
+        selectedBorderRadius?: number;
+        separatorColor?: string;
+        separatorWidth?: number;
+        /** Optional header above the level rows. Empty/null hides the title. */
+        title?: string;
+        titleStyle?: BaseSettingsLabelStyle;
+    }
+    /** Optional titlebar above the scrollable comments list. When enabled, the
+    list clip region, scroll offset, and top scroll arrow start below this
+    band so comments never paint into the titlebar. */
+    export interface LinearChartSettingsCommentsPanelTitlebar {
+        /** Style for the count run (e.g. `" (12)"`) in the titlebar LabelGroup. */
+        countStyle?: BaseSettingsLabelGroupLabelStyle;
+        enabled?: boolean;
+        /** Optional group-level margin/padding for the titlebar LabelGroup. */
+        groupStyle?: BaseSettingsLabelGroupStyle;
+        /** Optional stroke color for the titlebar icon. When null, uses the
+        title text color. */
+        iconColor?: string;
+        /** Horizontal gap between the icon and the title LabelGroup. */
+        iconGap?: number;
+        /** Pixel size of the titlebar comments icon. */
+        iconSize?: number;
+        /** Inner padding around the titlebar content. */
+        padding?: number;
+        /** Stroke/fill color of the separator line. */
+        separatorColor?: string;
+        /** Thickness of the separator line under the titlebar. */
+        separatorWidth?: number;
+        /** When true, appends the resolved comment total next to the title. */
+        showCount?: boolean;
+        /** Title text shown next to the comments icon. */
+        title?: string;
+        /** Style for the title run in the titlebar LabelGroup. */
+        titleStyle?: BaseSettingsLabelGroupLabelStyle;
+    }
+    /** Stroke colors for icons in the comments toolbar dropdown. Each icon uses
+    {@code currentColor}; configure these to match your theme. */
+    export interface LinearChartSettingsCommentsToolbarDropdown {
+        addArrowCommentIconColor?: string;
+        addCanvasCommentChevronIconColor?: string;
+        addCanvasCommentIconColor?: string;
+        addDataPointCommentIconColor?: string;
+        addOvalCommentIconColor?: string;
+        addRectangleCommentIconColor?: string;
+        addTextCommentIconColor?: string;
+        chartPreviewToggleIconColor?: string;
+        panelToggleIconColor?: string;
     }
     export interface LinearChartSettingsEvents<TArguments extends BaseChartEventArguments, TClickArguments extends BaseChartEventArguments> extends BaseSettingsEvents<TArguments, TClickArguments> {
         /** Function called when chart scrolling animation is finished. */
@@ -3515,16 +3775,24 @@ declare module ZoomCharts.Configuration {
         addRectangleComment?: string;
         /** Add a text-only canvas comment. */
         addTextComment?: string;
+        /** Comments dropdown: close the side panel when it is open. */
+        closeCommentsPanel?: string;
         /** Comments edit toolbar button text. */
         commentsEditButton?: string;
         /** Title for the comment text editor when editing an existing comment. */
         editCommentTitle?: string;
+        /** Comments dropdown: hide markers/shapes in the chart area. */
+        hideChartPreview?: string;
         /** Linear mode button text. */
         linButton?: string;
         /** Lin/Log button title. */
         linLogTitle?: string;
         /** Logarithmic mode button text. */
         logButton?: string;
+        /** Comments dropdown: show markers/shapes in the chart area again. */
+        previewAllComments?: string;
+        /** Comments dropdown: open the side panel when it is closed. */
+        showAllComments?: string;
     }
     export interface LinearChartSettingsSeries {
         /** Name to show in the info popup when some aggregation has occurred. */
@@ -4127,6 +4395,7 @@ declare module ZoomCharts.Configuration {
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartClickEventArguments extends NetChartChartEventArguments {
         clickItem: BaseLabel;
+        clickLegend: NetChartLegendClickInfo;
         clickLink: ItemsChartLink;
         clickNode: ItemsChartNode;
     }
@@ -4148,6 +4417,14 @@ declare module ZoomCharts.Configuration {
         x?: number;
         /** Initial Y coordinate, used for static layout. */
         y?: number;
+    }
+    export interface NetChartLegendClickInfo {
+        /** Whether the legend entry is currently enabled. */
+        enabled: boolean;
+        /** Node/link class name or aura id. */
+        id: string;
+        /** Kind of legend entry that was pressed. */
+        type: "nodeClass" | "linkClass" | "aura";
     }
     export interface NetChartSettings extends ItemsChartSettings {
         /** Chart area related settings. */
@@ -6234,6 +6511,7 @@ declare module ZoomCharts {
                 /** An empty mouse event. */
                 event: Configuration.BaseMouseEvent, args: Configuration.BaseChartErrorEventArguments) => void): void;
         public on(name: "hoverChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
+        public on(name: "longPress", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartClickEventArguments) => void): void;
         /** Adds an event listener for pointer down event. */
         public on(name: "pointerDown", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         /** Adds an event listener for pointer down event. */
@@ -6578,6 +6856,20 @@ declare module ZoomCharts {
         [key: number]: TValue;
     }
 
+    /** An ordered list of color stops.
+
+    Each stop is a two-element tuple `[position, color]`:
+    - `position` — a number between 0 and 1 locating the stop along the gradient.
+    - `color` — a CSS color string, such as `"red"` or `"rgba(0,0,255,0.4)"`.
+
+    Colors between neighboring stops are interpolated. Values beyond the first
+    or last stop use that stop's color.
+    How `position` maps onto the chart (for example a data value, or a 0..1
+    fraction of a shape) is defined by the setting that consumes the gradient.
+
+    @example
+    [[0, "black"], [0.5, "red"], [1, "orange"]]
+    */
     export interface GradientDefinition extends Array<[number, string]> {
     }
 

@@ -3,9 +3,44 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.19
+Version 1.21.20
 
 ====== Changelog ===========================
+
+Version 1.21.20 (2026-09-08)
+
+All Charts:
+* New overlay mode for some unlicensed use cases
+* Add hover background to toolbar items
+* Add shadowSpread for background styles (CSS box-shadow-like outer spread)
+* Add minWidth and minHeight for labels
+
+NetChart:
+* onLongPress now fires for legend items and includes args.clickLegend
+* Long-pressing a legend item isolates that item (or restores all items of the same kind)
+
+FacetChart:
+* Fix scroll arrows not showing up in case of subpixel position offsets
+
+FacetChart/TimeChart:
+* Add titlebar for chart comments panel
+* Add panel levels for chart comments panel
+* Add range comments
+* Improved comment dark mode
+* Add separate chart, panel, and selected styles for comment icons
+* Add live placement preview while adding comments
+* Add option to hide in-chart comment markers while keeping the side panel
+* Add icons and configurable colors for the comments toolbar dropdown
+* Fix comment placement cursor being overwritten when zoomed out past the minimum unit
+* Improve secondary comment label vertical alignment with the icon
+* Add offsetX/offsetY panel layout offsets for comment labels and extra label groups
+* Add shape.interactive to make comment shapes visual-only (no click/selection)
+* Lighten comments panel edit/delete icon colors and increase their hit targets
+
+TimeChart:
+* Fix weekend/holiday tint darkening comment markers and shapes
+
+--------------------------------------------
 
 Version 1.21.19 (2026-08-03)
 

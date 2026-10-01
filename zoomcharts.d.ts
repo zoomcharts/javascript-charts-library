@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.20 */
+/** TypeScript definition file for ZoomCharts 1.21.21 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -21,7 +21,7 @@ declare module ZoomCharts.Configuration {
         public back(): this;
         public clearHistory(): this;
         /** Applies one of the built-in themes to the chart. This is an alternative to calling 
-        `updateSettings({ theme: ZoomCharts.$this.themes.dark })`. */
+        `updateSettings({ theme: ZoomCharts.$this.themes.dark })`. The theme replaces any previously applied theme overlay. */
         public customize(
             /** The name of the theme to be applied, must be one of the values defined in the `$this.themes` static property. */
             name: string): this;
@@ -330,6 +330,14 @@ declare module ZoomCharts.Configuration {
         /** Apply ellipsis to label rows that exceed the specified maxWidth.
         This method modifies the label's rows in-place to truncate text with ellipsis. */
         applyEllipsisToRows(g: CanvasRenderingContext2D, label: BaseLabel, maxWidth: number): BaseLabelApplyEllipsisToRowsResult;
+        /** Horizontal space the rounded corners on one side of a label background
+        take away from its text. A label that must fit its text between both
+        of its sides therefore needs twice this. */
+        borderRadiusInset(borderRadius: number, halfHeight: number, padding: number): number;
+        /** Exact-geometry counterpart to borderRadiusInset. `padding` is the
+        label's total padding, which both sets how far the text sits from the
+        box edge and supplies part of the clearance the corner needs. */
+        borderRadiusInsetExact(borderRadius: number, halfHeight: number, padding: number): number;
         /** places label */
         fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
         /** places label
@@ -397,7 +405,7 @@ declare module ZoomCharts.Configuration {
         changedPointerCount: number;
         consumed: boolean;
         ctrlKey: boolean;
-        cursor: "default" | "help" | "move" | "pointer" | "progress" | "text" | "wait" | "e-resize" | "ne-resize" | "nw-resize" | "n-resize" | "se-resize" | "sw-resize" | "s-resize" | "w-resize" | "ns-resize" | "crosshair";
+        cursor: "default" | "help" | "move" | "pointer" | "progress" | "text" | "wait" | "e-resize" | "ne-resize" | "nw-resize" | "n-resize" | "se-resize" | "sw-resize" | "s-resize" | "w-resize" | "ns-resize" | "crosshair" | "grab" | "grabbing";
         defaultPrevented: boolean;
         distance(p: {
                 x: number;
@@ -518,8 +526,9 @@ declare module ZoomCharts.Configuration {
         
         Use `area.left`, `area.top`, `area.width` and `area.height` settings to position the subchart within parent chart. */
         parentChart?: BaseApi;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Passing another theme replaces the previous one and restores leaves the
+        new theme does not set. Pass `theme: null` to remove the active theme overlay. */
         theme?: BaseSettings;
         /** The chart's main title. */
         title?: BaseSettingsTitle;
@@ -699,7 +708,12 @@ declare module ZoomCharts.Configuration {
     export interface BaseSettingsAreaStyle {
         /** Background fill color of chart area */
         fillColor?: string;
-        /** Background image of  chart area. */
+        /** Background image of the chart area. Drawn on the canvas after
+        `fillColor`.
+        
+        Image export includes this background when the image will not taint the
+        canvas (same-origin, or CORS via `advanced.crossOriginHeader`).
+        Otherwise it is omitted from the export and a warning is logged. */
         image?: string;
         /** The foreground fill color of the chart area. `rgba()` with alpha transparency should be used */
         overlayColor?: string;
@@ -1477,8 +1491,8 @@ declare module ZoomCharts.Configuration {
         /** The default series used as the chart dominant data. Use settings.series array to specify actual series. */
         seriesDefault?: FacetChartSettingsSeries;
         sidePreview?: FacetChartSettingsFacetSidePreview;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: FacetChartSettings;
         /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
         toolbar?: FacetChartSettingsToolbar;
@@ -1609,6 +1623,10 @@ declare module ZoomCharts.Configuration {
         allowOverflow?: boolean;
         enabled?: boolean;
         interLabelSpacing?: number;
+        /** When enabled, hovering a facet axis label that has a hover tooltip
+        (currently: labels shortened with an ellipsis) shows a small tip
+        with the full label text. */
+        showHoverTooltip?: boolean;
         /** The default text displayed for each value when the data item does not define a specific text. */
         text?: string;
     }
@@ -1837,8 +1855,8 @@ declare module ZoomCharts.Configuration {
                 sizeProportional?: number;
             };
         };
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: GeoChartSettings;
         /** Please note that currently toolbar is not supported on GeoChart.
         @deprecated */
@@ -2686,7 +2704,7 @@ declare module ZoomCharts.Configuration {
         direction?: string;
         fillColor?: string;
         /** The decoration rendered where the link starts. */
-        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         /** Specifies if the link is invisible - thus completely skipping the drawing and hit testing. This can be used, for example, to hide all links
         and showing only ones that meet certain criteria using `linkStyleFunction`. */
         invisible?: boolean;
@@ -2720,7 +2738,7 @@ declare module ZoomCharts.Configuration {
         shadowOffsetY?: number;
         strength?: number;
         /** The decoration rendered where the link ends. */
-        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         toPieColor?: string;
         toPieValue?: number;
     }
@@ -3013,6 +3031,17 @@ declare module ZoomCharts.Configuration {
         a shape; otherwise null/undefined. */
         shapeStart?: LinearChartSettingsCommentRelativePoint;
         text?: string;
+    }
+    /** Arguments for {@link SettingsComments.editorInfoLine}. Same useful fields
+    as {@link ICommentPlacementPreviewArguments} so apps can format a brief
+    placement summary (range / category / series) for the add dialog. */
+    export interface LinearChartCommentEditorInfoLineArguments {
+        chart: any;
+        /** SDK-seeded draft comment after placement suggestions are applied. */
+        comment: LinearChartSettingsComment;
+        /** Target item context (timestamp / series / facet item, etc.). */
+        context: any;
+        placement: LinearChartCommentPlacementInfo;
     }
     export interface LinearChartCommentPanelItem {
         comment: LinearChartSettingsComment;
@@ -3383,7 +3412,7 @@ declare module ZoomCharts.Configuration {
         borderRadius?: number;
         end?: LinearChartSettingsCommentRelativePoint;
         /** Decoration rendered at the start of an arrow shape. */
-        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         /** When false, the shape is visual-only in the chart: it does not
         participate in click/selection, context menu targeting, or
         shape-handle editing. Comment markers and the side panel still
@@ -3398,7 +3427,7 @@ declare module ZoomCharts.Configuration {
         /** Shared fill/stroke settings (fillColor, lineColor, lineWidth, lineDash, shadow*). */
         style?: BaseSettingsBackgroundStyle;
         /** Decoration rendered at the end of an arrow shape. */
-        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         type?: "rectangle" | "arrow" | "oval";
     }
     export interface LinearChartSettingsComments {
@@ -3407,16 +3436,48 @@ declare module ZoomCharts.Configuration {
         disabled, a tooltip appears only while hovering a marker and follows
         the mouse cursor (still respecting {@link markerTooltipPosition}). */
         alwaysShowMarkerTooltip?: boolean;
+        /** When {@link experience} is `"annotations"`, enables the built-in
+        TimeChart comment catalog (add/edit/delete + panel/paint wiring)
+        unless the app supplies its own {@link panelItemsFunction} /
+        {@link panelCountFunction} persistence. Set to `false` to disable.
+        Ignored for legacy experience. Default `true` under annotations. */
+        builtinStorage?: boolean;
         /** When true (default), comment markers and shapes are drawn in the chart
         area. When false, they are hidden in the chart but still listed in
         the side panel when it is open. */
         chartPreviewEnabled?: boolean;
+        /** Optional default panel-card chrome ({@link SettingsComment.background}
+        style fill/line) applied by the annotations experience when styling
+        comments. Dark theme sets a light wash (white ~2% fill / ~15% outline). */
+        defaultBackgroundStyle?: BaseSettingsBackgroundStyle;
+        /** Optional default style for category (full-item) comment shapes in the
+        annotations experience. Dark theme sets a light wash (white ~4% fill /
+        ~20% dashed outline). */
+        defaultCategoryShapeStyle?: BaseSettingsBackgroundStyle;
+        /** When set, non-arrow shapes created from placement use this opacity
+        for {@link SettingsCommentShape.style.fillColor} (same RGB as the
+        shape default). Annotations accent themes also honor this for
+        oval/rectangle fills. Dark theme sets `0.2`. */
+        defaultShapeFillOpacity?: number;
         /** Fallback fill color for new comments / the editor when a comment has
         no {@link SettingsComment.labelStyle} text fillColor. Dark themes
         override this to a light color so draft text stays readable. */
         defaultTextColor?: string;
         editing?: LinearChartSettingsCommentsEditing;
+        /** Optional app callback that returns a short placement summary shown
+        under the add-comment dialog titlebar (above the editor toolbar).
+        Return `null` or an empty string to hide the row. Edit mode never
+        shows this line. Canvas adds typically return `null`. */
+        editorInfoLine?: (args: LinearChartCommentEditorInfoLineArguments) => string;
         enabled?: boolean;
+        /** Product experience for comments.
+        - `legacy` (default / unset): existing read-only-friendly defaults
+           (waterfall-style: editing off, titlebar/levels off, panel shows
+           visible comments).
+        - `annotations`: opt-in pack that enables editing, titlebar, levels,
+           `allAtLevel` panel contents, annotation localization, and (for
+           TimeChart) built-in storage / appearance callbacks when unset. */
+        experience?: "legacy" | "annotations";
         height?: number;
         iconMarkerPosition?: "default" | "top" | "bottom";
         /** How chart comment markers resolve overlaps with each other.
@@ -3471,6 +3532,9 @@ declare module ZoomCharts.Configuration {
         /** Optional fixed titlebar above the scrollable comment list (icon,
         title, optional total count, separator). Disabled by default. */
         panelTitlebar?: LinearChartSettingsCommentsPanelTitlebar;
+        /** Derivation parameters for the dismissible top-of-chart placement
+        guidance pill (colors are derived from the placement icon accent). */
+        placementGuidance?: LinearChartSettingsCommentsPlacementGuidance;
         /** Optional app callback that builds a {@link SettingsComment} used only
         for the live placement preview (ghost marker while adding a
         data-point or canvas comment). Must not persist comments or advance
@@ -3510,9 +3574,15 @@ declare module ZoomCharts.Configuration {
         allLabel?: string;
         countStyle?: BaseSettingsLabelStyle;
         countStyleDeactivated?: BaseSettingsLabelStyle;
-        /** Text after the per-level count (e.g. `" comments"` → `"3 comments"`).
-        Empty/null shows only the number. */
+        /** Text after the per-level count for every count other than `1`
+        (e.g. `" comments"` → `"3 comments"`, `"0 comments"`). Empty/null
+        shows only the number. Localize together with
+        {@link countSuffixSingular}. */
         countSuffix?: string;
+        /** Text after the per-level count when the count is exactly `1`
+        (e.g. `" comment"` → `"1 comment"`). Empty/null shows only the
+        number. Localize together with {@link countSuffix} for each language. */
+        countSuffixSingular?: string;
         enabled?: boolean;
         /** Max height of the levels band in pixels (title + rows + separator).
         Null/undefined = no absolute pixel ceiling. When content exceeds the
@@ -3575,6 +3645,30 @@ declare module ZoomCharts.Configuration {
         title?: string;
         /** Style for the title run in the titlebar LabelGroup. */
         titleStyle?: BaseSettingsLabelGroupLabelStyle;
+    }
+    /** How the placement guidance pill derives fill / stroke / text from the
+    current placement icon accent color. */
+    export interface LinearChartSettingsCommentsPlacementGuidance {
+        /** When the accent HSL lightness is above this value, fill/stroke use a
+        remapped accent ({@link accentTargetLightness} /
+        {@link accentMaxSaturation}). `null` (default) disables remapping. */
+        accentMaxLightness?: number;
+        /** Max HSL saturation (0..1) when remapping. Default `0.70`. */
+        accentMaxSaturation?: number;
+        /** Target HSL lightness (0..1) when remapping. Default `0.45`. */
+        accentTargetLightness?: number;
+        /** Fill opacity of the guidance pill (0..1). Default `0.1`. */
+        fillOpacity?: number;
+        /** Stroke opacity of the guidance pill (0..1). Default `0.25`. */
+        strokeOpacity?: number;
+        /** Guidance text color strategy:
+        - `accent` (default): opaque icon accent
+        - `auto`: white for purple-leaning accents; light tint for blue-leaning
+        - `white`: always white */
+        text?: "auto" | "accent" | "white";
+        /** When {@link text} is `"auto"` and the accent is blue-leaning, blend
+        toward white by this amount (0..1). Default `0.65`. */
+        textTintBlend?: number;
     }
     /** Stroke colors for icons in the comments toolbar dropdown. Each icon uses
     {@code currentColor}; configure these to match your theme. */
@@ -3763,24 +3857,51 @@ declare module ZoomCharts.Configuration {
     export interface LinearChartSettingsLocalizationToolbar extends BaseSettingsLocalizationToolbar {
         /** Add an arrow canvas comment with text. */
         addArrowComment?: string;
+        /** Title when adding an arrow canvas comment. */
+        addArrowCommentTitle?: string;
         /** Add a freeform canvas comment; expands a shape submenu. */
         addCanvasComment?: string;
+        /** Title when adding a text-only canvas comment. */
+        addCanvasCommentTitle?: string;
+        /** Primary button label when adding a new comment. */
+        addComment?: string;
         /** Comments edit toolbar button title. */
         addCommentTitle?: string;
         /** Add a comment attached to a data point. */
         addDataPointComment?: string;
+        /** Title when adding a data-point comment. */
+        addDataPointCommentTitle?: string;
         /** Add an oval canvas comment with text. */
         addOvalComment?: string;
+        /** Title when adding an oval canvas comment. */
+        addOvalCommentTitle?: string;
         /** Add a rectangle canvas comment with text. */
         addRectangleComment?: string;
+        /** Title when adding a rectangle canvas comment. */
+        addRectangleCommentTitle?: string;
         /** Add a text-only canvas comment. */
         addTextComment?: string;
+        /** Cancel button label in the comment text editor. */
+        cancelComment?: string;
         /** Comments dropdown: close the side panel when it is open. */
         closeCommentsPanel?: string;
+        /** Placeholder shown in the empty comment text editor. */
+        commentEditorPlaceholder?: string;
         /** Comments edit toolbar button text. */
         commentsEditButton?: string;
-        /** Title for the comment text editor when editing an existing comment. */
+        /** Title when editing an arrow canvas comment. */
+        editArrowCommentTitle?: string;
+        /** Title when editing a text-only canvas comment. */
+        editCanvasCommentTitle?: string;
+        /** Title for the comment text editor when editing a data-point comment. */
         editCommentTitle?: string;
+        /** Title when editing an oval canvas comment. */
+        editOvalCommentTitle?: string;
+        /** Title when editing a rectangle canvas comment. */
+        editRectangleCommentTitle?: string;
+        /** Label shown in the side-panel card footer while that comment is open
+        in the edit popup. */
+        editingInPopup?: string;
         /** Comments dropdown: hide markers/shapes in the chart area. */
         hideChartPreview?: string;
         /** Linear mode button text. */
@@ -3789,8 +3910,25 @@ declare module ZoomCharts.Configuration {
         linLogTitle?: string;
         /** Logarithmic mode button text. */
         logButton?: string;
+        /** Guidance shown at the top of the chart while placing an arrow canvas
+        comment (before the first drag). */
+        placeArrowCommentHint?: string;
+        /** Guidance shown at the top of the chart while placing a text-only
+        canvas comment (before the first click). */
+        placeCanvasCommentHint?: string;
+        /** Guidance shown at the top of the chart while placing a data-point
+        comment (before the first click or drag). */
+        placeDataPointCommentHint?: string;
+        /** Guidance shown at the top of the chart while placing an oval canvas
+        comment (before the first drag). */
+        placeOvalCommentHint?: string;
+        /** Guidance shown at the top of the chart while placing a rectangle
+        canvas comment (before the first drag). */
+        placeRectangleCommentHint?: string;
         /** Comments dropdown: show markers/shapes in the chart area again. */
         previewAllComments?: string;
+        /** Primary button label when saving an edited comment. */
+        saveComment?: string;
         /** Comments dropdown: open the side panel when it is closed. */
         showAllComments?: string;
     }
@@ -4489,8 +4627,8 @@ declare module ZoomCharts.Configuration {
         navigation?: NetChartSettingsNavigation;
         /** Chart style settings. */
         style?: NetChartSettingsStyle;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: NetChartSettings;
         /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
         toolbar?: NetChartBarSettingsToolbar;
@@ -5169,8 +5307,8 @@ declare module ZoomCharts.Configuration {
                 /** slice data including subvalues */
                 sliceData: PieChartDataObject) => void;
         };
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: PieChartSettings;
         /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
         toolbar?: BaseSettingsToolbar;
@@ -5663,8 +5801,8 @@ declare module ZoomCharts.Configuration {
         series?: Array<TimeChartSettingsSeries>;
         /** The default series used as the chart dominant data. Use settings.series array to specify actual series. */
         seriesDefault?: TimeChartSettingsSeries;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: TimeChartSettings;
         /** X-axis line representing time at the bottom of chart.
         
@@ -6334,14 +6472,21 @@ declare module ZoomCharts {
         public replaceSettings(changes: Configuration.FacetChartSettings): this;
         public selection(selected?: Array<string | Configuration.FacetChartItem>): Array<Configuration.FacetChartItem>;
         public setPie(pieId: string | Array<string>, offset?: number, count?: number): this;
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {
+            /** Opt-in annotations UI (editing, titlebar, levels). Data still
+            comes from item {@code style.comment}. */
+            annotations?: Configuration.FacetChartSettings;
             dark?: Configuration.FacetChartSettings;
             horizontal?: Configuration.FacetChartSettings;
         };
@@ -6420,11 +6565,15 @@ declare module ZoomCharts {
         public selection(
             /** array of objects identifiers to select. Do not pass this parameter if you don't want to change current selection. */
             selected?: Array<string | Configuration.ItemsChartNode | Configuration.ItemsChartLink>): Array<Configuration.ItemsChartNode | Configuration.ItemsChartLink>;
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -6556,11 +6705,15 @@ declare module ZoomCharts {
             id: string): void;
         /** Shows context menu, when either node id or INode interface object is passed as a parameter. */
         public showNodeMenu(node: string | Configuration.ItemsChartNode): void;
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -6652,11 +6805,15 @@ declare module ZoomCharts {
         public setPie(pieId: Array<string>, offset?: number): this;
         public setPieOffset(offset: number): this;
         public showInfoPopup(x: number, y: number, slice: Configuration.PieChartSlice): void;
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {
@@ -6793,14 +6950,22 @@ declare module ZoomCharts {
         
         If the data has not yet been loaded, this method returns `[null, null]`. */
         public targetTime(): [number, number];
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {
+            /** Opt-in annotations experience (editing, titlebar, levels, built-in
+            storage/appearance). Same as
+            {@code comments: { experience: "annotations" }}. */
+            annotations?: Configuration.TimeChartSettings;
             dark?: Configuration.TimeChartSettings;
             flat?: Configuration.TimeChartSettings;
             gradient?: Configuration.TimeChartSettings;

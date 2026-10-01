@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.21.20 */
+/** TypeScript definition file for ZoomCharts 1.21.21 */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -15,7 +15,7 @@ declare module ZoomCharts.Configuration {
         public back(): this;
         public clearHistory(): this;
         /** Applies one of the built-in themes to the chart. This is an alternative to calling 
-        `updateSettings({ theme: ZoomCharts.$this.themes.dark })`. */
+        `updateSettings({ theme: ZoomCharts.$this.themes.dark })`. The theme replaces any previously applied theme overlay. */
         public customize(
             /** The name of the theme to be applied, must be one of the values defined in the `$this.themes` static property. */
             name: string): this;
@@ -317,6 +317,14 @@ declare module ZoomCharts.Configuration {
         /** Apply ellipsis to label rows that exceed the specified maxWidth.
         This method modifies the label's rows in-place to truncate text with ellipsis. */
         applyEllipsisToRows(g: CanvasRenderingContext2D, label: BaseLabel, maxWidth: number): BaseLabelApplyEllipsisToRowsResult;
+        /** Horizontal space the rounded corners on one side of a label background
+        take away from its text. A label that must fit its text between both
+        of its sides therefore needs twice this. */
+        borderRadiusInset(borderRadius: number, halfHeight: number, padding: number): number;
+        /** Exact-geometry counterpart to borderRadiusInset. `padding` is the
+        label's total padding, which both sets how far the text sits from the
+        box edge and supplies part of the clearance the corner needs. */
+        borderRadiusInsetExact(borderRadius: number, halfHeight: number, padding: number): number;
         /** places label */
         fitLabelInLines(g: CanvasRenderingContext2D, label: BaseLabel, x: number, y: number, align: string, noSpaceAlign: string, leftRightFromXY: (x: number, y: number) => [number, number]): number;
         /** places label
@@ -359,7 +367,7 @@ declare module ZoomCharts.Configuration {
         changedPointerCount: number;
         consumed: boolean;
         ctrlKey: boolean;
-        cursor: "default" | "help" | "move" | "pointer" | "progress" | "text" | "wait" | "e-resize" | "ne-resize" | "nw-resize" | "n-resize" | "se-resize" | "sw-resize" | "s-resize" | "w-resize" | "ns-resize" | "crosshair";
+        cursor: "default" | "help" | "move" | "pointer" | "progress" | "text" | "wait" | "e-resize" | "ne-resize" | "nw-resize" | "n-resize" | "se-resize" | "sw-resize" | "s-resize" | "w-resize" | "ns-resize" | "crosshair" | "grab" | "grabbing";
         defaultPrevented: boolean;
         distance(p: {
                 x: number;
@@ -480,8 +488,9 @@ declare module ZoomCharts.Configuration {
         
         Use `area.left`, `area.top`, `area.width` and `area.height` settings to position the subchart within parent chart. */
         parentChart?: BaseApi;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Passing another theme replaces the previous one and restores leaves the
+        new theme does not set. Pass `theme: null` to remove the active theme overlay. */
         theme?: BaseSettings;
         /** The chart's main title. */
         title?: BaseSettingsTitle;
@@ -661,7 +670,12 @@ declare module ZoomCharts.Configuration {
     export interface BaseSettingsAreaStyle {
         /** Background fill color of chart area */
         fillColor?: string;
-        /** Background image of  chart area. */
+        /** Background image of the chart area. Drawn on the canvas after
+        `fillColor`.
+        
+        Image export includes this background when the image will not taint the
+        canvas (same-origin, or CORS via `advanced.crossOriginHeader`).
+        Otherwise it is omitted from the export and a warning is logged. */
         image?: string;
         /** The foreground fill color of the chart area. `rgba()` with alpha transparency should be used */
         overlayColor?: string;
@@ -1706,7 +1720,7 @@ declare module ZoomCharts.Configuration {
         direction?: string;
         fillColor?: string;
         /** The decoration rendered where the link starts. */
-        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        fromDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         /** Specifies if the link is invisible - thus completely skipping the drawing and hit testing. This can be used, for example, to hide all links
         and showing only ones that meet certain criteria using `linkStyleFunction`. */
         invisible?: boolean;
@@ -1740,7 +1754,7 @@ declare module ZoomCharts.Configuration {
         shadowOffsetY?: number;
         strength?: number;
         /** The decoration rendered where the link ends. */
-        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow";
+        toDecoration?: "circle" | "open arrow" | "hollow arrow" | "arrow" | "slim arrow";
         toPieColor?: string;
         toPieValue?: number;
     }
@@ -2143,8 +2157,8 @@ declare module ZoomCharts.Configuration {
         navigation?: NetChartSettingsNavigation;
         /** Chart style settings. */
         style?: NetChartSettingsStyle;
-        /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
-        themes. */
+        /** Theme to apply as a replaceable overlay. You can either use this to share configuration objects between multiple
+        charts or use one of the predefined themes. Pass `theme: null` to remove the active theme overlay. */
         theme?: NetChartSettings;
         /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
         toolbar?: NetChartBarSettingsToolbar;
@@ -2607,11 +2621,15 @@ declare module ZoomCharts {
             id: string): void;
         /** Shows context menu, when either node id or INode interface object is passed as a parameter. */
         public showNodeMenu(node: string | Configuration.ItemsChartNode): void;
-        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
+        /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method.
+        Themes are applied as a replaceable overlay: switching themes restores values the previous theme set that the new one
+        does not, and `updateSettings({ theme: null })` removes the overlay.
         
         ```javascript 
         var chart = new ZoomCharts.$this({ theme: ZoomCharts.$this.themes.dark });
         chart.updateSettings({ theme: ZoomCharts.$this.themes.dark });
+        chart.updateSettings({ theme: ZoomCharts.$this.themes.flat });
+        chart.updateSettings({ theme: null });
         chart.customize("dark");
         ``` */
         public static themes: {

@@ -3,9 +3,51 @@ ZoomCharts javascript library.
 Copyright 2014-2026, SIA Data Visualization Software Lab. All rights reserved.
 http://zoomcharts.com
 
-Version 1.21.20
+Version 1.21.21
 
 ====== Changelog ===========================
+
+Version 1.21.21 (2026-10-01)
+
+All Charts:
+* Themes are applied as a replaceable overlay; switching themes or passing `theme: null` restores previous values
+* Fix scaled info popup being misaligned in some cases
+* Fix labels never being shortened with an ellipsis unless a border radius was set
+* Background images now on top of background color and appear in image export
+
+FacetChart:
+* Add hover tooltip for shortened facet axis labels
+
+FacetChart/TimeChart:
+* Series labels are left-aligned by default, so multi-word labels no longer look centered
+* Fix series labels overflowing the panel instead of wrapping or being shortened with an ellipsis
+* Fix series label connectors detaching when the line continues past the value-axis scale
+* Comment editor shows a placeholder
+* Comment editor disables Save button if the comment is empty
+* New button names for comment editor
+* Comment editor titles reflect add/edit and comment type
+* Comment editor titlebar icons match comment type and icon color
+* Comment editor Add/Save button uses the comment icon accent color
+* Comment editor can show an add-only placement info line via editorInfoLine
+* Comment panel level counts use countSuffixSingular for a count of 1
+* While editing a comment, the panel highlights that card and dims the others
+* Oval comment icons sit on the ellipse edge with aspect-biased placement
+* Shape-edit handle drags keep the icon attached to its original corner/endpoint
+* While editing a shape, drag the shape body to reposition it (grab cursor)
+* Placement mode shows a dismissible top-of-chart guidance hint
+* Comment arrows default to a narrower filled "slim arrow" head
+* Hide in-chart comment icons when their associated series is disabled
+* Opt-in annotations experience via comments.experience / TimeChart.themes.annotations
+  (editing, titlebar, levels, built-in TimeChart storage and appearance defaults)
+* Comment placement works without an items.styleFunction (annotations / builtin storage)
+* Annotations experience: preview icons use the next number; panel extraLabels match comments.html
+* Annotations experience defaults align with comments.html (secondary labels, colors, icon/shape styles)
+* Annotations experience: dark-theme panel/accent colors; paint-stable level ids; Inter editor font
+* Add-comment editor inherits label font/color from placementPreviewComment (comments.html + annotations)
+* While editing, drag a relatively positioned comment icon to move the comment (and its shape when present); fixed align/position markers stay locked
+* Annotations / comments dark theme: marker tooltip matches info-popup (#000 + shadow); placement guidance / shape fill contrast via configurable comments.placementGuidance and comments.defaultShapeFillOpacity; panel cards and category bands via comments.defaultBackgroundStyle / defaultCategoryShapeStyle
+
+--------------------------------------------
 
 Version 1.21.20 (2026-09-08)
 
